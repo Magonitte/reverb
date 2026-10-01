@@ -45,6 +45,8 @@ jobs:
         run: npx playwright install chromium
 
       - run: npm run test:prepare
+      - name: Ferramentas reais executam (yt-dlp, deno, ffmpeg, ffprobe, fpcalc)
+        run: node scripts/verify-tools.mjs
       - run: npm run verify
 
       - name: E2E (mock)

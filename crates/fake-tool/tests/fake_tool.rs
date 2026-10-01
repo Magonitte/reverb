@@ -25,6 +25,37 @@ fn version_padrao_e_via_env() {
 }
 
 #[test]
+fn version_via_arquivo_ao_lado_do_executavel() {
+    let dir = tempfile::tempdir().unwrap();
+    let copy = dir
+        .path()
+        .join(format!("node{}", std::env::consts::EXE_SUFFIX));
+    std::fs::copy(env!("CARGO_BIN_EXE_fake-tool"), &copy).unwrap();
+    let mut sidecar = copy.clone().into_os_string();
+    sidecar.push(".version");
+    std::fs::write(
+        &sidecar, "v22.1.0
+",
+    )
+    .unwrap();
+
+    let out = Command::new(&copy)
+        .arg("--version")
+        .env_remove("FAKE_TOOL_VERSION")
+        .output()
+        .unwrap();
+    assert_eq!(String::from_utf8_lossy(&out.stdout).trim(), "v22.1.0");
+
+    // A variável de ambiente tem prioridade sobre o arquivo.
+    let out = Command::new(&copy)
+        .arg("--version")
+        .env("FAKE_TOOL_VERSION", "9.9.9")
+        .output()
+        .unwrap();
+    assert_eq!(String::from_utf8_lossy(&out.stdout).trim(), "9.9.9");
+}
+
+#[test]
 fn exit_devolve_o_codigo() {
     let out = tool().args(["--exit", "3"]).output().unwrap();
     assert_eq!(out.status.code(), Some(3));

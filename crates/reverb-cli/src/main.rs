@@ -1,10 +1,12 @@
 use std::path::PathBuf;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 use anyhow::{bail, Context, Result};
 use clap::{Parser, Subcommand};
 use reverb_core::paths::{default_app_data_dir, DataPaths};
-use reverb_core::{Db, MemorySink, SettingsPatch, SettingsService};
+use reverb_core::{
+    Db, EventSink, MemorySink, SettingsPatch, SettingsService, Tool, ToolsConfig, ToolsManager,
+};
 
 #[derive(Parser)]
 #[command(name = "reverb-cli", version, about = "Linha de comando do Reverb")]
@@ -30,6 +32,28 @@ enum Command {
         #[command(subcommand)]
         action: SettingsAction,
     },
+    /// Gerencia as ferramentas externas (yt-dlp, Deno, FFmpeg, fpcalc, bgutil)
+    Tools {
+        #[command(subcommand)]
+        action: ToolsAction,
+    },
+}
+
+#[derive(Subcommand)]
+enum ToolsAction {
+    /// Imprime o estado de cada ferramenta (JSON)
+    Status,
+    /// Instala: `--all` (yt-dlp, Deno, FFmpeg e fpcalc), uma ferramenta, ou (sem argumentos) só as que faltam
+    Install {
+        #[arg(long, conflicts_with = "tool")]
+        all: bool,
+        /// ytdlp | deno | ffmpeg | fpcalc | bgutil
+        tool: Option<String>,
+    },
+    /// Atualiza uma ferramenta para a última versão (consulta o GitHub sem cache)
+    Update { tool: String },
+    /// Volta uma ferramenta para a versão anterior
+    Rollback { tool: String },
 }
 
 #[derive(Subcommand)]
@@ -86,9 +110,118 @@ async fn run_settings(paths: &DataPaths, action: SettingsAction) -> Result<()> {
     Ok(())
 }
 
+/// Mostra o progresso das ferramentas no stderr (uma linha por fase / a cada 20 %).
+struct StderrSink {
+    last: Mutex<(String, i64)>,
+}
+
+impl EventSink for StderrSink {
+    fn emit(&self, event: &str, payload: serde_json::Value) {
+        if event != "tools://progress" {
+            return;
+        }
+        let tool = payload["tool"].as_str().unwrap_or("?");
+        let phase = payload["phase"].as_str().unwrap_or("?");
+        let percent = payload["percent"].as_i64().unwrap_or(0);
+        let key = format!("{tool}/{phase}");
+        let bucket = percent / 20;
+        let mut last = self.last.lock().expect("sink");
+        if last.0 != key || last.1 != bucket {
+            *last = (key, bucket);
+            eprintln!("[{tool}] {phase} {percent}%");
+        }
+    }
+}
+
+fn parse_tool(text: &str) -> Result<Tool> {
+    Tool::from_id(text).with_context(|| {
+        format!("ferramenta desconhecida: {text} (use ytdlp, deno, ffmpeg, fpcalc ou bgutil)")
+    })
+}
+
+/// Sem `--data-dir`, o `--tools-dir` isola também o banco (em memória): testes com
+/// `--tools-dir` nunca tocam nos dados reais do usuário.
+async fn tools_manager(
+    paths: &DataPaths,
+    tools_dir: PathBuf,
+    isolated: bool,
+) -> Result<ToolsManager> {
+    let db = if isolated {
+        Db::open_in_memory()?
+    } else {
+        Db::open(&paths.db_file())?
+    };
+    let sink: Arc<dyn EventSink> = Arc::new(StderrSink {
+        last: Mutex::new((String::new(), -1)),
+    });
+    let settings = Arc::new(SettingsService::new(db.clone(), Arc::clone(&sink)).await?);
+    let mut config = ToolsConfig::new(tools_dir);
+    // Permite apontar para um GitHub falso nos testes do CLI.
+    if let Ok(url) = std::env::var("REVERB_GITHUB_API_URL") {
+        config.github_base_url = url;
+    }
+    Ok(ToolsManager::new(config, db, settings, sink)?)
+}
+
+async fn run_tools(manager: &ToolsManager, action: ToolsAction) -> Result<()> {
+    match action {
+        ToolsAction::Status => {
+            println!(
+                "{}",
+                serde_json::to_string_pretty(&manager.status().await?)?
+            );
+        }
+        ToolsAction::Install { all, tool } => {
+            let targets = match (all, tool) {
+                (true, _) => Tool::DEFAULT_SET.to_vec(),
+                (false, Some(name)) => vec![parse_tool(&name)?],
+                (false, None) => {
+                    let installed = manager.install_missing().await?;
+                    println!("{}", serde_json::json!({ "installed": installed }));
+                    return Ok(());
+                }
+            };
+            for tool in targets {
+                let outcome = manager
+                    .install(tool)
+                    .await
+                    .with_context(|| format!("falha ao instalar {}", tool.id()))?;
+                println!(
+                    "{}",
+                    serde_json::json!({ "tool": tool, "outcome": outcome })
+                );
+            }
+        }
+        ToolsAction::Update { tool } => {
+            let tool = parse_tool(&tool)?;
+            let outcome = manager
+                .update(tool)
+                .await
+                .with_context(|| format!("falha ao atualizar {}", tool.id()))?;
+            println!(
+                "{}",
+                serde_json::json!({ "tool": tool, "outcome": outcome })
+            );
+        }
+        ToolsAction::Rollback { tool } => {
+            let tool = parse_tool(&tool)?;
+            let version = manager
+                .rollback(tool)
+                .await
+                .with_context(|| format!("falha ao reverter {}", tool.id()))?;
+            println!(
+                "{}",
+                serde_json::json!({ "tool": tool, "version": version })
+            );
+        }
+    }
+    Ok(())
+}
+
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> Result<()> {
     let cli = Cli::parse();
+    let isolated_tools = cli.tools_dir.is_some() && cli.data_dir.is_none();
     let paths = resolve_paths(cli.data_dir)?;
     let tools_dir = cli.tools_dir.unwrap_or_else(|| paths.tools_dir());
 
@@ -105,6 +238,10 @@ async fn main() -> Result<()> {
             println!("{}", serde_json::to_string_pretty(&report)?);
         }
         Command::Settings { action } => run_settings(&paths, action).await?,
+        Command::Tools { action } => {
+            let manager = tools_manager(&paths, tools_dir, isolated_tools).await?;
+            run_tools(&manager, action).await?;
+        }
     }
     Ok(())
 }

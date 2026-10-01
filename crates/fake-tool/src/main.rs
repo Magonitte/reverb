@@ -83,6 +83,23 @@ fn serve_ping(port: u16) -> ! {
     process::exit(0);
 }
 
+/// Texto impresso por `--version`: `FAKE_TOOL_VERSION`, senão o conteúdo do arquivo
+/// `<executável>.version` (permite versões diferentes para cópias renomeadas, como `deno`/`node`,
+/// sem alterar o ambiente do processo de teste), senão `1.0.0`.
+fn version_text() -> String {
+    if let Ok(version) = std::env::var("FAKE_TOOL_VERSION") {
+        return version;
+    }
+    if let Ok(exe) = std::env::current_exe() {
+        let mut sidecar = exe.into_os_string();
+        sidecar.push(".version");
+        if let Ok(text) = std::fs::read_to_string(sidecar) {
+            return text.trim_end().to_string();
+        }
+    }
+    "1.0.0".to_string()
+}
+
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let opts = match parse(&args) {
@@ -98,8 +115,7 @@ fn main() {
     }
 
     if opts.version {
-        let version = std::env::var("FAKE_TOOL_VERSION").unwrap_or_else(|_| "1.0.0".to_string());
-        println!("{version}");
+        println!("{}", version_text());
     }
 
     if let Some(path) = &opts.stdout_lines {

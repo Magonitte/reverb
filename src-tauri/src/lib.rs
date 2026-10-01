@@ -4,7 +4,7 @@ mod state;
 
 use std::sync::Arc;
 
-use reverb_core::{logging, Db, EventSink, SettingsService};
+use reverb_core::{logging, Db, EventSink, SettingsService, ToolsConfig, ToolsManager};
 use tauri::{Manager, WebviewUrl, WebviewWindowBuilder};
 
 use crate::state::{AppState, TauriSink};
@@ -37,14 +37,23 @@ pub fn run() {
 
             let db = Db::open(&paths.db_file())?;
             let sink: Arc<dyn EventSink> = Arc::new(TauriSink::new(app.handle().clone()));
-            let settings = tauri::async_runtime::block_on(SettingsService::new(
+            let settings = Arc::new(tauri::async_runtime::block_on(SettingsService::new(
                 db.clone(),
                 Arc::clone(&sink),
-            ))?;
+            ))?);
+            let tools = Arc::new(ToolsManager::new(
+                ToolsConfig::new(headless::resolve_tools_dir(&paths)),
+                db.clone(),
+                Arc::clone(&settings),
+                Arc::clone(&sink),
+            )?);
+            // Ferramentas faltantes e atualizações automáticas, em segundo plano (§16).
+            tauri::async_runtime::spawn(Arc::clone(&tools).background_startup());
             app.manage(AppState {
                 paths,
                 db,
-                settings: Arc::new(settings),
+                settings,
+                tools,
                 sink,
             });
 
@@ -61,7 +70,20 @@ pub fn run() {
             commands::settings::settings_get,
             commands::settings::settings_update,
             commands::settings::settings_reset,
+            commands::tools::tools_status,
+            commands::tools::tools_install_missing,
+            commands::tools::tools_check_updates,
+            commands::tools::tools_update,
+            commands::tools::tools_rollback,
         ])
-        .run(tauri::generate_context!())
-        .expect("erro ao executar o Reverb");
+        .build(tauri::generate_context!())
+        .expect("erro ao construir o Reverb")
+        .run(|handle, event| {
+            // Encerra o servidor de PO token (e sua árvore de processos) ao fechar o app.
+            if let tauri::RunEvent::Exit = event {
+                if let Some(state) = handle.try_state::<AppState>() {
+                    tauri::async_runtime::block_on(state.tools.shutdown());
+                }
+            }
+        });
 }

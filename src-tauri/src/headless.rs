@@ -18,6 +18,16 @@ pub fn resolve_data_paths() -> Result<DataPaths, String> {
     Ok(DataPaths::resolve(exe_dir, &app_data))
 }
 
+/// Pasta das ferramentas: `REVERB_TOOLS_DIR` só em debug; senão `<dados>/tools` (arquitetura §4).
+pub fn resolve_tools_dir(paths: &DataPaths) -> PathBuf {
+    if cfg!(debug_assertions) {
+        if let Some(dir) = std::env::var_os("REVERB_TOOLS_DIR") {
+            return PathBuf::from(dir);
+        }
+    }
+    paths.tools_dir()
+}
+
 /// Trata as flags headless. Devolve `Some(código)` se o processo deve sair já.
 pub fn handle(args: &[String]) -> Option<i32> {
     let position = args.iter().position(|a| a == "--headless-selftest")?;

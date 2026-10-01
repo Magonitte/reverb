@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use reverb_core::{DataPaths, Db, EventSink, SettingsService};
+use reverb_core::{DataPaths, Db, EventSink, SettingsService, ToolsManager};
 use tauri::{AppHandle, Emitter};
 
 /// Estado gerenciado do app, criado no `setup()` (arquitetura §3).
@@ -10,6 +10,7 @@ pub struct AppState {
     #[allow(dead_code)] // F04+: fila e biblioteca usam o banco diretamente.
     pub db: Db,
     pub settings: Arc<SettingsService>,
+    pub tools: Arc<ToolsManager>,
     #[allow(dead_code)] // F02+: ferramentas e fila emitem eventos pelo sink.
     pub sink: Arc<dyn EventSink>,
 }

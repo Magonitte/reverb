@@ -14,11 +14,21 @@ pub enum CoreError {
     Db(#[from] rusqlite::Error),
     #[error("{0}")]
     Internal(String),
+    /// Erro com código estável (`checksum_mismatch`, `tool_missing`…), usado como `kind`.
+    #[error("{message}")]
+    Coded { kind: &'static str, message: String },
     #[error("{message}")]
     Invalid {
         message: String,
         i18n_key: Option<String>,
     },
+}
+
+impl From<reqwest::Error> for CoreError {
+    fn from(err: reqwest::Error) -> Self {
+        // `without_url` evita vazar query strings (tokens) nas mensagens e nos logs.
+        Self::coded("network", err.without_url().to_string())
+    }
 }
 
 impl CoreError {
@@ -36,8 +46,16 @@ impl CoreError {
         }
     }
 
+    pub fn coded(kind: &'static str, message: impl Into<String>) -> Self {
+        Self::Coded {
+            kind,
+            message: message.into(),
+        }
+    }
+
     pub fn kind(&self) -> &'static str {
         match self {
+            Self::Coded { kind, .. } => kind,
             Self::Io(_) => "io",
             Self::Json(_) => "json",
             Self::Db(_) => "db",

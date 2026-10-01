@@ -1,4 +1,5 @@
 pub mod settings;
+pub mod tools;
 
 use reverb_core::AppInfo;
 use tauri::AppHandle;

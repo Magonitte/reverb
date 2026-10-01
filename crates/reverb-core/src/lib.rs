@@ -7,6 +7,7 @@ pub mod events;
 pub mod logging;
 pub mod paths;
 pub mod settings;
+pub mod tools;
 
 pub use app_info::AppInfo;
 pub use db::Db;
@@ -14,3 +15,4 @@ pub use error::{CoreError, CoreResult};
 pub use events::{EventSink, MemorySink};
 pub use paths::DataPaths;
 pub use settings::{Settings, SettingsPatch, SettingsService, SettingsView};
+pub use tools::{Tool, ToolsConfig, ToolsManager};

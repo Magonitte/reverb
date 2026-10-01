@@ -57,6 +57,16 @@ impl Db {
         .map_err(|e| CoreError::Internal(format!("tarefa do banco falhou: {e}")))?
     }
 
+    pub async fn kv_get(&self, key: &str) -> CoreResult<Option<String>> {
+        let key = key.to_string();
+        self.call(move |conn| kv_get(conn, &key)).await
+    }
+
+    pub async fn kv_set(&self, key: &str, value: &str) -> CoreResult<()> {
+        let (key, value) = (key.to_string(), value.to_string());
+        self.call(move |conn| kv_set(conn, &key, &value)).await
+    }
+
     /// Versão síncrona, para código que já roda em thread de bloqueio (CLI, testes).
     pub fn call_blocking<T>(
         &self,
@@ -68,6 +78,25 @@ impl Db {
             .map_err(|_| CoreError::Internal("mutex do banco envenenado".into()))?;
         f(&mut guard)
     }
+}
+
+/// Lê uma chave da tabela `kv` (estado interno: últimas verificações, autocura…).
+pub fn kv_get(conn: &Connection, key: &str) -> CoreResult<Option<String>> {
+    let mut stmt = conn.prepare_cached("SELECT value FROM kv WHERE key = ?1")?;
+    let mut rows = stmt.query([key])?;
+    match rows.next()? {
+        Some(row) => Ok(Some(row.get(0)?)),
+        None => Ok(None),
+    }
+}
+
+pub fn kv_set(conn: &Connection, key: &str, value: &str) -> CoreResult<()> {
+    conn.execute(
+        "INSERT INTO kv (key, value) VALUES (?1, ?2)
+         ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+        [key, value],
+    )?;
+    Ok(())
 }
 
 /// Aplica, em ordem e dentro de transação, as migrações com versão > `user_version`.
