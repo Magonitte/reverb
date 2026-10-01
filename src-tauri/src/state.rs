@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use reverb_core::queue::QueueService;
 use reverb_core::{DataPaths, Db, EventSink, SettingsService, ToolsManager};
 use tauri::{AppHandle, Emitter};
 
@@ -7,10 +8,11 @@ use tauri::{AppHandle, Emitter};
 pub struct AppState {
     #[allow(dead_code)] // F02+: ferramentas, fila e biblioteca usam os diretórios.
     pub paths: DataPaths,
-    #[allow(dead_code)] // F04+: fila e biblioteca usam o banco diretamente.
+    #[allow(dead_code)] // F09+: a biblioteca usa o banco diretamente.
     pub db: Db,
     pub settings: Arc<SettingsService>,
     pub tools: Arc<ToolsManager>,
+    pub queue: QueueService,
     #[allow(dead_code)] // F02+: ferramentas e fila emitem eventos pelo sink.
     pub sink: Arc<dyn EventSink>,
 }

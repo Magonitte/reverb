@@ -1,4 +1,5 @@
 mod media;
+mod queue;
 
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
@@ -64,6 +65,43 @@ enum Command {
         /// Pasta de destino
         #[arg(long)]
         out: PathBuf,
+    },
+    /// Lista os jobs da fila persistente
+    Jobs {
+        #[command(subcommand)]
+        action: JobsAction,
+    },
+    /// Enfileira URLs e processa a fila
+    Queue {
+        #[command(subcommand)]
+        action: QueueAction,
+    },
+}
+
+#[derive(Subcommand)]
+enum JobsAction {
+    /// Lista os jobs na ordem da fila
+    List {
+        /// Imprime em JSON
+        #[arg(long)]
+        json: bool,
+    },
+}
+
+#[derive(Subcommand)]
+enum QueueAction {
+    /// Enfileira a URL de um vídeo (não processa)
+    Add {
+        url: String,
+        /// original | mp3_v0 | mp3_320 | aac_256 | opus_96 | flac (padrão: o das configurações)
+        #[arg(long)]
+        profile: Option<String>,
+    },
+    /// Processa a fila (Ctrl+C interrompe; os jobs voltam para a fila)
+    Run {
+        /// Sai quando a fila esvaziar
+        #[arg(long)]
+        until_idle: bool,
     },
 }
 
@@ -169,16 +207,15 @@ fn parse_tool(text: &str) -> Result<Tool> {
 
 /// Sem `--data-dir`, o `--tools-dir` isola também o banco (em memória): testes com
 /// `--tools-dir` nunca tocam nos dados reais do usuário.
-async fn tools_manager(
-    paths: &DataPaths,
-    tools_dir: PathBuf,
-    isolated: bool,
-) -> Result<(ToolsManager, Arc<SettingsService>)> {
-    let db = if isolated {
+fn open_db(paths: &DataPaths, isolated: bool) -> Result<Db> {
+    Ok(if isolated {
         Db::open_in_memory()?
     } else {
         Db::open(&paths.db_file())?
-    };
+    })
+}
+
+async fn tools_manager(db: Db, tools_dir: PathBuf) -> Result<(ToolsManager, Arc<SettingsService>)> {
     let sink: Arc<dyn EventSink> = Arc::new(StderrSink {
         last: Mutex::new((String::new(), -1)),
     });
@@ -268,11 +305,34 @@ async fn main() -> Result<()> {
         }
         Command::Settings { action } => run_settings(&paths, action).await?,
         Command::Tools { action } => {
-            let (manager, _) = tools_manager(&paths, tools_dir, isolated_tools).await?;
+            let (manager, _) = tools_manager(open_db(&paths, isolated_tools)?, tools_dir).await?;
             run_tools(&manager, action).await?;
         }
+        Command::Jobs {
+            action: JobsAction::List { json },
+        } => {
+            queue::list(&open_db(&paths, isolated_tools)?, json)?;
+        }
+        Command::Queue { action } => {
+            let db = open_db(&paths, isolated_tools)?;
+            let (manager, settings) = tools_manager(db.clone(), tools_dir).await?;
+            let data_dir = if isolated_tools {
+                std::env::temp_dir().join("reverb-cli")
+            } else {
+                paths.data_dir.clone()
+            };
+            match action {
+                QueueAction::Add { url, profile } => {
+                    queue::add(db, Arc::new(manager), settings, data_dir, url, profile).await?
+                }
+                QueueAction::Run { until_idle } => {
+                    queue::run(db, Arc::new(manager), settings, data_dir, until_idle).await?
+                }
+            }
+        }
         command @ (Command::Analyze { .. } | Command::Search { .. } | Command::Download { .. }) => {
-            let (manager, settings) = tools_manager(&paths, tools_dir, isolated_tools).await?;
+            let (manager, settings) =
+                tools_manager(open_db(&paths, isolated_tools)?, tools_dir).await?;
             let manager = Arc::new(manager);
             match command {
                 Command::Analyze { url, json } => {

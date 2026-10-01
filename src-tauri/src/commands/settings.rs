@@ -13,7 +13,10 @@ pub async fn settings_update(
     state: State<'_, AppState>,
     patch: SettingsPatch,
 ) -> Result<SettingsView, CoreError> {
-    Ok(state.settings.update(patch).await?.view())
+    let view = state.settings.update(patch).await?.view();
+    // `parallelism` vale em tempo real: a fila reavalia quantos jobs pode rodar.
+    state.queue.wake();
+    Ok(view)
 }
 
 #[tauri::command]

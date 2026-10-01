@@ -11,6 +11,7 @@ pub mod organize;
 pub mod paths;
 pub mod pipeline;
 pub mod profiles;
+pub mod queue;
 pub mod settings;
 pub mod tools;
 pub mod transcode;

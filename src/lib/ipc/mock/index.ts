@@ -1,6 +1,22 @@
 import type { AppInfo } from "@/bindings/AppInfo";
+import type { EnqueueRequest } from "@/bindings/EnqueueRequest";
+import type { MoveTarget } from "@/bindings/MoveTarget";
 import type { SettingsPatch } from "@/bindings/SettingsPatch";
 import type { Tool } from "@/bindings/Tool";
+import {
+  mockCheckDuplicates,
+  mockEnqueue,
+  mockJobCancel,
+  mockJobMove,
+  mockJobRemove,
+  mockJobRetry,
+  mockJobsCancelAll,
+  mockJobsClearFinished,
+  mockJobsList,
+  mockQueuePause,
+  mockQueueResume,
+  mockQueueState,
+} from "./queue";
 import { mockSettingsGet, mockSettingsReset, mockSettingsUpdate } from "./settings";
 import {
   mockToolsCheckUpdates,
@@ -11,6 +27,7 @@ import {
 } from "./tools";
 
 export { mockBus } from "./bus";
+export { resetMockQueue } from "./queue";
 export { resetMockSettings } from "./settings";
 export { resetMockTools, seedMockTool } from "./tools";
 
@@ -24,6 +41,19 @@ const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
   tools_check_updates: () => mockToolsCheckUpdates(),
   tools_update: (args) => mockToolsUpdate(args?.tool as Tool),
   tools_rollback: (args) => mockToolsRollback(args?.tool as Tool),
+  enqueue: (args) => mockEnqueue(args?.request as EnqueueRequest),
+  check_duplicates: (args) =>
+    mockCheckDuplicates(args?.sourceIds as string[], args?.profileId as string | undefined),
+  jobs_list: () => mockJobsList(),
+  job_cancel: (args) => mockJobCancel(args?.id as string),
+  job_retry: (args) => mockJobRetry(args?.id as string),
+  job_remove: (args) => mockJobRemove(args?.id as string),
+  job_move: (args) => mockJobMove(args?.id as string, args?.target as MoveTarget),
+  jobs_clear_finished: () => mockJobsClearFinished(),
+  queue_pause: () => mockQueuePause(),
+  queue_resume: () => mockQueueResume(),
+  queue_state: () => mockQueueState(),
+  jobs_cancel_all: () => mockJobsCancelAll(),
 };
 
 export async function mockCall<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {

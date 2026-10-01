@@ -5,8 +5,8 @@
 
 ## Situação atual
 
-- **Fase atual:** F04 — NÃO INICIADA (F00, F01, F02 e F03 concluídas)
-- **Último ponto de parada:** F03 concluída e com tag `fase-03-ok`; próximo passo: ler `plano/fases/F04-fila-e-autocura.md`
+- **Fase atual:** F05 — NÃO INICIADA (F00–F04 concluídas)
+- **Último ponto de parada:** F04 concluída e com tag `fase-04-ok`; próximo passo: ler `plano/fases/F05-*.md`
 - **Pendências humanas abertas:** nenhuma
 - **Pendência técnica (não humana):** F02/T13 — o job Linux do CI (`test:prepare` + `scripts/verify-tools.mjs`) só roda depois do remoto GitHub da F06; a F06 só conclui com ele verde (ver seção F02).
 
@@ -125,3 +125,25 @@
   - TS: modelos novos sem `optional_fields` (campos opcionais saem `T | null`, como o serde realmente emite).
 - **Pendências humanas:** nenhuma.
 - **Commit/tag:** `feat(F03): motor de download` · tag `fase-03-ok`
+
+### F04 — Fila persistente, retry e autocura
+
+- **Status:** CONCLUÍDA
+- **Início / fim:** 2026-10-01 / 2026-10-01
+- **Tarefas:** [x] 1 `queue::model` (`Job`, `JobStatus`, `JobStage`, `EnqueueRequest`, `JobOptions`, `PlaylistCtx`, `MoveTarget`, `QueueState`, `DuplicateHit`, todos com TS) · [x] 2 `queue::repo` (CRUD, `next_queued`, `claim` atômico, `move_job`, `restore`) · [x] 3 `QueueService` (parallelism dinâmico, pausa, cancelamento por token, `cancel_all`, `retry`, `remove`, `clear_finished`, `queueLimit`, throttle 250 ms, move-simples via `DownloadPipeline`) · [x] 4 duplicatas (`jobs` + `library`) · [x] 5 retry/backoff 5/30/120 s · [x] 6 `HealCoordinator` (passo 0 PO token, update, nightly, 1×/h) · [x] 7 limite de velocidade (já repassado por `ToolsContext` a cada job, F03) · [x] 8 comandos Tauri + eventos, fila iniciada no `setup()` · [x] 9 CLI `jobs list`, `queue add`, `queue run [--until-idle]` · [x] 10 `FakeBackend` (somente testes)
+- **Portão (última rodada):** 2026-10-01 · Rust 329 testes (36 da fila: T1–T14 + extras) · Vitest 24 · Playwright 1 · rede T15 + T16 (+ F02/F03) OK · app real 0 (F07) · `npm run verify` OK em 158 s · `npm run e2e` OK · `npm run verify:net` OK
+- **Falhas e correções:** nenhuma falha de teste do portão (só erros de compilação durante o desenvolvimento: feature `test-util` do tokio, CRLF em arquivos do src-tauri ao editar por script).
+- **Desvios do plano:**
+  - Sem `trait Step` ainda: a fila executa o `DownloadPipeline` (baixar ⇒ converter ⇒ mover) por trás de `trait PipelineRunner` (`ToolsPipeline` resolve o FFmpeg a cada job). A decomposição em passos nasce na F08, quando existe um segundo passo real.
+  - `unknown` e `ffmpeg` repetem uma única vez (`min(maxAttempts, 2)` tentativas), como na tabela §9; `network` usa `maxAttempts`.
+  - `attempts` conta tentativas iniciadas; reenfileirar pela autocura devolve a tentativa. Restauração mantém `attempts` (a tentativa interrompida fica contada).
+  - Autocura: um `epoch` sobe a cada conserto; job que falhou com um `epoch` mais antigo só é reenfileirado (o conserto já aconteceu enquanto rodava), o que garante 1 única chamada a `update` com vários jobs falhando. Escalada stable→nightly acontece dentro da mesma hora (nível 1 em `kv.heal_level`); depois do nightly, nova autocura só após 1 h. `HealTools` é o trait mockado nos testes; `ToolsHeal` é a implementação real.
+  - Falha definitiva da autocura grava `error_kind = extractor` e `error_message = "errors.extractorPersistent"` (chave i18n; a UI traduz). Chaves novas em pt-BR/en: `errors.extractorPersistent`, `notices.potEnabled`, `notices.ytdlpNightly`.
+  - Duplicata: `CoreError::Coded("duplicate")` com a lista no texto; a UI usa `check_duplicates` para a lista estruturada.
+  - Mudança de `parallelism` em tempo real: `settings_update` chama `queue.wake()`; sem polling.
+  - `QueueDeps.start_paused` (o CLI `queue add` enfileira sem processar).
+  - Frontend: wrappers em `api.ts` + backend mock da fila (`mock/queue.ts`, com testes) para os 12 comandos novos do §15.
+  - Pendência de §9 item 6 (volta automática do nightly para o stable na verificação diária) **não** está nas tarefas/testes da F04 e ficou para a F12 (verificação periódica em segundo plano).
+  - Dependências novas no core: `uuid` (v4); dev: `tokio/test-util`.
+- **Pendências humanas:** nenhuma.
+- **Commit/tag:** `feat(F04): fila persistente, retry e autocura` · tag `fase-04-ok`

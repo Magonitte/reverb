@@ -2,5 +2,12 @@
   "app": {
     "name": "Reverb",
     "loading": "Loading…"
+  },
+  "errors": {
+    "extractorPersistent": "YouTube changed and even the latest yt-dlp could not keep up. Try again later."
+  },
+  "notices": {
+    "potEnabled": "YouTube asked for verification: Reverb enabled the PO token provider.",
+    "ytdlpNightly": "We switched yt-dlp to the nightly channel to keep downloads working."
   }
 }
