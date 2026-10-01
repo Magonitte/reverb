@@ -38,9 +38,52 @@ where
     #[cfg(unix)]
     {
         wrap.wrap(ProcessGroup::leader());
+        wrap.wrap(KillGroupOnDrop);
     }
     wrap.wrap(KillOnDrop);
     wrap
+}
+
+/// No Unix, o `KillOnDrop` do tokio só mata o processo líder; este shim mata o grupo inteiro.
+#[cfg(unix)]
+#[derive(Debug, Clone, Copy)]
+struct KillGroupOnDrop;
+
+#[cfg(unix)]
+impl CommandWrapper for KillGroupOnDrop {
+    fn wrap_child(
+        &mut self,
+        child: Box<dyn ChildWrapper>,
+        _core: &CommandWrap,
+    ) -> io::Result<Box<dyn ChildWrapper>> {
+        Ok(Box::new(GroupKillChild(Some(child))))
+    }
+}
+
+#[cfg(unix)]
+#[derive(Debug)]
+struct GroupKillChild(Option<Box<dyn ChildWrapper>>);
+
+#[cfg(unix)]
+impl ChildWrapper for GroupKillChild {
+    fn inner(&self) -> &dyn ChildWrapper {
+        self.0.as_deref().expect("filho presente")
+    }
+    fn inner_mut(&mut self) -> &mut dyn ChildWrapper {
+        self.0.as_deref_mut().expect("filho presente")
+    }
+    fn into_inner(mut self: Box<Self>) -> Box<dyn ChildWrapper> {
+        self.0.take().expect("filho presente")
+    }
+}
+
+#[cfg(unix)]
+impl Drop for GroupKillChild {
+    fn drop(&mut self) {
+        if let Some(child) = self.0.as_mut() {
+            let _ = child.start_kill();
+        }
+    }
 }
 
 /// Inicia o processo. Use `kill_tree` para encerrar a árvore inteira.
