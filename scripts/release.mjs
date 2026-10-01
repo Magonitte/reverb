@@ -11,7 +11,7 @@ if (!/^\d+\.\d+\.\d+$/.test(version ?? "")) {
 }
 
 function run(command, commandArgs) {
-  const result = spawnSync(command, commandArgs, { stdio: "inherit" });
+  const result = spawnSync(command, commandArgs, { stdio: "inherit", shell: process.platform === "win32" });
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
 

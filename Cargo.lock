@@ -1101,7 +1101,7 @@ dependencies = [
 
 [[package]]
 name = "fake-tool"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "tempfile",
 ]
@@ -3389,7 +3389,7 @@ dependencies = [
 
 [[package]]
 name = "reverb"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "reverb-core",
  "semver",
@@ -3405,7 +3405,7 @@ dependencies = [
 
 [[package]]
 name = "reverb-cli"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "anyhow",
  "clap",
@@ -3421,7 +3421,7 @@ dependencies = [
 
 [[package]]
 name = "reverb-core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "async-trait",
  "dirs",
