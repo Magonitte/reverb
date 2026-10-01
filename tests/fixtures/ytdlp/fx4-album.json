@@ -1,0 +1,468 @@
+{
+ "id": "OLAK5uy_nmDUsWOMoEcz0SsVqUwir0oxu-k1oUyXE",
+ "title": "Album - Whenever You Need Somebody",
+ "availability": "unlisted",
+ "channel_follower_count": null,
+ "description": "",
+ "tags": [],
+ "thumbnails": [
+  {
+   "url": "https://i9.ytimg.com/s_p/OLAK5uy_nmDUsWOMoEcz0SsVqUwir0oxu-k1oUyXE/mqdefault.jpg?sqp=CKzd99UGir7X7AMICMeUuL0GEAE=&rs=AOn4CLD3DzJiHGvwq0e47J9R4j8bptxFAg&v=1739459143",
+   "height": 180,
+   "width": 180,
+   "id": "0",
+   "resolution": "180x180"
+  },
+  {
+   "url": "https://i9.ytimg.com/s_p/OLAK5uy_nmDUsWOMoEcz0SsVqUwir0oxu-k1oUyXE/sddefault.jpg?sqp=CKzd99UGir7X7AMICMeUuL0GEAE=&rs=AOn4CLASOHdnwFXEG6lCc7Bev0llIQpP_Q&v=1739459143",
+   "height": 640,
+   "width": 640,
+   "id": "1",
+   "resolution": "640x640"
+  },
+  {
+   "url": "https://i9.ytimg.com/s_p/OLAK5uy_nmDUsWOMoEcz0SsVqUwir0oxu-k1oUyXE/maxresdefault.jpg",
+   "height": 1200,
+   "width": 1200,
+   "id": "2",
+   "resolution": "1200x1200"
+  }
+ ],
+ "modified_date": "20250922",
+ "view_count": 642121,
+ "playlist_count": 10,
+ "channel": null,
+ "channel_id": null,
+ "uploader_id": null,
+ "uploader": null,
+ "channel_url": null,
+ "uploader_url": null,
+ "_type": "playlist",
+ "entries": [
+  {
+   "title": "Never Gonna Give You Up",
+   "thumbnails": [
+    {
+     "url": "https://i.ytimg.com/vi/lYBUbBu4W08/hqdefault.jpg?sqp=-oaymwEfCKgBEF5IVfKriqkDEggBFQAAiEIYAXABwAEGuAL3GA==&rs=AOn4CLCycOCzVWVBU1P7Fe5a5J-wYYnV9g",
+     "height": 94,
+     "width": 168
+    },
+    {
+     "url": "https://i.ytimg.com/vi/lYBUbBu4W08/hqdefault.jpg?sqp=-oaymwEfCMQBEG5IVfKriqkDEggBFQAAiEIYAXABwAEGuAL3GA==&rs=AOn4CLBNN4CXyY8CdYgmvH4vgl3X8FGAqw",
+     "height": 110,
+     "width": 196
+    },
+    {
+     "url": "https://i.ytimg.com/vi/lYBUbBu4W08/hqdefault.jpg?sqp=-oaymwEgCPYBEIoBSFXyq4qpAxIIARUAAIhCGAFwAcABBrgC9xg=&rs=AOn4CLD4sq68jebfbBFD_0S9BKClr_3zFg",
+     "height": 138,
+     "width": 246
+    },
+    {
+     "url": "https://i.ytimg.com/vi/lYBUbBu4W08/hqdefault.jpg?sqp=-oaymwEgCNACELwBSFXyq4qpAxIIARUAAIhCGAFwAcABBrgC9xg=&rs=AOn4CLAhn7K2r4ifk0IiDbBNKVhspH7big",
+     "height": 188,
+     "width": 336
+    }
+   ],
+   "duration": 214,
+   "view_count": 141000000,
+   "timestamp": null,
+   "live_status": null,
+   "availability": null,
+   "channel_url": "https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw",
+   "uploader_url": null,
+   "creators": null,
+   "channel": "Rick Astley",
+   "channel_id": "UCuAXFkgsw1L7xaCfnd5JJOw",
+   "uploader": "Rick Astley",
+   "ie_key": "Youtube",
+   "id": "lYBUbBu4W08",
+   "_type": "url",
+   "url": "https://www.youtube.com/watch?v=lYBUbBu4W08",
+   "__x_forwarded_for_ip": null
+  },
+  {
+   "title": "Whenever You Need Somebody",
+   "thumbnails": [
+    {
+     "url": "https://i.ytimg.com/vi/raBobo3GZYA/hqdefault.jpg?sqp=-oaymwEfCKgBEF5IVfKriqkDEggBFQAAiEIYAXABwAEGuAL3GA==&rs=AOn4CLAlD194-EwjHotF9uq-hXZelvTxbQ",
+     "height": 94,
+     "width": 168
+    },
+    {
+     "url": "https://i.ytimg.com/vi/raBobo3GZYA/hqdefault.jpg?sqp=-oaymwEfCMQBEG5IVfKriqkDEggBFQAAiEIYAXABwAEGuAL3GA==&rs=AOn4CLCeWevhA4QidYnc0Poz9BuSE8q1Uw",
+     "height": 110,
+     "width": 196
+    },
+    {
+     "url": "https://i.ytimg.com/vi/raBobo3GZYA/hqdefault.jpg?sqp=-oaymwEgCPYBEIoBSFXyq4qpAxIIARUAAIhCGAFwAcABBrgC9xg=&rs=AOn4CLAhGyOHr_NRj3_ZcVmjf3U0_wSd6Q",
+     "height": 138,
+     "width": 246
+    },
+    {
+     "url": "https://i.ytimg.com/vi/raBobo3GZYA/hqdefault.jpg?sqp=-oaymwEgCNACELwBSFXyq4qpAxIIARUAAIhCGAFwAcABBrgC9xg=&rs=AOn4CLD_7G3HmCU4pM1MO2ZMJdpSzoksfw",
+     "height": 188,
+     "width": 336
+    }
+   ],
+   "duration": 234,
+   "view_count": 1400000,
+   "timestamp": null,
+   "live_status": null,
+   "availability": null,
+   "channel_url": "https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw",
+   "uploader_url": null,
+   "creators": null,
+   "channel": "Rick Astley",
+   "channel_id": "UCuAXFkgsw1L7xaCfnd5JJOw",
+   "uploader": "Rick Astley",
+   "ie_key": "Youtube",
+   "id": "raBobo3GZYA",
+   "_type": "url",
+   "url": "https://www.youtube.com/watch?v=raBobo3GZYA",
+   "__x_forwarded_for_ip": null
+  },
+  {
+   "title": "Together Forever",
+   "thumbnails": [
+    {
+     "url": "https://i.ytimg.com/vi/i_Q88T1HI_w/hqdefault.jpg?sqp=-oaymwEfCKgBEF5IVfKriqkDEggBFQAAiEIYAXABwAEGuAL3GA==&rs=AOn4CLBmnlWQxpJ_7IXgqtOT1XVEDOuWzw",
+     "height": 94,
+     "width": 168
+    },
+    {
+     "url": "https://i.ytimg.com/vi/i_Q88T1HI_w/hqdefault.jpg?sqp=-oaymwEfCMQBEG5IVfKriqkDEggBFQAAiEIYAXABwAEGuAL3GA==&rs=AOn4CLCdbN7tdkHCEG5paAzjiglhw7PGKg",
+     "height": 110,
+     "width": 196
+    },
+    {
+     "url": "https://i.ytimg.com/vi/i_Q88T1HI_w/hqdefault.jpg?sqp=-oaymwEgCPYBEIoBSFXyq4qpAxIIARUAAIhCGAFwAcABBrgC9xg=&rs=AOn4CLA4_uIpQMM9-10aiamtLCmeP2biwA",
+     "height": 138,
+     "width": 246
+    },
+    {
+     "url": "https://i.ytimg.com/vi/i_Q88T1HI_w/hqdefault.jpg?sqp=-oaymwEgCNACELwBSFXyq4qpAxIIARUAAIhCGAFwAcABBrgC9xg=&rs=AOn4CLDU5Etm8m7ag_1RnA2r7rRA296_mg",
+     "height": 188,
+     "width": 336
+    }
+   ],
+   "duration": 206,
+   "view_count": 21000000,
+   "timestamp": null,
+   "live_status": null,
+   "availability": null,
+   "channel_url": "https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw",
+   "uploader_url": null,
+   "creators": null,
+   "channel": "Rick Astley",
+   "channel_id": "UCuAXFkgsw1L7xaCfnd5JJOw",
+   "uploader": "Rick Astley",
+   "ie_key": "Youtube",
+   "id": "i_Q88T1HI_w",
+   "_type": "url",
+   "url": "https://www.youtube.com/watch?v=i_Q88T1HI_w",
+   "__x_forwarded_for_ip": null
+  },
+  {
+   "title": "It Would Take a Strong Strong Man",
+   "thumbnails": [
+    {
+     "url": "https://i.ytimg.com/vi/dc7UCha20yw/hqdefault.jpg?sqp=-oaymwEfCKgBEF5IVfKriqkDEggBFQAAiEIYAXABwAEGuAL3GA==&rs=AOn4CLCda_R1vJuflTOarm9eunqtG3ww6Q",
+     "height": 94,
+     "width": 168
+    },
+    {
+     "url": "https://i.ytimg.com/vi/dc7UCha20yw/hqdefault.jpg?sqp=-oaymwEfCMQBEG5IVfKriqkDEggBFQAAiEIYAXABwAEGuAL3GA==&rs=AOn4CLBnLdwocdebxZTRu-nt9fLTLyz_Jw",
+     "height": 110,
+     "width": 196
+    },
+    {
+     "url": "https://i.ytimg.com/vi/dc7UCha20yw/hqdefault.jpg?sqp=-oaymwEgCPYBEIoBSFXyq4qpAxIIARUAAIhCGAFwAcABBrgC9xg=&rs=AOn4CLBMEv4N8npMYunP06o88-IQhnPjmQ",
+     "height": 138,
+     "width": 246
+    },
+    {
+     "url": "https://i.ytimg.com/vi/dc7UCha20yw/hqdefault.jpg?sqp=-oaymwEgCNACELwBSFXyq4qpAxIIARUAAIhCGAFwAcABBrgC9xg=&rs=AOn4CLDz-dPKznecLmHNTcfarw_N48qbhg",
+     "height": 188,
+     "width": 336
+    }
+   ],
+   "duration": 221,
+   "view_count": 580000,
+   "timestamp": null,
+   "live_status": null,
+   "availability": null,
+   "channel_url": "https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw",
+   "uploader_url": null,
+   "creators": null,
+   "channel": "Rick Astley",
+   "channel_id": "UCuAXFkgsw1L7xaCfnd5JJOw",
+   "uploader": "Rick Astley",
+   "ie_key": "Youtube",
+   "id": "dc7UCha20yw",
+   "_type": "url",
+   "url": "https://www.youtube.com/watch?v=dc7UCha20yw",
+   "__x_forwarded_for_ip": null
+  },
+  {
+   "title": "The Love Has Gone",
+   "thumbnails": [
+    {
+     "url": "https://i.ytimg.com/vi/d0t04zd918U/hqdefault.jpg?sqp=-oaymwEfCKgBEF5IVfKriqkDEggBFQAAiEIYAXABwAEGuAL3GA==&rs=AOn4CLAh4cOJCNgkUHs0HOzlYyjmT5D2Ug",
+     "height": 94,
+     "width": 168
+    },
+    {
+     "url": "https://i.ytimg.com/vi/d0t04zd918U/hqdefault.jpg?sqp=-oaymwEfCMQBEG5IVfKriqkDEggBFQAAiEIYAXABwAEGuAL3GA==&rs=AOn4CLC4rQtQ8pIur8-WuhUzv4bo8874Lw",
+     "height": 110,
+     "width": 196
+    },
+    {
+     "url": "https://i.ytimg.com/vi/d0t04zd918U/hqdefault.jpg?sqp=-oaymwEgCPYBEIoBSFXyq4qpAxIIARUAAIhCGAFwAcABBrgC9xg=&rs=AOn4CLAEnNPPFsj2gUTYPp-FpPpTcazXdQ",
+     "height": 138,
+     "width": 246
+    },
+    {
+     "url": "https://i.ytimg.com/vi/d0t04zd918U/hqdefault.jpg?sqp=-oaymwEgCNACELwBSFXyq4qpAxIIARUAAIhCGAFwAcABBrgC9xg=&rs=AOn4CLDEPkJyIfu1PPwk27y3Bm4niI_3fQ",
+     "height": 188,
+     "width": 336
+    }
+   ],
+   "duration": 261,
+   "view_count": 284000,
+   "timestamp": null,
+   "live_status": null,
+   "availability": null,
+   "channel_url": "https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw",
+   "uploader_url": null,
+   "creators": null,
+   "channel": "Rick Astley",
+   "channel_id": "UCuAXFkgsw1L7xaCfnd5JJOw",
+   "uploader": "Rick Astley",
+   "ie_key": "Youtube",
+   "id": "d0t04zd918U",
+   "_type": "url",
+   "url": "https://www.youtube.com/watch?v=d0t04zd918U",
+   "__x_forwarded_for_ip": null
+  },
+  {
+   "title": "Don't Say Goodbye",
+   "thumbnails": [
+    {
+     "url": "https://i.ytimg.com/vi/NnLO1yupSoM/hqdefault.jpg?sqp=-oaymwEfCKgBEF5IVfKriqkDEggBFQAAiEIYAXABwAEGuAL3GA==&rs=AOn4CLAA7kD5TLgAnvsG0SQ0u7n3V86u-Q",
+     "height": 94,
+     "width": 168
+    },
+    {
+     "url": "https://i.ytimg.com/vi/NnLO1yupSoM/hqdefault.jpg?sqp=-oaymwEfCMQBEG5IVfKriqkDEggBFQAAiEIYAXABwAEGuAL3GA==&rs=AOn4CLAdFpvpSbNFVdZOqTWh3gfE9de2DQ",
+     "height": 110,
+     "width": 196
+    },
+    {
+     "url": "https://i.ytimg.com/vi/NnLO1yupSoM/hqdefault.jpg?sqp=-oaymwEgCPYBEIoBSFXyq4qpAxIIARUAAIhCGAFwAcABBrgC9xg=&rs=AOn4CLAf0Fc9t9QMYjgqJNsWY_xyAYPTpw",
+     "height": 138,
+     "width": 246
+    },
+    {
+     "url": "https://i.ytimg.com/vi/NnLO1yupSoM/hqdefault.jpg?sqp=-oaymwEgCNACELwBSFXyq4qpAxIIARUAAIhCGAFwAcABBrgC9xg=&rs=AOn4CLADwuJe8ztbE65A96CNJ99E3FDf-g",
+     "height": 188,
+     "width": 336
+    }
+   ],
+   "duration": 250,
+   "view_count": 444000,
+   "timestamp": null,
+   "live_status": null,
+   "availability": null,
+   "channel_url": "https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw",
+   "uploader_url": null,
+   "creators": null,
+   "channel": "Rick Astley",
+   "channel_id": "UCuAXFkgsw1L7xaCfnd5JJOw",
+   "uploader": "Rick Astley",
+   "ie_key": "Youtube",
+   "id": "NnLO1yupSoM",
+   "_type": "url",
+   "url": "https://www.youtube.com/watch?v=NnLO1yupSoM",
+   "__x_forwarded_for_ip": null
+  },
+  {
+   "title": "Slipping Away",
+   "thumbnails": [
+    {
+     "url": "https://i.ytimg.com/vi/0125n60K-z8/hqdefault.jpg?sqp=-oaymwEfCKgBEF5IVfKriqkDEggBFQAAiEIYAXABwAEGuAL3GA==&rs=AOn4CLBU7yWGz1_w2BvUq46f4cACMaegTg",
+     "height": 94,
+     "width": 168
+    },
+    {
+     "url": "https://i.ytimg.com/vi/0125n60K-z8/hqdefault.jpg?sqp=-oaymwEfCMQBEG5IVfKriqkDEggBFQAAiEIYAXABwAEGuAL3GA==&rs=AOn4CLApWDmv9_UcSW9bA4e-VURiHIU-0w",
+     "height": 110,
+     "width": 196
+    },
+    {
+     "url": "https://i.ytimg.com/vi/0125n60K-z8/hqdefault.jpg?sqp=-oaymwEgCPYBEIoBSFXyq4qpAxIIARUAAIhCGAFwAcABBrgC9xg=&rs=AOn4CLA57XbW173fDk7mg6nvrBKEc29LCQ",
+     "height": 138,
+     "width": 246
+    },
+    {
+     "url": "https://i.ytimg.com/vi/0125n60K-z8/hqdefault.jpg?sqp=-oaymwEgCNACELwBSFXyq4qpAxIIARUAAIhCGAFwAcABBrgC9xg=&rs=AOn4CLCXi04-Hdz2SgtCMhI91McykpsXaA",
+     "height": 188,
+     "width": 336
+    }
+   ],
+   "duration": 233,
+   "view_count": 169000,
+   "timestamp": null,
+   "live_status": null,
+   "availability": null,
+   "channel_url": "https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw",
+   "uploader_url": null,
+   "creators": null,
+   "channel": "Rick Astley",
+   "channel_id": "UCuAXFkgsw1L7xaCfnd5JJOw",
+   "uploader": "Rick Astley",
+   "ie_key": "Youtube",
+   "id": "0125n60K-z8",
+   "_type": "url",
+   "url": "https://www.youtube.com/watch?v=0125n60K-z8",
+   "__x_forwarded_for_ip": null
+  },
+  {
+   "title": "No More Looking for Love",
+   "thumbnails": [
+    {
+     "url": "https://i.ytimg.com/vi/-NzNaBJjohk/hqdefault.jpg?sqp=-oaymwEfCKgBEF5IVfKriqkDEggBFQAAiEIYAXABwAEGuAL3GA==&rs=AOn4CLDUb3b-1XrvM_ScaEdZwE8TPwW2Vw",
+     "height": 94,
+     "width": 168
+    },
+    {
+     "url": "https://i.ytimg.com/vi/-NzNaBJjohk/hqdefault.jpg?sqp=-oaymwEfCMQBEG5IVfKriqkDEggBFQAAiEIYAXABwAEGuAL3GA==&rs=AOn4CLCvypwv57K4vl-6_akMhXwrHfIsBw",
+     "height": 110,
+     "width": 196
+    },
+    {
+     "url": "https://i.ytimg.com/vi/-NzNaBJjohk/hqdefault.jpg?sqp=-oaymwEgCPYBEIoBSFXyq4qpAxIIARUAAIhCGAFwAcABBrgC9xg=&rs=AOn4CLBlmcWHslzqJ9NkagZwuABt9EkDPQ",
+     "height": 138,
+     "width": 246
+    },
+    {
+     "url": "https://i.ytimg.com/vi/-NzNaBJjohk/hqdefault.jpg?sqp=-oaymwEgCNACELwBSFXyq4qpAxIIARUAAIhCGAFwAcABBrgC9xg=&rs=AOn4CLCAwGXqnYB9u1Ct8RgQqxsf3-YhGw",
+     "height": 188,
+     "width": 336
+    }
+   ],
+   "duration": 193,
+   "view_count": 168000,
+   "timestamp": null,
+   "live_status": null,
+   "availability": null,
+   "channel_url": "https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw",
+   "uploader_url": null,
+   "creators": null,
+   "channel": "Rick Astley",
+   "channel_id": "UCuAXFkgsw1L7xaCfnd5JJOw",
+   "uploader": "Rick Astley",
+   "ie_key": "Youtube",
+   "id": "-NzNaBJjohk",
+   "_type": "url",
+   "url": "https://www.youtube.com/watch?v=-NzNaBJjohk",
+   "__x_forwarded_for_ip": null
+  },
+  {
+   "title": "You Move Me",
+   "thumbnails": [
+    {
+     "url": "https://i.ytimg.com/vi/NlxK_hVeKWQ/hqdefault.jpg?sqp=-oaymwEfCKgBEF5IVfKriqkDEggBFQAAiEIYAXABwAEGuAL3GA==&rs=AOn4CLAT5s_eoA7T3bBEp2-_8PgCmowVgg",
+     "height": 94,
+     "width": 168
+    },
+    {
+     "url": "https://i.ytimg.com/vi/NlxK_hVeKWQ/hqdefault.jpg?sqp=-oaymwEfCMQBEG5IVfKriqkDEggBFQAAiEIYAXABwAEGuAL3GA==&rs=AOn4CLBYfVVJ2ifs5TIPiyo9WO7zEo0DRQ",
+     "height": 110,
+     "width": 196
+    },
+    {
+     "url": "https://i.ytimg.com/vi/NlxK_hVeKWQ/hqdefault.jpg?sqp=-oaymwEgCPYBEIoBSFXyq4qpAxIIARUAAIhCGAFwAcABBrgC9xg=&rs=AOn4CLDk99A1z61rCzmNPRQSVofzE7uxVg",
+     "height": 138,
+     "width": 246
+    },
+    {
+     "url": "https://i.ytimg.com/vi/NlxK_hVeKWQ/hqdefault.jpg?sqp=-oaymwEgCNACELwBSFXyq4qpAxIIARUAAIhCGAFwAcABBrgC9xg=&rs=AOn4CLBRkWmKMzz9Xp7jFhKHwIpjsC6fOA",
+     "height": 188,
+     "width": 336
+    }
+   ],
+   "duration": 223,
+   "view_count": 139000,
+   "timestamp": null,
+   "live_status": null,
+   "availability": null,
+   "channel_url": "https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw",
+   "uploader_url": null,
+   "creators": null,
+   "channel": "Rick Astley",
+   "channel_id": "UCuAXFkgsw1L7xaCfnd5JJOw",
+   "uploader": "Rick Astley",
+   "ie_key": "Youtube",
+   "id": "NlxK_hVeKWQ",
+   "_type": "url",
+   "url": "https://www.youtube.com/watch?v=NlxK_hVeKWQ",
+   "__x_forwarded_for_ip": null
+  },
+  {
+   "title": "When I Fall in Love",
+   "thumbnails": [
+    {
+     "url": "https://i.ytimg.com/vi/zoGOXDIsKXM/hqdefault.jpg?sqp=-oaymwEfCKgBEF5IVfKriqkDEggBFQAAiEIYAXABwAEGuAL3GA==&rs=AOn4CLDD0pFC8R_PtuwNzjxvsAq45pbDJA",
+     "height": 94,
+     "width": 168
+    },
+    {
+     "url": "https://i.ytimg.com/vi/zoGOXDIsKXM/hqdefault.jpg?sqp=-oaymwEfCMQBEG5IVfKriqkDEggBFQAAiEIYAXABwAEGuAL3GA==&rs=AOn4CLDWWZOGEun25Ua1UTVTF2apl86q5Q",
+     "height": 110,
+     "width": 196
+    },
+    {
+     "url": "https://i.ytimg.com/vi/zoGOXDIsKXM/hqdefault.jpg?sqp=-oaymwEgCPYBEIoBSFXyq4qpAxIIARUAAIhCGAFwAcABBrgC9xg=&rs=AOn4CLC37LF9_rsLDpRauA7RcDWCodIApg",
+     "height": 138,
+     "width": 246
+    },
+    {
+     "url": "https://i.ytimg.com/vi/zoGOXDIsKXM/hqdefault.jpg?sqp=-oaymwEgCNACELwBSFXyq4qpAxIIARUAAIhCGAFwAcABBrgC9xg=&rs=AOn4CLDh2ULBBtKbNrkBP2Z_zUe11-8L9w",
+     "height": 188,
+     "width": 336
+    }
+   ],
+   "duration": 184,
+   "view_count": 197000,
+   "timestamp": null,
+   "live_status": null,
+   "availability": null,
+   "channel_url": "https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw",
+   "uploader_url": null,
+   "creators": null,
+   "channel": "Rick Astley",
+   "channel_id": "UCuAXFkgsw1L7xaCfnd5JJOw",
+   "uploader": "Rick Astley",
+   "ie_key": "Youtube",
+   "id": "zoGOXDIsKXM",
+   "_type": "url",
+   "url": "https://www.youtube.com/watch?v=zoGOXDIsKXM",
+   "__x_forwarded_for_ip": null
+  }
+ ],
+ "extractor_key": "YoutubeTab",
+ "extractor": "youtube:tab",
+ "webpage_url": "https://www.youtube.com/playlist?list=OLAK5uy_nmDUsWOMoEcz0SsVqUwir0oxu-k1oUyXE",
+ "original_url": "https://www.youtube.com/playlist?list=OLAK5uy_nmDUsWOMoEcz0SsVqUwir0oxu-k1oUyXE",
+ "webpage_url_basename": "playlist",
+ "webpage_url_domain": "youtube.com",
+ "release_year": null,
+ "epoch": 1790832393,
+ "__files_to_move": {},
+ "_version": {
+  "version": "2026.08.19",
+  "current_git_head": null,
+  "release_git_head": "594bd50c2c78ac432f81600d309fdc4e0a92d82c",
+  "repository": "yt-dlp/yt-dlp"
+ }
+}

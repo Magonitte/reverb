@@ -14,10 +14,11 @@ struct Opts {
     stdout_lines: Option<String>,
     exit_code: Option<i32>,
     stderr: Option<String>,
+    stderr_count: Option<u32>,
     http_ping: Option<u16>,
 }
 
-fn parse(args: &[String]) -> Result<Opts, String> {
+fn parse(args: &[String], lenient: bool) -> Result<Opts, String> {
     let mut opts = Opts::default();
     let mut it = args.iter();
     while let Some(arg) = it.next() {
@@ -35,7 +36,10 @@ fn parse(args: &[String]) -> Result<Opts, String> {
             "--stdout-lines" => opts.stdout_lines = Some(value("--stdout-lines")?),
             "--exit" => opts.exit_code = Some(parse_num::<i32>(&value("--exit")?)?),
             "--stderr" => opts.stderr = Some(value("--stderr")?),
+            "--stderr-count" => opts.stderr_count = Some(parse_num(&value("--stderr-count")?)?),
             "--http-ping" => opts.http_ping = Some(parse_num::<u16>(&value("--http-ping")?)?),
+            // Modo yt-dlp falso: os argumentos reais do yt-dlp (`--js-runtimes`, `-o`, …) são ignorados.
+            _ if lenient => {}
             other => return Err(format!("argumento desconhecido: {other}")),
         }
     }
@@ -100,9 +104,19 @@ fn version_text() -> String {
     "1.0.0".to_string()
 }
 
+/// `FAKE_TOOL_OPTS` (um argumento por linha) é somado aos argumentos da linha de comando e liga o
+/// modo tolerante: quem chama com a linha de comando de um yt-dlp real controla o falso só pelo ambiente.
 fn main() {
-    let args: Vec<String> = std::env::args().skip(1).collect();
-    let opts = match parse(&args) {
+    let mut args: Vec<String> = Vec::new();
+    let lenient = match std::env::var("FAKE_TOOL_OPTS") {
+        Ok(opts) => {
+            args.extend(opts.lines().map(str::to_string));
+            true
+        }
+        Err(_) => false,
+    };
+    args.extend(std::env::args().skip(1));
+    let opts = match parse(&args, lenient) {
         Ok(opts) => opts,
         Err(message) => {
             eprintln!("{message}");
@@ -112,6 +126,12 @@ fn main() {
 
     if let Some(text) = &opts.stderr {
         eprintln!("{text}");
+    }
+
+    if let Some(count) = opts.stderr_count {
+        for n in 0..count {
+            eprintln!("linha {n}");
+        }
     }
 
     if opts.version {

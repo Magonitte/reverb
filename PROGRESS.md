@@ -5,8 +5,8 @@
 
 ## Situação atual
 
-- **Fase atual:** F03 — NÃO INICIADA (F00, F01 e F02 concluídas)
-- **Último ponto de parada:** F02 concluída e com tag `fase-02-ok`; próximo passo: ler `plano/fases/F03-motor-de-download.md`
+- **Fase atual:** F04 — NÃO INICIADA (F00, F01, F02 e F03 concluídas)
+- **Último ponto de parada:** F03 concluída e com tag `fase-03-ok`; próximo passo: ler `plano/fases/F04-fila-e-autocura.md`
 - **Pendências humanas abertas:** nenhuma
 - **Pendência técnica (não humana):** F02/T13 — o job Linux do CI (`test:prepare` + `scripts/verify-tools.mjs`) só roda depois do remoto GitHub da F06; a F06 só conclui com ele verde (ver seção F02).
 
@@ -99,3 +99,29 @@
 - **Pendências humanas:** nenhuma.
 - **Pendência técnica:** T13 — o job Linux do CI (T1–T9 em `ubuntu-22.04`, `test:prepare` + `scripts/verify-tools.mjs`) ainda não foi exercitado (não há remoto GitHub até a F06; a F06 só conclui com ele verde).
 - **Commit/tag:** `feat(F02): gerenciador de ferramentas` · tag `fase-02-ok`
+
+### F03 — Motor de download (yt-dlp + conversão)
+
+- **Status:** CONCLUÍDA
+- **Início / fim:** 2026-10-01 / 2026-10-01
+- **Tarefas:** [x] 1 `urlkind::classify` · [x] 2 `ytdlp::args` (snapshots `insta`) · [x] 3 `ytdlp::parse` + modelos (`VideoInfo`, `CollectionInfo`, `SearchResult`, todos com TS) · [x] 4 `ytdlp::errors::classify_stderr` · [x] 5 `YtDlpRunner` (`analyze`, `search`, `download`; watchdog, cancelamento, últimas 200 linhas de stderr) · [x] 6 `transcode` (`convert` com `-progress pipe:1`, `probe`) · [x] 7 `profiles` · [x] 8 `workspace` (`JobWorkspace`, `sweep_orphans`) · [x] 9 `organize::sanitize` · [x] 10 `DownloadBackend` + `YtDlpProcessBackend` · [x] 11 CLI `analyze`/`search`/`download` · [x] 12 fixtures `tests/fixtures/ytdlp/` (`scripts/record-fixtures.mjs`)
+- **Portão (última rodada):** 2026-10-01 · Rust 293 testes passando (+9 de rede ignorados por desenho) · Vitest 20 · Playwright 1 · rede 9 (T10–T12c da F02 + T13–T17) · app real 0 (F07) · `npm run verify` OK em 142 s · `npm run e2e` OK · `npm run verify:net` OK (com `GITHUB_TOKEN` do `gh auth token`, ver abaixo)
+- **Falhas e correções:**
+  - T10 (transcode) `mp3_v0` deu 151 kbps (esperado 180–330) — causa raiz: `anoisesrc` é mono e `-ac 2` só duplica o canal; o joint stereo do LAME derruba o VBR. Correção **na fonte de teste, sem mexer nas tolerâncias**: ruído rosa estéreo de verdade (dois `anoisesrc` com `seed` diferentes + `amerge`). Com isso: V0 ≈ 244, 320k ≈ 324, aac_256 ≈ 260, opus_96 ≈ 89 kbps — 1 ciclo
+  - T5 (stderr real "unavailable") — causa raiz: o yt-dlp real imprime `This video is unavailable`, que nenhum padrão do §9 cobria — correção: padrão adicionado em `unavailable` — 1 ciclo
+  - FX1 `best_audio_abr` — expectativa minha estava errada (o maior bitrate é o AAC 140 ≈ 130 kbps, não o Opus 251) — teste corrigido — 1 ciclo
+  - Warnings do ts-rs com `#[serde(alias)]` (quebrariam o clippy `-D warnings`) — correção: structs "raw" só de entrada (`RawChapter`, `RawDone`) — 1 ciclo
+  - `verify:net` falhou uma vez com `github_rate_limit` (HTTP 403 anônimo, 60/h esgotado pelas rodadas seguidas dos testes da F02/F03) — externo; reexecutado com `GITHUB_TOKEN` (passa a ser usado pelo gerenciador, §16) e passou — 1 re-execução
+- **Desvios do plano:**
+  - §9: `geo_blocked` foi posto **antes** de `unavailable` na ordem das regras e o padrão virou `available in your country|geo.?restrict` (a mensagem real "…has not made this video available in your country" não casava, e "This video is not available in your country" seria engolida por `unavailable`); `unavailable` ganhou `This video is unavailable` (stderr real gravado).
+  - T10: fonte de áudio é ruído rosa estéreo real (ver acima), não `-ac 2` sobre fonte mono.
+  - `fake-tool` ganhou `FAKE_TOOL_OPTS` (um argumento por linha, ligado ⇒ ignora argumentos desconhecidos, para o runner chamar o falso com a linha de comando real de um yt-dlp) e `--stderr-count N`.
+  - O backend não cria o `JobWorkspace`: o arquivo baixado precisa sobreviver até ser convertido/movido, então quem cria é o chamador. Novo `DownloadPipeline` (core) faz baixar ⇒ converter ⇒ mover e apaga a pasta do job em qualquer resultado; o CLI `download` usa o pipeline.
+  - `sweep_orphans(data_dir, older_than)`: o app deve usar `Duration::ZERO` na inicialização; o CLI usa 24 h (outro processo pode estar baixando).
+  - `YtDlpRunner::new(Option<Arc<ToolsManager>>)`: com gerenciador segura `acquire_run`; sem ele (testes) não segura nada.
+  - Busca no YouTube Music devolve o que o yt-dlp traz (sem duração); "buscar detalhes dos 3 primeiros" (§8) é da F08.
+  - `UrlKind` normaliza vídeo para `https://www.youtube.com/watch?v=ID` (ou `music.youtube.com` se a origem era o Music, para manter os metadados oficiais) e canal para `…/videos`; `watch?list=…` sem `v` vira coleção.
+  - Dependências novas no core: `tokio-util` (CancellationToken), `url`, `unicode-normalization`, `async-trait`; dev: `insta`. No CLI: `tokio-util`, `tokio` com `signal` (Ctrl+C cancela e limpa o tmp).
+  - TS: modelos novos sem `optional_fields` (campos opcionais saem `T | null`, como o serde realmente emite).
+- **Pendências humanas:** nenhuma.
+- **Commit/tag:** `feat(F03): motor de download` · tag `fase-03-ok`

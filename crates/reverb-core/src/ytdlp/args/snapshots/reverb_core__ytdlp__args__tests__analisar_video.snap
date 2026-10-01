@@ -1,0 +1,15 @@
+---
+source: crates/reverb-core/src/ytdlp/args/tests.rs
+expression: "render(&analyze_video_args(&ctx(), URL))"
+---
+--ignore-config
+--color
+never
+--js-runtimes
+deno:/tools/deno
+--ffmpeg-location
+/tools/ffmpeg
+-J
+--no-playlist
+--
+https://www.youtube.com/watch?v=jNQXAC9IVRw

@@ -1,0 +1,15 @@
+---
+source: crates/reverb-core/src/ytdlp/args/tests.rs
+expression: render(&args)
+---
+--ignore-config
+--color
+never
+--js-runtimes
+deno:/tools/deno
+--ffmpeg-location
+/tools/ffmpeg
+-J
+--flat-playlist
+--
+ytsearch10:rick astley

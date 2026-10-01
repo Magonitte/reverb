@@ -1,0 +1,17 @@
+---
+source: crates/reverb-core/src/ytdlp/args/tests.rs
+expression: render(&args)
+---
+--ignore-config
+--color
+never
+--js-runtimes
+deno:/tools/deno
+--ffmpeg-location
+/tools/ffmpeg
+-J
+--flat-playlist
+--playlist-end
+5
+--
+https://music.youtube.com/search?q=rick+astley+%26+voc%C3%AA#songs

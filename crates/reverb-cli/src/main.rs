@@ -1,3 +1,5 @@
+mod media;
+
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 
@@ -36,6 +38,32 @@ enum Command {
     Tools {
         #[command(subcommand)]
         action: ToolsAction,
+    },
+    /// Analisa uma URL (vídeo, playlist, álbum ou canal)
+    Analyze {
+        url: String,
+        /// Imprime o resultado completo em JSON
+        #[arg(long)]
+        json: bool,
+    },
+    /// Busca por texto no YouTube Music ou no YouTube
+    Search {
+        text: String,
+        /// ytmusic | youtube
+        #[arg(long, default_value = "ytmusic")]
+        source: String,
+        #[arg(long, default_value_t = 5)]
+        limit: u32,
+    },
+    /// Baixa um vídeo, converte pelo perfil e move para a pasta de destino
+    Download {
+        url: String,
+        /// original | mp3_v0 | mp3_320 | aac_256 | opus_96 | flac
+        #[arg(long, default_value = "original")]
+        profile: String,
+        /// Pasta de destino
+        #[arg(long)]
+        out: PathBuf,
     },
 }
 
@@ -145,7 +173,7 @@ async fn tools_manager(
     paths: &DataPaths,
     tools_dir: PathBuf,
     isolated: bool,
-) -> Result<ToolsManager> {
+) -> Result<(ToolsManager, Arc<SettingsService>)> {
     let db = if isolated {
         Db::open_in_memory()?
     } else {
@@ -160,7 +188,8 @@ async fn tools_manager(
     if let Ok(url) = std::env::var("REVERB_GITHUB_API_URL") {
         config.github_base_url = url;
     }
-    Ok(ToolsManager::new(config, db, settings, sink)?)
+    let manager = ToolsManager::new(config, db, Arc::clone(&settings), sink)?;
+    Ok((manager, settings))
 }
 
 async fn run_tools(manager: &ToolsManager, action: ToolsAction) -> Result<()> {
@@ -239,8 +268,32 @@ async fn main() -> Result<()> {
         }
         Command::Settings { action } => run_settings(&paths, action).await?,
         Command::Tools { action } => {
-            let manager = tools_manager(&paths, tools_dir, isolated_tools).await?;
+            let (manager, _) = tools_manager(&paths, tools_dir, isolated_tools).await?;
             run_tools(&manager, action).await?;
+        }
+        command @ (Command::Analyze { .. } | Command::Search { .. } | Command::Download { .. }) => {
+            let (manager, settings) = tools_manager(&paths, tools_dir, isolated_tools).await?;
+            let manager = Arc::new(manager);
+            match command {
+                Command::Analyze { url, json } => {
+                    media::analyze(manager, settings, &url, json).await?
+                }
+                Command::Search {
+                    text,
+                    source,
+                    limit,
+                } => media::search(manager, settings, &text, &source, limit).await?,
+                Command::Download { url, profile, out } => {
+                    // Testes isolados (`--tools-dir` sem `--data-dir`) nunca tocam no tmp real.
+                    let data_dir = if isolated_tools {
+                        std::env::temp_dir().join("reverb-cli")
+                    } else {
+                        paths.data_dir.clone()
+                    };
+                    media::download(manager, settings, data_dir, &url, &profile, &out).await?
+                }
+                _ => unreachable!("filtrado acima"),
+            }
         }
     }
     Ok(())

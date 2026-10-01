@@ -1,0 +1,29 @@
+---
+source: crates/reverb-core/src/ytdlp/args/tests.rs
+expression: "render(&download_args(&ctx, &options(\"/tmp/job-1\", None)))"
+---
+--ignore-config
+--color
+never
+--js-runtimes
+deno:/tools/deno
+--ffmpeg-location
+/tools/ffmpeg
+--limit-rate
+2.5M
+--no-playlist
+--newline
+--progress
+-f
+bestaudio[format_id!*=-drc]/bestaudio
+-x
+--audio-format
+best
+--progress-template
+download:REVERB_PROGRESS %(progress)j
+--print
+after_move:REVERB_DONE %(.{id,title,filepath,ext,abr,acodec,format_id,duration})j
+-o
+/tmp/job-1/%(id)s.%(ext)s
+--
+https://www.youtube.com/watch?v=jNQXAC9IVRw
