@@ -1,0 +1,353 @@
+{
+  "common": {
+    "appName": "Reverb",
+    "loading": "Carregando...",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "save": "Salvar",
+    "retry": "Tentar novamente",
+    "close": "Fechar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "skip": "Pular",
+    "yes": "Sim",
+    "no": "Não",
+    "remove": "Remover",
+    "download": "Baixar",
+    "add": "Adicionar",
+    "search": "Buscar",
+    "selectAll": "Selecionar Todas",
+    "deselectAll": "Desmarcar Todas",
+    "openFolder": "Abrir pasta",
+    "viewAll": "Ver Todos →"
+  },
+  "updater": {
+    "availableToast": "Atualização {{version}} disponível. Abra Configurações para instalar.",
+    "dialogTitle": "Atualização disponível",
+    "dialogSubtitle": "Versão {{version}} está pronta para instalar.",
+    "changelog": "Novidades",
+    "noNotes": "Sem notas de versão para esta atualização.",
+    "install": "Instalar e reiniciar",
+    "later": "Agora não",
+    "installing": "Baixando atualização…",
+    "installProgress": "{{percent}}% concluído",
+    "installError": "Não foi possível instalar a atualização.",
+    "checkError": "Não foi possível verificar atualizações.",
+    "noUpdate": "Você está na versão mais recente.",
+    "unavailable": "Atualizações automáticas só estão disponíveis no app instalado.",
+    "badge": "Nova versão",
+    "viewUpdate": "Ver atualização"
+  },
+  "nav": {
+    "home": "Início",
+    "queue": "Fila de Downloads",
+    "metadata": "Editor de Metadados",
+    "playlist": "Análise de Playlist",
+    "settings": "Configurações",
+    "history": "Histórico"
+  },
+  "home": {
+    "title": "Novo Download",
+    "subtitle": "Cole uma URL do YouTube — vídeo, playlist ou canal",
+    "urlPlaceholder": "Cole a URL do YouTube aqui...",
+    "analyze": "Analisar",
+    "analyzing": "Analisando...",
+    "quickActions": {
+      "label": "AÇÕES RÁPIDAS",
+      "analyzePlaylist": "Analisar Playlist",
+      "analyzePlaylistDescription": "Selecione faixas de uma playlist para baixar",
+      "editMetadata": "Editar Metadados",
+      "editMetadataDescription": "Edite tags de arquivos já baixados",
+      "viewQueue": "Ver Fila ({{count}} ativos)",
+      "viewQueue_zero": "Ver Fila",
+      "viewQueueDescription": "Acompanhe downloads em andamento"
+    },
+    "recent": {
+      "label": "DOWNLOADS RECENTES",
+      "viewAll": "Ver Todos →",
+      "empty": "Nenhuma URL analisada ainda",
+      "emptyDescription": "Seus downloads recentes aparecerão aqui"
+    },
+    "toast": {
+      "addedToQueue": "Adicionado à fila"
+    }
+  },
+  "preview": {
+    "title": "Pré-visualização",
+    "subtitle": "Confira as informações e escolha o formato",
+    "views": "{{count}} visualizações",
+    "downloadAudio": "Baixar Áudio",
+    "addToQueue": "Adicionar à Fila",
+    "selectFolder": "Escolher pasta de destino",
+    "formats": {
+      "mp3_320": "MP3 320kbps",
+      "aac_256": "AAC 256kbps",
+      "flac": "FLAC",
+      "opus_160": "Opus 160kbps"
+    },
+    "options": {
+      "fetchMetadata": "Buscar metadados automaticamente",
+      "fetchLyrics": "Baixar letra (Genius)",
+      "fetchArtwork": "Baixar capa do álbum",
+      "removeSponsorBlocks": "Remover segmentos (SponsorBlock)",
+      "autoOrganize": "Organizar automaticamente"
+    },
+    "loading": "Carregando informações do vídeo..."
+  },
+  "queue": {
+    "title": "Fila de Downloads",
+    "subtitle": "Gerencie seus downloads em andamento",
+    "empty": "Nenhum download na fila",
+    "emptyDescription": "Adicione um download pela tela inicial",
+    "emptyCta": "Adicionar download",
+    "counters": "{{active}} ativos · {{pending}} pendentes · {{completed}} concluídos",
+    "pause": "Pausar fila",
+    "resume": "Retomar",
+    "cancelAll": "Cancelar todos",
+    "removeFromQueue": "Remover da fila",
+    "retry": "Tentar novamente",
+    "retryAttempt": "Tentativa {{current}}/{{max}}...",
+    "permanentFailure": "Falha permanente — {{reason}}",
+    "limitWarning": "A fila está quase cheia ({{current}}/{{limit}}). Considere pausar novos downloads.",
+    "status": {
+      "pending": "Pendente",
+      "running": "Em andamento",
+      "completed": "Concluído",
+      "failed": "Falhou",
+      "cancelled": "Cancelado",
+      "paused": "Pausado"
+    },
+    "stages": {
+      "analyzing": "Analisando",
+      "downloading": "Baixando",
+      "transcoding": "Convertendo",
+      "metadata": "Metadados",
+      "lyrics": "Letra",
+      "artwork": "Capa",
+      "organizing": "Organizando"
+    }
+  },
+  "history": {
+    "title": "Histórico de Downloads",
+    "subtitle": "Todos os downloads concluídos",
+    "empty": "Nenhum download no histórico",
+    "emptyDescription": "Seus downloads concluídos aparecerão aqui",
+    "emptyCta": "Baixar seu primeiro áudio",
+    "searchPlaceholder": "Buscar por título ou artista...",
+    "filters": {
+      "format": "Formato",
+      "date": "Data",
+      "today": "Hoje",
+      "week": "Esta semana",
+      "month": "Este mês",
+      "all": "Tudo"
+    },
+    "columns": {
+      "cover": "Capa",
+      "track": "Faixa",
+      "format": "Formato",
+      "date": "Data",
+      "actions": "Ações"
+    },
+    "actions": {
+      "openFolder": "Abrir pasta",
+      "editTags": "Editar tags",
+      "redownload": "Baixar novamente"
+    },
+    "duplicateDialog": {
+      "title": "Download duplicado",
+      "message": "Este vídeo já foi baixado neste formato. Deseja baixar novamente?",
+      "confirm": "Baixar novamente"
+    },
+    "clearAll": "Limpar tudo",
+    "clearDialog": {
+      "title": "Limpar histórico",
+      "message": "Tem certeza que deseja remover todo o histórico de downloads? Esta ação não pode ser desfeita.",
+      "confirm": "Limpar"
+    }
+  },
+  "settings": {
+    "title": "Configurações",
+    "subtitle": "Personalize o comportamento e a aparência do Reverb",
+    "tabs": {
+      "general": "Geral",
+      "audio": "Áudio",
+      "metadata": "Metadados",
+      "advanced": "Avançado"
+    },
+    "sections": {
+      "behavior": "Comportamento",
+      "appearance": "Aparência",
+      "defaultQuality": "Qualidade Padrão",
+      "outputFolder": "Pasta de Destino",
+      "autoFill": "Preenchimento Automático",
+      "network": "Rede",
+      "maintenance": "Manutenção",
+      "apis": "APIs"
+    },
+    "launchWithWindows": "Iniciar com o Windows",
+    "launchWithWindowsDesc": "Abre o Reverb ao ligar o PC",
+    "minimizeToTray": "Minimizar para a bandeja",
+    "minimizeToTrayDesc": "Mantém o app em segundo plano",
+    "completionNotifications": "Notificações de conclusão",
+    "completionNotificationsDesc": "Notificação nativa ao terminar download",
+    "theme": "Tema",
+    "themeDesc": "Claro, escuro ou automático",
+    "themeOptions": {
+      "dark": "Escuro (padrão do sistema)",
+      "light": "Claro",
+      "system": "Automático (horário)"
+    },
+    "language": "Idioma",
+    "languageDesc": "Idioma da interface",
+    "languageOptions": {
+      "pt-BR": "Português (Brasil)",
+      "en": "English (US)",
+      "es": "Español"
+    },
+    "preferredFormat": "Formato preferido",
+    "preferredFormatDesc": "Formato de saída padrão",
+    "formatPresets": {
+      "mp3-320": "MP3 320kbps",
+      "aac-256": "AAC 256kbps",
+      "flac": "FLAC (sem perdas)",
+      "opus-160": "Opus 160kbps"
+    },
+    "normalizeVolume": "Normalizar volume",
+    "normalizeVolumeDesc": "Loudness normalization (EBU R128)",
+    "saveTo": "Salvar em",
+    "saveToPlaceholder": "Pasta padrão de Downloads",
+    "changeFolder": "Alterar...",
+    "fetchArtwork": "Buscar capa automaticamente",
+    "fetchArtworkDesc": "Procura arte do álbum online",
+    "fetchLyrics": "Buscar letras",
+    "fetchLyricsDesc": "Tenta encontrar letras sincronizadas",
+    "extractTitleFromVideo": "Extrair título do vídeo",
+    "extractTitleFromVideoDesc": "Artista e título do YouTube",
+    "parallelism": "Downloads simultâneos",
+    "parallelismDesc": "Máximo de downloads paralelos",
+    "speedLimit": "Limite de velocidade",
+    "speedLimitDesc": "0 = sem limite",
+    "speedLimitUnit": "MB/s",
+    "clearCache": "Limpar cache",
+    "clearCacheDesc": "Remove arquivos temporários",
+    "clearCacheNow": "Limpar Agora",
+    "clearCacheDone": "Cache temporário limpo.",
+    "ffmpeg": "FFmpeg",
+    "ffmpegInstalled": "FFmpeg instalado ✓",
+    "ffmpegDownload": "Baixar FFmpeg",
+    "checkUpdates": "Verificar atualizações",
+    "checkUpdatesDesc": "Busca novas versões do Reverb",
+    "checkUpdatesDone": "Você está na versão mais recente.",
+    "exportLogs": "Exportar logs",
+    "exportLogsDesc": "Salva logs de diagnóstico em arquivo",
+    "exportLogsDone": "Exportação de logs em breve.",
+    "exportDiagnostics": "Exportar diagnóstico",
+    "exportDiagnosticsDesc": "Salva contadores de uso e métricas locais em JSON",
+    "exportDiagnosticsDone": "Diagnóstico exportado com sucesso.",
+    "exportDiagnosticsError": "Não foi possível exportar o diagnóstico.",
+    "apiStatus": {
+      "configured": "Configurado",
+      "notConfigured": "Não configurado"
+    },
+    "apis": {
+      "genius": "Genius",
+      "spotify": "Spotify",
+      "discogs": "Discogs",
+      "lastfm": "Last.fm",
+      "musicbrainz": "MusicBrainz",
+      "geniusDesc": "Letras sincronizadas via API do Genius.",
+      "spotifyDesc": "Metadados e capas de alta qualidade via Spotify Web API.",
+      "discogsDesc": "Informações de álbum e release via Discogs. Na página de developers, gere um Personal Access Token (não use Consumer Key ou Consumer Secret).",
+      "lastfmDesc": "Metadados, gêneros e capas via Last.fm.",
+      "musicbrainzDesc": "Banco de dados aberto de metadados musicais. Sem cadastro necessário.",
+      "noApiRequired": "Sem cadastro necessário",
+      "getApiKey": "Gerar Personal Access Token",
+      "configure": "Configurar",
+      "edit": "Editar",
+      "remove": "Remover",
+      "add": "Salvar",
+      "save": "Salvar",
+      "saved": "API configurada com sucesso.",
+      "removed": "Credenciais removidas.",
+      "saveError": "Não foi possível salvar as credenciais.",
+      "removeError": "Não foi possível remover as credenciais.",
+      "geniusToken": "Access Token",
+      "spotifyClientId": "Client ID",
+      "spotifyClientSecret": "Client Secret",
+      "discogsToken": "Personal Access Token",
+      "lastfmApiKey": "API Key",
+      "tokenPlaceholder": "Cole o token aqui (não a URL nem Consumer Key)",
+      "discogsHint": "Na página do app, role até 'Personal Access Token' e clique em 'Generate new token'"
+    },
+    "ffmpegWarning": "Formatos MP3/FLAC requerem FFmpeg. Baixe no onboarding ou nas configurações avançadas."
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Bem-vindo ao Reverb",
+      "description": "Baixe áudio do YouTube com metadados, letras e capas — tudo em um só lugar.",
+      "start": "Começar"
+    },
+    "environment": {
+      "title": "Verificando ambiente",
+      "description": "Conectando ao motor de download...",
+      "checking": "Verificando sidecar Python..."
+    },
+    "ffmpeg": {
+      "title": "FFmpeg",
+      "description": "FFmpeg é necessário para converter áudio em MP3, FLAC e outros formatos.",
+      "found": "FFmpeg encontrado",
+      "missing": "FFmpeg não encontrado",
+      "download": "Baixar FFmpeg",
+      "downloading": "Baixando FFmpeg... {{percent}}%",
+      "skip": "Pular (modo rápido)",
+      "skipHint": "No modo rápido, apenas formatos originais (OPUS/M4A) estarão disponíveis."
+    },
+    "apis": {
+      "title": "APIs de metadados",
+      "description": "Configure MusicBrainz, Spotify e Genius para enriquecer seus downloads. Opcional.",
+      "configureLater": "Configurar depois",
+      "configureNow": "Configurar agora"
+    },
+    "ready": {
+      "title": "Tudo pronto!",
+      "description": "Seu ambiente está configurado. Comece a baixar seu primeiro áudio.",
+      "start": "Começar a usar"
+    },
+    "preparing": "Preparando seu ambiente..."
+  },
+  "playlist": {
+    "title": "Análise de Playlist — {{name}}",
+    "subtitle": "{{count}} faixas encontradas · Selecione as que deseja baixar",
+    "selected": "{{count}} faixas selecionadas",
+    "downloadSelected": "Baixar {{count}} Faixas",
+    "limitWarning": "Apenas as primeiras {{limit}} serão adicionadas.",
+    "changeLimit": "Alterar limite",
+    "urlPlaceholder": "Cole a URL da playlist..."
+  },
+  "metadata": {
+    "title": "Editor de Metadados",
+    "subtitle": "Edite tags de arquivos de áudio",
+    "placeholder": "Selecione um arquivo para editar as tags."
+  },
+  "errors": {
+    "generic": "Ocorreu um erro inesperado. Tente novamente.",
+    "network": "Erro de rede — tentando novamente ({{current}}/{{max}})...",
+    "networkPermanent": "Falha de rede após {{max}} tentativas.",
+    "invalidUrl": "URL inválida — verifique o link",
+    "videoUnavailable": "Vídeo indisponível — download cancelado",
+    "engineUnreachable": "Não foi possível conectar ao motor de download.",
+    "engineUnreachableHint": "Verifique se o sidecar Python está em execução e tente novamente.",
+    "ffmpegDownloadFailed": "Falha ao baixar FFmpeg. Verifique sua conexão e tente novamente.",
+    "ffmpegMissing": "FFmpeg não encontrado. Baixe-o no onboarding ou use o modo rápido.",
+    "analysisFailed": "Não foi possível analisar a URL.",
+    "downloadFailed": "Falha no download: {{message}}",
+    "metadataFailed": "Falha ao buscar metadados: {{message}}",
+    "permissionDenied": "Permissão negada para acessar a pasta.",
+    "diskFull": "Espaço em disco insuficiente.",
+    "queueFull": "A fila atingiu o limite máximo ({{limit}}).",
+    "retryNoUrl": "URL indisponível para tentar novamente.",
+    "unknown": "Erro desconhecido",
+    "offline": "Modo offline ativo — metadados em cache apenas."
+  }
+}

@@ -1,0 +1,1951 @@
+
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Reverb — Download de Áudio do YouTube</title>
+<style>
+/* ============================================================
+   DESIGN SYSTEM — Reverb Vinil + Glassmorphism
+   Base: disco de vinil preto-quente, âmbar/laranja, vidro fosco
+   ============================================================ */
+:root {
+  /* Fundo — preto vinil com calor */
+  --bg-deep: #0f0f14;
+  --bg-base: #18181f;
+  --bg-warm: #1c1b1e;
+
+  /* Superfícies glassmorphism */
+  --glass-bg: rgba(28, 27, 32, 0.72);
+  --glass-bg-hover: rgba(36, 34, 42, 0.78);
+  --glass-bg-elevated: rgba(32, 30, 38, 0.82);
+  --glass-border: rgba(255, 255, 255, 0.07);
+  --glass-border-hover: rgba(255, 255, 255, 0.13);
+  --glass-border-focus: rgba(245, 158, 75, 0.35);
+  --glass-blur: 24px;
+  --glass-blur-heavy: 40px;
+
+  /* Acrílico (sidebar, titlebar) */
+  --acrylic-bg: rgba(18, 17, 22, 0.78);
+  --acrylic-blur: 32px;
+
+  /* Accent — âmbar vinil / groove dourado */
+  --accent: #f59e4b;
+  --accent-hover: #f6b06a;
+  --accent-pressed: #e08a35;
+  --accent-muted: rgba(245, 158, 75, 0.12);
+  --accent-glow: rgba(245, 158, 75, 0.25);
+  --accent-soft: rgba(245, 158, 75, 0.08);
+
+  /* Gold subtle */
+  --gold: #e2a854;
+  --gold-muted: rgba(226, 168, 84, 0.15);
+
+  /* Foreground — quente */
+  --fg: #f2efe9;
+  --fg-secondary: #cfccc6;
+  --fg-muted: #a09d97;
+  --fg-dim: #706d68;
+
+  /* Semantic */
+  --success: #5cdb8b;
+  --warning: #f5c842;
+  --error: #f8716b;
+  --info: #6db3f5;
+
+  /* Vinyl groove effect */
+  --groove-1: rgba(245, 158, 75, 0.04);
+  --groove-2: rgba(226, 168, 84, 0.03);
+
+  /* Typography */
+  --font-display: 'Segoe UI Variable Display', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-body: 'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Cascadia Code', 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.5);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.6);
+  --shadow-glow: 0 0 28px var(--accent-glow);
+  --shadow-glow-sm: 0 0 12px rgba(245, 158, 75, 0.18);
+
+  /* Layout */
+  --titlebar-h: 36px;
+  --sidebar-w: 58px;
+
+  /* Transitions */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 140ms;
+  --dur-normal: 240ms;
+  --dur-slow: 400ms;
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--fg);
+  background: #0a0a10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+  /* Sutil textura de fundo */
+  background-image:
+    radial-gradient(ellipse 120% 80% at 30% 20%, rgba(245, 158, 75, 0.03) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 60% at 70% 80%, rgba(226, 168, 84, 0.02) 0%, transparent 50%);
+}
+
+/* ============================================================
+   APP WINDOW — vidro com borda fina
+   ============================================================ */
+.app-window {
+  width: 1200px;
+  height: 800px;
+  background: var(--bg-deep);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 0 0 2px rgba(0, 0, 0, 0.3),
+    0 20px 60px rgba(0, 0, 0, 0.7);
+  position: relative;
+}
+
+/* Gradiente ambiente por trás do vidro */
+.app-window::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 20% 15%, rgba(245, 158, 75, 0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 80% 85%, rgba(226, 168, 84, 0.04) 0%, transparent 55%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================================
+   TITLE BAR — glassmorphism
+   ============================================================ */
+.titlebar {
+  height: var(--titlebar-h);
+  background: var(--acrylic-bg);
+  backdrop-filter: blur(var(--acrylic-blur));
+  -webkit-backdrop-filter: blur(var(--acrylic-blur));
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-3);
+  gap: var(--space-3);
+  border-bottom: 1px solid var(--glass-border);
+  z-index: 10;
+  position: relative;
+  flex-shrink: 0;
+}
+.titlebar-icon {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #f6b06a, #e08a35 70%, #c06a1a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(245, 158, 75, 0.3);
+}
+.titlebar-icon svg { width: 10px; height: 10px; }
+.titlebar-title {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg-secondary);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.02em;
+}
+.titlebar-actions {
+  display: flex;
+  gap: 2px;
+  margin-right: -2px;
+}
+.titlebar-btn {
+  width: 36px; height: 26px;
+  border: none;
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: 10px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--dur-fast) var(--ease-out);
+}
+.titlebar-btn:hover { background: rgba(255, 255, 255, 0.06); color: var(--fg); }
+.titlebar-btn.close:hover { background: #e8503a; color: #fff; }
+
+/* ============================================================
+   APP BODY
+   ============================================================ */
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================
+   SIDEBAR — glassmorphism acrílico
+   ============================================================ */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--acrylic-bg);
+  backdrop-filter: blur(var(--acrylic-blur));
+  -webkit-backdrop-filter: blur(var(--acrylic-blur));
+  border-right: 1px solid var(--glass-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-3) 0;
+  gap: var(--space-1);
+  flex-shrink: 0;
+  z-index: 5;
+  position: relative;
+}
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  padding: 0 var(--space-2);
+}
+.nav-item {
+  width: 100%;
+  aspect-ratio: 1;
+  border: none;
+  background: transparent;
+  color: var(--fg-muted);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all var(--dur-fast) var(--ease-out);
+}
+.nav-item svg {
+  width: 20px; height: 20px;
+  flex-shrink: 0;
+  opacity: 0.6;
+  transition: all var(--dur-fast) var(--ease-out);
+}
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--fg);
+}
+.nav-item:hover svg { opacity: 0.9; }
+.nav-item.active {
+  background: var(--accent-muted);
+  color: var(--accent);
+  box-shadow: inset 0 0 0 1px rgba(245, 158, 75, 0.15);
+}
+.nav-item.active svg { opacity: 1; }
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 22px;
+  background: var(--accent);
+  border-radius: 0 3px 3px 0;
+  box-shadow: 0 0 8px rgba(245, 158, 75, 0.4);
+}
+.nav-item .badge {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 7px; height: 7px;
+  background: var(--accent);
+  border-radius: 50%;
+  border: 2px solid var(--acrylic-bg);
+  box-shadow: 0 0 6px rgba(245, 158, 75, 0.5);
+}
+.nav-divider {
+  width: 30px;
+  height: 1px;
+  background: var(--glass-border);
+  margin: var(--space-2) auto;
+}
+
+/* ============================================================
+   CONTENT AREA
+   ============================================================ */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  background: transparent;
+  scroll-behavior: smooth;
+}
+.content::-webkit-scrollbar { width: 5px; }
+.content::-webkit-scrollbar-track { background: transparent; }
+.content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+}
+.content::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.12); }
+
+/* Screen container */
+.screen {
+  display: none;
+  padding: var(--space-8);
+  animation: screenIn var(--dur-normal) var(--ease-out);
+}
+.screen.active { display: block; }
+
+@keyframes screenIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   TYPOGRAPHY HELPERS
+   ============================================================ */
+.screen-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--fg);
+  margin-bottom: var(--space-1);
+}
+.screen-subtitle {
+  font-size: 13px;
+  color: var(--fg-muted);
+  margin-bottom: var(--space-8);
+}
+
+/* ============================================================
+   GLASS COMPONENTS
+   ============================================================ */
+
+/* Glass card */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  transition: all var(--dur-fast) var(--ease-out);
+  position: relative;
+}
+.glass-card:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  box-shadow: var(--shadow-md);
+}
+.glass-card.interactive {
+  cursor: pointer;
+}
+.glass-card.interactive:active {
+  transform: scale(0.985);
+  transition: transform 80ms var(--ease-out);
+}
+
+/* Glass panel (mais opaco, para forms) */
+.glass-panel {
+  background: var(--glass-bg-elevated);
+  backdrop-filter: blur(var(--glass-blur-heavy));
+  -webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+}
+
+/* Glass input */
+.glass-input {
+  height: 38px;
+  padding: 0 var(--space-4);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 13px;
+  outline: none;
+  transition: all var(--dur-fast) var(--ease-out);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.glass-input::placeholder { color: var(--fg-dim); }
+.glass-input:hover { border-color: var(--glass-border-hover); background: rgba(255, 255, 255, 0.06); }
+.glass-input:focus {
+  border-color: var(--glass-border-focus);
+  box-shadow: 0 0 0 3px var(--accent-muted), var(--shadow-glow-sm);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.glass-input-lg {
+  height: 52px;
+  padding: 0 var(--space-6);
+  font-size: 14px;
+  border-radius: var(--radius-lg);
+}
+
+.glass-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: var(--space-4);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.8;
+  resize: vertical;
+  outline: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+.glass-textarea:focus {
+  border-color: var(--glass-border-focus);
+  box-shadow: 0 0 0 3px var(--accent-muted), var(--shadow-glow-sm);
+}
+
+/* Input group */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-4);
+}
+.input-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg-secondary);
+  letter-spacing: 0.015em;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  height: 36px;
+  padding: 0 var(--space-5);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  transition: all var(--dur-fast) var(--ease-out);
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  position: relative;
+  overflow: hidden;
+}
+.btn:active { transform: scale(0.96); }
+
+.btn-primary {
+  background: linear-gradient(135deg, #f59e4b 0%, #e08a35 100%);
+  color: #1a1208;
+  font-weight: 600;
+  box-shadow: 0 2px 12px rgba(245, 158, 75, 0.25);
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, #f6b06a 0%, #e8943a 100%);
+  box-shadow: 0 4px 20px rgba(245, 158, 75, 0.4);
+}
+.btn-primary:active {
+  background: linear-gradient(135deg, #e08a35 0%, #c87820 100%);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--fg-secondary);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--fg);
+  border-color: var(--glass-border-hover);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--fg-muted);
+}
+.btn-ghost:hover { background: rgba(255, 255, 255, 0.05); color: var(--fg); }
+
+.btn-sm { height: 30px; padding: 0 var(--space-3); font-size: 12px; border-radius: var(--radius-sm); }
+.btn-lg { height: 46px; padding: 0 var(--space-6); font-size: 14px; border-radius: var(--radius-lg); }
+
+.btn-icon {
+  width: 36px; height: 36px;
+  padding: 0;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  color: var(--fg-muted);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+.btn-icon:hover { background: rgba(255, 255, 255, 0.08); color: var(--fg); border-color: var(--glass-border-hover); }
+.btn-icon svg { width: 16px; height: 16px; }
+
+/* ============================================================
+   CHIP / TAG
+   ============================================================ */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 var(--space-2);
+  background: var(--accent-muted);
+  color: var(--accent);
+  border: 1px solid rgba(245, 158, 75, 0.15);
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 500;
+  gap: var(--space-1);
+  white-space: nowrap;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.chip .chip-close {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  transition: all var(--dur-fast) var(--ease-out);
+}
+.chip .chip-close:hover { opacity: 1; background: var(--accent); color: #1a1208; }
+
+/* ============================================================
+   PROGRESS BAR
+   ============================================================ */
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #e08a35, #f59e4b, #f6b06a);
+  border-radius: 2px;
+  transition: width 0.3s linear;
+  box-shadow: 0 0 8px rgba(245, 158, 75, 0.3);
+}
+.progress-bar-fill.indeterminate {
+  width: 35%;
+  animation: indeterminate 1.6s var(--ease-in-out) infinite;
+}
+@keyframes indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(380%); }
+}
+.progress-bar-fill.success { background: linear-gradient(90deg, #3db864, #5cdb8b); box-shadow: 0 0 8px rgba(92, 219, 139, 0.3); }
+.progress-bar-fill.error { background: linear-gradient(90deg, #e8503a, #f8716b); box-shadow: 0 0 8px rgba(248, 113, 107, 0.3); }
+.progress-bar-fill.converting { background: linear-gradient(90deg, #d4942a, #f5c842); box-shadow: 0 0 8px rgba(245, 200, 66, 0.3); }
+
+/* ============================================================
+   TOGGLE
+   ============================================================ */
+.toggle {
+  width: 42px; height: 24px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  position: relative;
+  transition: all var(--dur-fast) var(--ease-out);
+  flex-shrink: 0;
+}
+.toggle::after {
+  content: '';
+  width: 17px; height: 17px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 2.5px; left: 3px;
+  transition: transform var(--dur-fast) var(--ease-out);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+.toggle.on {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.toggle.on::after {
+  transform: translateX(17px);
+}
+
+/* ============================================================
+   MODAL — glassmorphism pesado
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 6, 12, 0.7);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-normal) var(--ease-out);
+}
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal {
+  width: 600px;
+  max-height: 72vh;
+  background: var(--glass-bg-elevated);
+  backdrop-filter: blur(var(--glass-blur-heavy));
+  -webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(245, 158, 75, 0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: scale(0.94) translateY(12px);
+  transition: transform var(--dur-normal) var(--ease-out);
+}
+.modal-overlay.open .modal {
+  transform: scale(1) translateY(0);
+}
+.modal-header {
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  flex: 1;
+}
+.modal-close {
+  width: 30px; height: 30px;
+  border: none;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--fg-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--dur-fast) var(--ease-out);
+}
+.modal-close:hover { background: rgba(255, 255, 255, 0.1); color: var(--fg); }
+.modal-body {
+  padding: var(--space-5) var(--space-6);
+  overflow-y: auto;
+  flex: 1;
+}
+.modal-footer {
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--glass-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+/* Checkbox row */
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out);
+  font-size: 13px;
+}
+.checkbox-row:hover { background: rgba(255, 255, 255, 0.04); }
+.checkbox-row input[type="checkbox"] {
+  width: 16px; height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   VINYL GROOVE TEXTURE (sutil, nos cards grandes)
+   ============================================================ */
+.vinyl-grooves {
+  position: relative;
+}
+.vinyl-grooves::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    repeating-radial-gradient(circle at 50% 50%, transparent, transparent 18px, rgba(245, 158, 75, 0.015) 18px, rgba(245, 158, 75, 0.015) 19px);
+  pointer-events: none;
+  z-index: 0;
+}
+.vinyl-grooves > * { position: relative; z-index: 1; }
+
+/* ============================================================
+   ONBOARDING
+   ============================================================ */
+.onboarding-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  text-align: center;
+  gap: var(--space-8);
+}
+.onboarding-steps { display: flex; gap: var(--space-5); }
+.onboarding-step-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  transition: all var(--dur-normal) var(--ease-out);
+}
+.onboarding-step-dot.active { background: var(--accent); width: 28px; border-radius: var(--radius-full); box-shadow: 0 0 12px rgba(245, 158, 75, 0.4); }
+.onboarding-step-dot.done { background: var(--accent-muted); }
+
+/* Vinyl disc illustration */
+.vinyl-disc {
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  position: relative;
+  margin-bottom: var(--space-4);
+  background:
+    radial-gradient(circle at 50% 50%,
+      #2a2520 0%, #221e18 18%,
+      #1a1710 18.5%, #2a2520 20%,
+      transparent 20.5%, transparent 21%,
+      rgba(245, 158, 75, 0.12) 21%, rgba(245, 158, 75, 0.06) 28%,
+      transparent 28.5%, transparent 30%,
+      rgba(245, 158, 75, 0.10) 30%, rgba(245, 158, 75, 0.04) 40%,
+      transparent 40.5%, transparent 43%,
+      rgba(245, 158, 75, 0.08) 43%, rgba(245, 158, 75, 0.03) 55%,
+      transparent 55.5%, transparent 58%,
+      rgba(245, 158, 75, 0.06) 58%, rgba(245, 158, 75, 0.02) 100%);
+  box-shadow:
+    0 0 60px rgba(245, 158, 75, 0.12),
+    inset 0 0 40px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: vinylFloat 6s var(--ease-in-out) infinite;
+}
+.vinyl-disc::before {
+  content: '';
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #e8943a, #8a4a10);
+  z-index: 2;
+  box-shadow: 0 0 12px rgba(245, 158, 75, 0.5);
+}
+
+@keyframes vinylFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-6px) rotate(1deg); }
+  66% { transform: translateY(3px) rotate(-0.5deg); }
+}
+
+.vinyl-disc.icon-big { width: 200px; height: 200px; }
+
+.onboarding-heading {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+}
+.onboarding-desc {
+  font-size: 14px;
+  color: var(--fg-muted);
+  max-width: 420px;
+  line-height: 1.65;
+}
+
+/* ============================================================
+   HOME SCREEN — RICA
+   ============================================================ */
+.home-hero {
+  position: relative;
+  margin-bottom: var(--space-8);
+}
+.home-hero-bg {
+  position: absolute;
+  inset: -32px -32px -80px -32px;
+  border-radius: var(--radius-xl);
+  background:
+    radial-gradient(ellipse 50% 40% at 50% 30%, rgba(245, 158, 75, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.url-input-wrapper {
+  display: flex;
+  gap: var(--space-3);
+  position: relative;
+}
+.url-input-wrapper .glass-input { flex: 1; }
+
+/* Preview card — glass */
+.preview-card {
+  display: flex;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  align-items: flex-start;
+  transition: all var(--dur-normal) var(--ease-out);
+  margin-bottom: var(--space-4);
+  position: relative;
+}
+.preview-card:hover { border-color: var(--glass-border-hover); box-shadow: var(--shadow-md); }
+.preview-card.loading { opacity: 0.5; pointer-events: none; }
+.preview-thumb {
+  width: 150px; height: 94px;
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.preview-thumb .placeholder-thumb {
+  font-size: 28px;
+  color: var(--fg-dim);
+  background: linear-gradient(135deg, rgba(245, 158, 75, 0.15), rgba(226, 168, 84, 0.08));
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.preview-info { flex: 1; min-width: 0; }
+.preview-info h3 {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: var(--space-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.preview-info .meta {
+  font-size: 12px;
+  color: var(--fg-muted);
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.quality-selector {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+.quality-chip {
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--fg-muted);
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease-out);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.quality-chip:hover { border-color: var(--glass-border-hover); color: var(--fg); background: rgba(255, 255, 255, 0.06); }
+.quality-chip.selected {
+  background: var(--accent-muted);
+  border-color: rgba(245, 158, 75, 0.3);
+  color: var(--accent);
+  box-shadow: 0 0 12px rgba(245, 158, 75, 0.12);
+}
+
+/* Recent downloads section */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-dim);
+}
+.recent-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+.recent-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease-out);
+}
+.recent-item:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  box-shadow: var(--shadow-sm);
+}
+.recent-item-icon {
+  width: 40px; height: 40px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--fg-dim);
+}
+.recent-item-info {
+  flex: 1;
+  min-width: 0;
+}
+.recent-item-info .name {
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.recent-item-info .detail {
+  font-size: 11px;
+  color: var(--fg-dim);
+}
+
+/* Quick actions */
+.quick-actions {
+  display: flex;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+.quick-action {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease-out);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg-secondary);
+}
+.quick-action:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  color: var(--fg);
+  box-shadow: var(--shadow-sm);
+}
+.quick-action-icon {
+  width: 38px; height: 38px;
+  border-radius: var(--radius-md);
+  background: var(--accent-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--accent);
+}
+.quick-action-icon svg { width: 18px; height: 18px; }
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12);
+  text-align: center;
+  color: var(--fg-muted);
+  gap: var(--space-3);
+}
+.empty-state svg { width: 48px; height: 48px; opacity: 0.35; }
+.empty-state h3 { font-size: 15px; font-weight: 500; color: var(--fg-secondary); }
+.empty-state p { font-size: 12px; max-width: 320px; line-height: 1.6; }
+
+/* ============================================================
+   QUEUE SCREEN
+   ============================================================ */
+.queue-list { display: flex; flex-direction: column; gap: var(--space-3); }
+.queue-item {
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  align-items: center;
+  transition: all var(--dur-fast) var(--ease-out);
+}
+.queue-item:hover { background: var(--glass-bg-hover); border-color: var(--glass-border-hover); }
+.queue-item-thumb {
+  width: 50px; height: 50px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.queue-item-thumb .placeholder-thumb {
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--fg-dim);
+}
+.queue-item-info { flex: 1; min-width: 0; }
+.queue-item-info .name {
+  font-weight: 500;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.queue-item-info .status {
+  font-size: 11px;
+  color: var(--fg-muted);
+}
+.queue-item-progress { width: 170px; flex-shrink: 0; }
+.queue-item-progress .progress-bar { margin-top: var(--space-1); }
+.queue-item-progress .progress-label {
+  font-size: 11px;
+  color: var(--fg-muted);
+  display: flex;
+  justify-content: space-between;
+}
+.queue-item-actions { display: flex; gap: var(--space-1); flex-shrink: 0; }
+
+.status-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-dot.downloading { background: var(--accent); animation: pulse 1.2s ease-in-out infinite; box-shadow: 0 0 8px rgba(245, 158, 75, 0.5); }
+.status-dot.converting { background: var(--warning); animation: pulse 1.2s ease-in-out infinite; box-shadow: 0 0 8px rgba(245, 200, 66, 0.4); }
+.status-dot.completed { background: var(--success); box-shadow: 0 0 6px rgba(92, 219, 139, 0.3); }
+.status-dot.error { background: var(--error); box-shadow: 0 0 6px rgba(248, 113, 107, 0.3); }
+.status-dot.queued { background: var(--fg-dim); }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* ============================================================
+   METADATA EDITOR
+   ============================================================ */
+.metadata-layout {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  gap: var(--space-6);
+  align-items: start;
+}
+.artwork-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.artwork-preview {
+  width: 230px; height: 230px;
+  border-radius: var(--radius-lg);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-dim);
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease-out);
+}
+.artwork-preview:hover { border-color: var(--glass-border-hover); box-shadow: var(--shadow-md); }
+.artwork-preview .hover-hint {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+}
+.artwork-preview:hover .hover-hint { opacity: 1; }
+.metadata-form { display: flex; flex-direction: column; gap: var(--space-4); }
+.metadata-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+.metadata-row.full { grid-template-columns: 1fr; }
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  min-height: 38px;
+  align-items: center;
+  cursor: text;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+.tags-container:focus-within {
+  border-color: var(--glass-border-focus);
+  box-shadow: 0 0 0 3px var(--accent-muted);
+}
+.tags-container input {
+  border: none;
+  background: transparent;
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 12px;
+  outline: none;
+  flex: 1;
+  min-width: 80px;
+  padding: 2px 4px;
+}
+.tags-container input::placeholder { color: var(--fg-dim); }
+
+/* ============================================================
+   SETTINGS
+   ============================================================ */
+.settings-categories {
+  display: flex;
+  gap: var(--space-1);
+  margin-bottom: var(--space-6);
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 0;
+}
+.settings-cat {
+  padding: var(--space-2) var(--space-4);
+  border: none;
+  background: transparent;
+  color: var(--fg-muted);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  position: relative;
+  transition: all var(--dur-fast) var(--ease-out);
+}
+.settings-cat:hover { color: var(--fg); }
+.settings-cat.active { color: var(--accent); }
+.settings-cat.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 1px 1px 0 0;
+  box-shadow: 0 0 8px rgba(245, 158, 75, 0.4);
+}
+.settings-section { margin-bottom: var(--space-8); }
+.settings-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-dim);
+  margin-bottom: var(--space-3);
+}
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-1);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  gap: var(--space-4);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+.settings-row:hover { border-color: var(--glass-border-hover); }
+.settings-row-label { font-size: 13px; color: var(--fg); font-weight: 500; }
+.settings-row-desc { font-size: 11px; color: var(--fg-muted); margin-top: 1px; }
+.settings-select {
+  height: 32px;
+  padding: 0 var(--space-3);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 12px;
+  outline: none;
+  cursor: pointer;
+  min-width: 150px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.settings-select:focus { border-color: var(--glass-border-focus); }
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(120px);
+  background: var(--glass-bg-elevated);
+  backdrop-filter: blur(var(--glass-blur-heavy));
+  -webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-5);
+  box-shadow: var(--shadow-lg);
+  font-size: 13px;
+  color: var(--fg);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  transition: transform var(--dur-normal) var(--ease-out);
+  pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.success { border-color: rgba(92, 219, 139, 0.4); }
+.toast.success .toast-icon { color: var(--success); }
+.toast-icon { font-size: 16px; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1240px) {
+  .app-window { width: 100vw; height: 100vh; border-radius: 0; }
+}
+@media (max-width: 900px) {
+  .metadata-layout { grid-template-columns: 1fr; }
+  .artwork-section { align-items: center; }
+  .metadata-row { grid-template-columns: 1fr; }
+  .recent-grid { grid-template-columns: 1fr 1fr; }
+  .quick-actions { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     APP WINDOW
+     ============================================================ -->
+<div class="app-window">
+
+  <!-- TITLE BAR -->
+  <header class="titlebar">
+    <div class="titlebar-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+        <path d="M2 12C2 6.48 6.48 2 12 2s10 4.48 10 10"/>
+        <path d="M6 14c0-3.31 2.69-6 6-6s6 2.69 6 6" opacity="0.7"/>
+        <path d="M10 16c0-1.1.9-2 2-2s2 .9 2 2" opacity="0.4"/>
+      </svg>
+    </div>
+    <span class="titlebar-title">Reverb</span>
+    <div class="titlebar-actions">
+      <button class="titlebar-btn" title="Minimizar">─</button>
+      <button class="titlebar-btn" title="Maximizar">□</button>
+      <button class="titlebar-btn close" title="Fechar">✕</button>
+    </div>
+  </header>
+
+  <!-- APP BODY -->
+  <div class="app-body">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+      <div class="sidebar-nav">
+        <button class="nav-item active" data-screen="home" title="Início">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </button>
+        <button class="nav-item" data-screen="queue" title="Fila de Downloads">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <span class="badge" style="background:var(--warning)"></span>
+        </button>
+        <button class="nav-item" data-screen="metadata" title="Editor de Metadados">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </button>
+        <button class="nav-item" data-screen="playlist" title="Análise de Playlist">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="nav-divider"></div>
+      <div class="sidebar-nav">
+        <button class="nav-item" data-screen="settings" title="Configurações">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <main class="content" id="content">
+
+      <!-- ============== ONBOARDING ============== -->
+      <section class="screen active" id="screen-onboarding">
+        <div class="onboarding-container" id="onboarding-steps-container">
+          <!-- Step 1 -->
+          <div class="onboarding-step" data-step="0">
+            <div class="onboarding-steps">
+              <span class="onboarding-step-dot active"></span><span class="onboarding-step-dot"></span><span class="onboarding-step-dot"></span>
+            </div>
+            <div class="vinyl-disc icon-big"></div>
+            <h2 class="onboarding-heading">Bem-vindo ao Reverb</h2>
+            <p class="onboarding-desc">Baixe áudio do YouTube com metadados automáticos. Álbum, artista, capa e letras — tudo preenchido pra você, com qualidade de vinil.</p>
+            <div style="margin-top:var(--space-6)">
+              <button class="btn btn-primary btn-lg" onclick="onboardingNext()">Começar</button>
+            </div>
+          </div>
+          <!-- Step 2 -->
+          <div class="onboarding-step" data-step="1" style="display:none">
+            <div class="onboarding-steps">
+              <span class="onboarding-step-dot done"></span><span class="onboarding-step-dot active"></span><span class="onboarding-step-dot"></span>
+            </div>
+            <div class="vinyl-disc" style="width:140px;height:140px"></div>
+            <h2 class="onboarding-heading">Cole qualquer link</h2>
+            <p class="onboarding-desc">URL de vídeo, playlist ou canal do YouTube. O Reverb analisa na hora e mostra as faixas disponíveis para download.</p>
+            <div style="margin-top:var(--space-6);display:flex;gap:var(--space-3);justify-content:center">
+              <button class="btn btn-secondary btn-lg" onclick="onboardingPrev()">Voltar</button>
+              <button class="btn btn-primary btn-lg" onclick="onboardingNext()">Próximo</button>
+            </div>
+          </div>
+          <!-- Step 3 -->
+          <div class="onboarding-step" data-step="2" style="display:none">
+            <div class="onboarding-steps">
+              <span class="onboarding-step-dot done"></span><span class="onboarding-step-dot done"></span><span class="onboarding-step-dot active"></span>
+            </div>
+            <div class="vinyl-disc" style="width:140px;height:140px;box-shadow:0 0 60px rgba(92,219,139,0.15)"></div>
+            <h2 class="onboarding-heading">Tudo pronto</h2>
+            <p class="onboarding-desc">Suas preferências foram salvas. Agora é só colar um link e baixar com a melhor qualidade disponível.</p>
+            <div style="margin-top:var(--space-6);display:flex;gap:var(--space-3);justify-content:center">
+              <button class="btn btn-secondary btn-lg" onclick="onboardingPrev()">Voltar</button>
+              <button class="btn btn-primary btn-lg" onclick="finishOnboarding()">Ir para o App</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== HOME ============== -->
+      <section class="screen" id="screen-home" style="display:none">
+        <div class="home-hero">
+          <div class="home-hero-bg"></div>
+          <h1 class="screen-title">Novo Download</h1>
+          <p class="screen-subtitle">Cole uma URL do YouTube — vídeo, playlist ou canal</p>
+          <div class="url-input-wrapper">
+            <input type="text" class="glass-input glass-input-lg" placeholder="https://www.youtube.com/watch?v=..." id="url-input" value="https://www.youtube.com/watch?v=dQw4w9WgXcQ"/>
+            <button class="btn btn-primary btn-lg" onclick="analyzeUrl()" id="analyze-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              Analisar
+            </button>
+          </div>
+        </div>
+
+        <!-- Preview Card -->
+        <div class="preview-card loading" id="preview-card" style="display:none">
+          <div class="preview-thumb"><div class="placeholder-thumb">♪</div></div>
+          <div class="preview-info">
+            <h3 id="preview-title">Analisando...</h3>
+            <div class="meta" id="preview-meta"><span>⏱ --:--</span><span>📺 --</span></div>
+            <div class="quality-selector">
+              <button class="quality-chip selected">MP3 320kbps</button>
+              <button class="quality-chip">AAC 256kbps</button>
+              <button class="quality-chip">FLAC</button>
+              <button class="quality-chip">Opus 160kbps</button>
+            </div>
+            <div style="margin-top:var(--space-4);display:flex;gap:var(--space-3)">
+              <button class="btn btn-primary" onclick="startDownload()" id="download-btn" disabled>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Baixar Áudio
+              </button>
+              <button class="btn btn-secondary" onclick="addToQueue()" id="queue-btn" disabled>+ Adicionar à Fila</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="section-header" style="margin-top:var(--space-8)">
+          <span class="section-label">Ações Rápidas</span>
+        </div>
+        <div class="quick-actions">
+          <div class="quick-action" onclick="navigateTo('playlist')">
+            <div class="quick-action-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            </div>
+            Analisar Playlist
+          </div>
+          <div class="quick-action" onclick="navigateTo('metadata')">
+            <div class="quick-action-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </div>
+            Editar Metadados
+          </div>
+          <div class="quick-action" onclick="navigateTo('queue')">
+            <div class="quick-action-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            Ver Fila (3 ativos)
+          </div>
+        </div>
+
+        <!-- Recent Downloads -->
+        <div class="section-header">
+          <span class="section-label">Downloads Recentes</span>
+          <button class="btn btn-ghost btn-sm">Ver Todos</button>
+        </div>
+        <div class="recent-grid">
+          <div class="recent-item">
+            <div class="recent-item-icon" style="background:linear-gradient(135deg,rgba(245,158,75,0.2),rgba(180,100,40,0.1))">♪</div>
+            <div class="recent-item-info">
+              <div class="name">Bohemian Rhapsody</div>
+              <div class="detail">Queen • MP3 320kbps • 12.4 MB</div>
+            </div>
+          </div>
+          <div class="recent-item">
+            <div class="recent-item-icon" style="background:linear-gradient(135deg,rgba(92,219,139,0.15),rgba(60,160,100,0.08))">✓</div>
+            <div class="recent-item-info">
+              <div class="name">Blinding Lights</div>
+              <div class="detail">The Weeknd • AAC 256kbps • 8.2 MB</div>
+            </div>
+          </div>
+          <div class="recent-item">
+            <div class="recent-item-icon" style="background:linear-gradient(135deg,rgba(109,179,245,0.15),rgba(70,130,200,0.08))">♪</div>
+            <div class="recent-item-info">
+              <div class="name">Sweet Child O' Mine</div>
+              <div class="detail">Guns N' Roses • FLAC • 31.6 MB</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty state (hidden when preview is shown) -->
+        <div class="empty-state" id="home-empty" style="display:none">
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <path d="M24 4v24M16 12l8-8 8 8M8 28v12a4 4 0 004 4h24a4 4 0 004-4V28"/>
+          </svg>
+          <h3>Nenhuma URL analisada ainda</h3>
+          <p>Cole um link do YouTube acima e clique em Analisar para ver as opções de download.</p>
+        </div>
+      </section>
+
+      <!-- ============== QUEUE ============== -->
+      <section class="screen" id="screen-queue" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-6)">
+          <div>
+            <h1 class="screen-title" style="margin-bottom:0">Fila de Downloads</h1>
+            <p class="screen-subtitle" style="margin-bottom:0;margin-top:2px">5 itens na fila</p>
+          </div>
+          <div style="display:flex;gap:var(--space-2)">
+            <button class="btn btn-secondary btn-sm" onclick="clearQueue()">Limpar Concluídos</button>
+            <button class="btn btn-ghost btn-sm">Pausar Todos</button>
+          </div>
+        </div>
+        <div class="queue-list" id="queue-list">
+          <!-- Item 1: downloading -->
+          <div class="queue-item">
+            <span class="status-dot downloading"></span>
+            <div class="queue-item-thumb"><div class="placeholder-thumb" style="background:linear-gradient(135deg,rgba(245,158,75,0.25),rgba(226,168,84,0.08))">♪</div></div>
+            <div class="queue-item-info"><div class="name">Never Gonna Give You Up</div><div class="status">Baixando áudio • 68%</div></div>
+            <div class="queue-item-progress">
+              <div class="progress-label"><span>6.8 MB</span><span>10.0 MB</span></div>
+              <div class="progress-bar"><div class="progress-bar-fill" style="width:68%"></div></div>
+            </div>
+            <div class="queue-item-actions">
+              <button class="btn-icon" title="Pausar" style="width:30px;height:30px"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></button>
+              <button class="btn-icon" title="Cancelar" style="width:30px;height:30px;color:var(--error)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+          </div>
+          <!-- Item 2: converting -->
+          <div class="queue-item">
+            <span class="status-dot converting"></span>
+            <div class="queue-item-thumb"><div class="placeholder-thumb" style="background:linear-gradient(135deg,rgba(245,200,66,0.2),rgba(245,158,75,0.1))">♪</div></div>
+            <div class="queue-item-info"><div class="name">Blinding Lights</div><div class="status">Convertendo para MP3 320kbps...</div></div>
+            <div class="queue-item-progress">
+              <div class="progress-bar"><div class="progress-bar-fill indeterminate converting"></div></div>
+              <div class="progress-label" style="justify-content:center">Processando</div>
+            </div>
+            <div class="queue-item-actions">
+              <button class="btn-icon" title="Cancelar" style="width:30px;height:30px;color:var(--error)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+          </div>
+          <!-- Item 3: completed -->
+          <div class="queue-item">
+            <span class="status-dot completed"></span>
+            <div class="queue-item-thumb"><div class="placeholder-thumb" style="background:linear-gradient(135deg,rgba(92,219,139,0.2),rgba(109,179,245,0.1))">✓</div></div>
+            <div class="queue-item-info"><div class="name">Bohemian Rhapsody</div><div class="status">Concluído • 12.4 MB • 5:55</div></div>
+            <div class="queue-item-progress">
+              <div class="progress-bar"><div class="progress-bar-fill success" style="width:100%"></div></div>
+              <div class="progress-label"><span></span><span>100%</span></div>
+            </div>
+            <div class="queue-item-actions">
+              <button class="btn-icon" title="Abrir pasta" style="width:30px;height:30px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></button>
+              <button class="btn-icon" title="Editar metadados" style="width:30px;height:30px" onclick="navigateTo('metadata')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            </div>
+          </div>
+          <!-- Item 4: queued -->
+          <div class="queue-item" style="opacity:0.55">
+            <span class="status-dot queued"></span>
+            <div class="queue-item-thumb"><div class="placeholder-thumb">♪</div></div>
+            <div class="queue-item-info"><div class="name">Stairway to Heaven</div><div class="status">Na fila • FLAC</div></div>
+            <div class="queue-item-progress"><div class="progress-label"><span></span><span>Aguardando</span></div><div class="progress-bar"><div class="progress-bar-fill" style="width:0%"></div></div></div>
+            <div class="queue-item-actions">
+              <button class="btn-icon" title="Mover para cima" style="width:30px;height:30px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg></button>
+              <button class="btn-icon" title="Remover" style="width:30px;height:30px;color:var(--error)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+          </div>
+          <!-- Item 5: error -->
+          <div class="queue-item" style="border-left:3px solid var(--error);border-color:rgba(248,113,107,0.3)">
+            <span class="status-dot error"></span>
+            <div class="queue-item-thumb"><div class="placeholder-thumb" style="background:rgba(248,113,107,0.12)">!</div></div>
+            <div class="queue-item-info"><div class="name">Video Indisponível</div><div class="status" style="color:var(--error)">Erro: Vídeo privado ou removido</div></div>
+            <div class="queue-item-progress"><div class="progress-bar"><div class="progress-bar-fill error" style="width:32%"></div></div><div class="progress-label"><span></span><span>Falhou</span></div></div>
+            <div class="queue-item-actions">
+              <button class="btn btn-secondary btn-sm" style="height:28px">Tentar Novamente</button>
+              <button class="btn-icon" title="Remover" style="width:30px;height:30px;color:var(--error)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== METADATA EDITOR ============== -->
+      <section class="screen" id="screen-metadata" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-6)">
+          <div>
+            <h1 class="screen-title" style="margin-bottom:0">Editor de Metadados</h1>
+            <p class="screen-subtitle" style="margin-bottom:0;margin-top:2px">Never Gonna Give You Up • Rick Astley</p>
+          </div>
+          <div style="display:flex;gap:var(--space-2)">
+            <button class="btn btn-secondary btn-sm">Desfazer</button>
+            <button class="btn btn-primary btn-sm" onclick="showToast('Metadados salvos com sucesso!', 'success')">Salvar</button>
+          </div>
+        </div>
+        <div class="metadata-layout">
+          <div class="artwork-section">
+            <div class="artwork-preview">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+                <svg width="52" height="52" viewBox="0 0 52 52" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"><rect x="4" y="4" width="44" height="44" rx="8"/><circle cx="26" cy="26" r="12"/><circle cx="26" cy="26" r="3.5"/></svg>
+                <span style="font-size:11px">Sem capa</span>
+              </div>
+              <div class="hover-hint">Alterar capa</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" style="width:100%">Buscar Capa Automaticamente</button>
+            <button class="btn btn-ghost btn-sm" style="width:100%">Remover Capa</button>
+          </div>
+          <div class="metadata-form">
+            <div class="metadata-row">
+              <div class="input-group" style="margin-bottom:0"><label class="input-label">Título</label><input class="glass-input" value="Never Gonna Give You Up"/></div>
+              <div class="input-group" style="margin-bottom:0"><label class="input-label">Artista</label><input class="glass-input" value="Rick Astley"/></div>
+            </div>
+            <div class="metadata-row">
+              <div class="input-group" style="margin-bottom:0"><label class="input-label">Álbum</label><input class="glass-input" value="Whenever You Need Somebody"/></div>
+              <div class="input-group" style="margin-bottom:0"><label class="input-label">Ano</label><input class="glass-input" value="1987"/></div>
+            </div>
+            <div class="metadata-row">
+              <div class="input-group" style="margin-bottom:0"><label class="input-label">Gênero</label><input class="glass-input" value="Pop"/></div>
+              <div class="input-group" style="margin-bottom:0"><label class="input-label">Nº da Faixa</label><div style="display:flex;gap:8px;align-items:center"><input class="glass-input" value="1" style="width:60px"/><span style="color:var(--fg-dim)">de</span><input class="glass-input" value="10" style="width:60px"/></div></div>
+            </div>
+            <div class="metadata-row full">
+              <div class="input-group" style="margin-bottom:0"><label class="input-label">Tags</label>
+                <div class="tags-container" id="tags-container">
+                  <span class="chip">80s<span class="chip-close">×</span></span>
+                  <span class="chip">pop<span class="chip-close">×</span></span>
+                  <span class="chip">classic<span class="chip-close">×</span></span>
+                  <input type="text" placeholder="Adicionar tag..." id="tag-input"/>
+                </div>
+              </div>
+            </div>
+            <div class="metadata-row full">
+              <div class="input-group" style="margin-bottom:0"><label class="input-label">Letra</label>
+                <textarea class="glass-textarea" placeholder="Cole ou digite a letra...">We're no strangers to love
+You know the rules and so do I
+A full commitment's what I'm thinking of
+You wouldn't get this from any other guy
+
+I just wanna tell you how I'm feeling
+Gotta make you understand
+
+Never gonna give you up
+Never gonna let you down
+Never gonna run around and desert you
+Never gonna make you cry
+Never gonna say goodbye
+Never gonna tell a lie and hurt you</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== SETTINGS ============== -->
+      <section class="screen" id="screen-settings" style="display:none">
+        <h1 class="screen-title">Configurações</h1>
+        <p class="screen-subtitle">Personalize o comportamento e a aparência do Reverb</p>
+        <div class="settings-categories">
+          <button class="settings-cat active" data-settings-cat="general">Geral</button>
+          <button class="settings-cat" data-settings-cat="audio">Áudio</button>
+          <button class="settings-cat" data-settings-cat="metadata">Metadados</button>
+          <button class="settings-cat" data-settings-cat="advanced">Avançado</button>
+        </div>
+        <div class="settings-panel" id="settings-general">
+          <div class="settings-section">
+            <div class="settings-section-title">Comportamento</div>
+            <div class="settings-row"><div><div class="settings-row-label">Iniciar com o Windows</div><div class="settings-row-desc">Abre o Reverb ao ligar o PC</div></div><button class="toggle" onclick="this.classList.toggle('on')"></button></div>
+            <div class="settings-row"><div><div class="settings-row-label">Minimizar para a bandeja</div><div class="settings-row-desc">Mantém o app em segundo plano</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+            <div class="settings-row"><div><div class="settings-row-label">Notificações de conclusão</div><div class="settings-row-desc">Notificação nativa ao terminar download</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+          </div>
+          <div class="settings-section">
+            <div class="settings-section-title">Aparência</div>
+            <div class="settings-row"><div><div class="settings-row-label">Tema</div><div class="settings-row-desc">Claro, escuro ou automático</div></div><select class="settings-select"><option>Escuro (padrão do sistema)</option><option>Claro</option><option>Automático (horário)</option></select></div>
+            <div class="settings-row"><div><div class="settings-row-label">Idioma</div><div class="settings-row-desc">Idioma da interface</div></div><select class="settings-select"><option>Português (Brasil)</option><option>English (US)</option><option>Español</option></select></div>
+          </div>
+        </div>
+        <div class="settings-panel" id="settings-audio" style="display:none">
+          <div class="settings-section">
+            <div class="settings-section-title">Qualidade Padrão</div>
+            <div class="settings-row"><div><div class="settings-row-label">Formato preferido</div><div class="settings-row-desc">Formato de saída padrão</div></div><select class="settings-select"><option>MP3 320kbps</option><option>AAC 256kbps</option><option>FLAC (sem perdas)</option><option>Opus 160kbps</option></select></div>
+            <div class="settings-row"><div><div class="settings-row-label">Normalizar volume</div><div class="settings-row-desc">Loudness normalization (EBU R128)</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+          </div>
+          <div class="settings-section">
+            <div class="settings-section-title">Pasta de Destino</div>
+            <div class="settings-row"><div style="flex:1"><div class="settings-row-label">Salvar em</div><div class="settings-row-desc" style="font-family:var(--font-mono);font-size:10px">C:\Users\Music\Reverb\</div></div><button class="btn btn-secondary btn-sm">Alterar...</button></div>
+          </div>
+        </div>
+        <div class="settings-panel" id="settings-metadata" style="display:none">
+          <div class="settings-section">
+            <div class="settings-section-title">Preenchimento Automático</div>
+            <div class="settings-row"><div><div class="settings-row-label">Buscar capa automaticamente</div><div class="settings-row-desc">Procura arte do álbum online</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+            <div class="settings-row"><div><div class="settings-row-label">Buscar letras</div><div class="settings-row-desc">Tenta encontrar letras sincronizadas</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+            <div class="settings-row"><div><div class="settings-row-label">Extrair título do vídeo</div><div class="settings-row-desc">Artista e título do YouTube</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+          </div>
+        </div>
+        <div class="settings-panel" id="settings-advanced" style="display:none">
+          <div class="settings-section">
+            <div class="settings-section-title">Rede</div>
+            <div class="settings-row"><div><div class="settings-row-label">Downloads simultâneos</div><div class="settings-row-desc">Máximo de downloads paralelos</div></div><select class="settings-select" style="min-width:80px"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></div>
+            <div class="settings-row"><div><div class="settings-row-label">Limite de velocidade</div><div class="settings-row-desc">0 = sem limite</div></div><div style="display:flex;align-items:center;gap:8px"><input class="glass-input" value="0" style="width:80px;text-align:right"/><span style="font-size:12px;color:var(--fg-muted)">MB/s</span></div></div>
+          </div>
+          <div class="settings-section">
+            <div class="settings-section-title">Manutenção</div>
+            <div class="settings-row"><div><div class="settings-row-label">Limpar cache</div><div class="settings-row-desc">Remove arquivos temporários</div></div><button class="btn btn-secondary btn-sm">Limpar Agora</button></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ============== PLAYLIST MODAL ============== -->
+<div class="modal-overlay" id="playlist-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      <span class="modal-title">Análise de Playlist — "Greatest Hits 80s"</span>
+      <button class="modal-close" onclick="closePlaylistModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--fg-muted);margin-bottom:var(--space-4)">24 faixas encontradas • Selecione as que deseja baixar</p>
+      <div style="display:flex;gap:var(--space-2);margin-bottom:var(--space-4)">
+        <button class="btn btn-ghost btn-sm" onclick="selectAllTracks()">Selecionar Todas</button>
+        <button class="btn btn-ghost btn-sm" onclick="deselectAllTracks()">Desmarcar Todas</button>
+      </div>
+      <div id="playlist-tracks">
+        <label class="checkbox-row"><input type="checkbox" checked/> Never Gonna Give You Up — Rick Astley <span style="color:var(--fg-dim);font-size:11px;margin-left:auto">3:32</span></label>
+        <label class="checkbox-row"><input type="checkbox" checked/> Billie Jean — Michael Jackson <span style="color:var(--fg-dim);font-size:11px;margin-left:auto">4:54</span></label>
+        <label class="checkbox-row"><input type="checkbox" checked/> Like a Prayer — Madonna <span style="color:var(--fg-dim);font-size:11px;margin-left:auto">5:41</span></label>
+        <label class="checkbox-row"><input type="checkbox" checked/> Sweet Child O' Mine — Guns N' Roses <span style="color:var(--fg-dim);font-size:11px;margin-left:auto">5:56</span></label>
+        <label class="checkbox-row"><input type="checkbox" checked/> Every Breath You Take — The Police <span style="color:var(--fg-dim);font-size:11px;margin-left:auto">4:14</span></label>
+        <label class="checkbox-row"><input type="checkbox"/> Africa — Toto <span style="color:var(--fg-dim);font-size:11px;margin-left:auto">4:55</span></label>
+        <label class="checkbox-row"><input type="checkbox"/> Take On Me — a-ha <span style="color:var(--fg-dim);font-size:11px;margin-left:auto">3:49</span></label>
+        <label class="checkbox-row"><input type="checkbox" checked/> Livin' on a Prayer — Bon Jovi <span style="color:var(--fg-dim);font-size:11px;margin-left:auto">4:10</span></label>
+        <label class="checkbox-row"><input type="checkbox"/> Purple Rain — Prince <span style="color:var(--fg-dim);font-size:11px;margin-left:auto">8:41</span></label>
+        <label class="checkbox-row"><input type="checkbox"/> With or Without You — U2 <span style="color:var(--fg-dim);font-size:11px;margin-left:auto">4:56</span></label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <span style="font-size:12px;color:var(--fg-muted);flex:1">7 faixas selecionadas</span>
+      <button class="btn btn-secondary btn-sm" onclick="closePlaylistModal()">Cancelar</button>
+      <button class="btn btn-primary btn-sm" onclick="downloadPlaylist()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Baixar 7 Faixas</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============== TOAST ============== -->
+<div class="toast" id="toast"><span class="toast-icon">✓</span><span id="toast-msg"></span></div>
+
+<script>
+// ============================================================
+// NAVIGATION
+// ============================================================
+const navItems = document.querySelectorAll('.nav-item[data-screen]');
+const screens = document.querySelectorAll('.screen');
+
+function navigateTo(screenId) {
+  navItems.forEach(item => item.classList.toggle('active', item.dataset.screen === screenId));
+  let target = document.getElementById('screen-' + screenId);
+  screens.forEach(s => { s.classList.remove('active'); s.style.display = 'none'; });
+  if (target) { target.classList.add('active'); target.style.display = 'block'; }
+  document.getElementById('content').scrollTop = 0;
+  if (screenId === 'playlist') openPlaylistModal();
+}
+navItems.forEach(item => item.addEventListener('click', () => navigateTo(item.dataset.screen)));
+
+// ============================================================
+// ONBOARDING
+// ============================================================
+let step = 0;
+const os = document.querySelectorAll('#screen-onboarding .onboarding-step');
+const od = document.querySelectorAll('#screen-onboarding .onboarding-step-dot');
+function showStep(n) {
+  os.forEach((s,i) => s.style.display = i === n ? '' : 'none');
+  od.forEach((d,i) => { d.classList.remove('active','done'); if(i<n)d.classList.add('done'); if(i===n)d.classList.add('active'); });
+  step = n;
+}
+function onboardingNext() { if(step<2) showStep(step+1); }
+function onboardingPrev() { if(step>0) showStep(step-1); }
+function finishOnboarding() { navigateTo('home'); showToast('Onboarding concluído!','success'); }
+
+// ============================================================
+// HOME
+// ============================================================
+function analyzeUrl() {
+  const pc = document.getElementById('preview-card');
+  const he = document.getElementById('home-empty');
+  const db = document.getElementById('download-btn');
+  const qb = document.getElementById('queue-btn');
+  const pt = document.getElementById('preview-title');
+  const pm = document.getElementById('preview-meta');
+  const ab = document.getElementById('analyze-btn');
+  const ui = document.getElementById('url-input');
+  if(!ui.value.trim()) return;
+  pc.style.display='flex'; pc.classList.add('loading'); if(he)he.style.display='none';
+  db.disabled=true; qb.disabled=true;
+  pt.textContent='Analisando...'; pm.innerHTML='<span>⏱ --:--</span><span>📺 --</span>';
+  ab.textContent='Analisando...'; ab.disabled=true;
+  setTimeout(()=>{
+    pc.classList.remove('loading');
+    pt.textContent='Rick Astley — Never Gonna Give You Up';
+    pm.innerHTML='<span>⏱ 3:32</span><span>📺 1.5B views</span><span>📅 2009</span>';
+    db.disabled=false; qb.disabled=false;
+    ab.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Analisar';
+    ab.disabled=false;
+    showToast('Análise concluída!','success');
+  },1500);
+}
+function startDownload() { navigateTo('queue'); showToast('Adicionado à fila de downloads','success'); }
+function addToQueue() { showToast('Adicionado à fila','success'); }
+
+// ============================================================
+// QUEUE
+// ============================================================
+function clearQueue() {
+  document.querySelectorAll('#queue-list .status-dot.completed').forEach(d=>{
+    const el=d.closest('.queue-item');
+    el.style.opacity='0'; el.style.transform='translateX(20px)'; el.style.transition='all 300ms ease-out';
+    setTimeout(()=>el.remove(),300);
+  });
+  showToast('Itens concluídos removidos','success');
+}
+
+// ============================================================
+// PLAYLIST MODAL
+// ============================================================
+function openPlaylistModal() { document.getElementById('playlist-modal').classList.add('open'); }
+function closePlaylistModal() {
+  document.getElementById('playlist-modal').classList.remove('open');
+  const an = document.querySelector('.nav-item[data-screen].active');
+  if(an && an.dataset.screen==='playlist') setTimeout(()=>navigateTo('home'),200);
+}
+function selectAllTracks() { document.querySelectorAll('#playlist-tracks input[type="checkbox"]').forEach(c=>c.checked=true); }
+function deselectAllTracks() { document.querySelectorAll('#playlist-tracks input[type="checkbox"]').forEach(c=>c.checked=false); }
+function downloadPlaylist() { closePlaylistModal(); setTimeout(()=>{navigateTo('queue');showToast('7 faixas adicionadas à fila','success');},300); }
+document.getElementById('playlist-modal').addEventListener('click',function(e){if(e.target===this)closePlaylistModal();});
+
+// ============================================================
+// SETTINGS CATEGORIES
+// ============================================================
+document.querySelectorAll('.settings-cat').forEach(cat=>{
+  cat.addEventListener('click',function(){
+    document.querySelectorAll('.settings-cat').forEach(c=>c.classList.remove('active'));
+    this.classList.add('active');
+    document.querySelectorAll('.settings-panel').forEach(p=>p.style.display='none');
+    const p=document.getElementById('settings-'+this.dataset.settingsCat);
+    if(p)p.style.display='block';
+  });
+});
+
+// ============================================================
+// QUALITY CHIPS
+// ============================================================
+document.querySelectorAll('.quality-chip').forEach(ch=>{
+  ch.addEventListener('click',function(){
+    this.parentElement.querySelectorAll('.quality-chip').forEach(c=>c.classList.remove('selected'));
+    this.classList.add('selected');
+  });
+});
+
+// ============================================================
+// TOAST
+// ============================================================
+let tt;
+function showToast(m,t) {
+  const el=document.getElementById('toast'), em=document.getElementById('toast-msg');
+  el.classList.remove('success','show'); em.textContent=m; if(t)el.classList.add(t);
+  clearTimeout(tt);
+  requestAnimationFrame(()=>el.classList.add('show'));
+  tt=setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+// ============================================================
+// TAGS
+// ============================================================
+const tc=document.getElementById('tags-container'), ti=document.getElementById('tag-input');
+if(tc&&ti){
+  tc.addEventListener('click',()=>ti.focus());
+  ti.addEventListener('keydown',function(e){
+    if(e.key==='Enter'&&this.value.trim()){
+      e.preventDefault();
+      const ch=document.createElement('span'); ch.className='chip';
+      ch.innerHTML=this.value.trim()+'<span class="chip-close">×</span>';
+      ch.querySelector('.chip-close').addEventListener('click',ev=>{ev.stopPropagation();ch.remove();});
+      this.parentElement.insertBefore(ch,this); this.value='';
+    }
+  });
+  tc.querySelectorAll('.chip-close').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();b.parentElement.remove();}));
+}
+
+// ============================================================
+// WINDOW CLOSE (cosmetic)
+// ============================================================
+document.querySelector('.titlebar-btn.close').addEventListener('click',()=>{
+  const w=document.querySelector('.app-window');
+  w.style.transition='transform 200ms ease-in, opacity 200ms ease-in';
+  w.style.transform='scale(0.94)'; w.style.opacity='0';
+});
+
+// ESC closes modal
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const m=document.getElementById('playlist-modal');if(m.classList.contains('open'))closePlaylistModal();}});
+
+// INIT
+(function(){
+  document.getElementById('screen-onboarding').classList.add('active');
+  document.getElementById('screen-onboarding').style.display='block';
+  screens.forEach(s=>{if(s.id!=='screen-onboarding'){s.classList.remove('active');s.style.display='none';}});
+  showStep(0);
+})();
+</script>
+</body>
+</html>
