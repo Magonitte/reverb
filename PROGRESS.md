@@ -6,7 +6,7 @@
 ## Situação atual
 
 - **Fase atual:** F05 — NÃO INICIADA (F00–F04 concluídas)
-- **Último ponto de parada:** F04 concluída e com tag `fase-04-ok`; próximo passo: ler `plano/fases/F05-*.md`
+- **Último ponto de parada:** F04 concluída e com tag `fase-04-ok`; próximo passo: ler `plano/fases/F05-shell-ui-e-design.md`
 - **Pendências humanas abertas:** nenhuma
 - **Pendência técnica (não humana):** F02/T13 — o job Linux do CI (`test:prepare` + `scripts/verify-tools.mjs`) só roda depois do remoto GitHub da F06; a F06 só conclui com ele verde (ver seção F02).
 
