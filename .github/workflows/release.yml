@@ -45,6 +45,7 @@ jobs:
         run: |
           echo "body<<NOTES" >> "$GITHUB_OUTPUT"
           node scripts/changelog-notes.mjs >> "$GITHUB_OUTPUT"
+          echo >> "$GITHUB_OUTPUT"
           echo "NOTES" >> "$GITHUB_OUTPUT"
 
       - uses: tauri-apps/tauri-action@v0
