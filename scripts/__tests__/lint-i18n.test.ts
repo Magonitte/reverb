@@ -23,7 +23,8 @@ describe("lint i18n (T7)", () => {
   });
 
   it("aceita texto vindo de t()", async () => {
-    const code = 'export const Comp = ({ t }: { t: (k: string) => string }) => <div>{t("x")}</div>;';
+    const code =
+      'export const Comp = ({ t }: { t: (k: string) => string }) => <div>{t("x")}</div>;';
     expect(await ruleIds(code)).not.toContain("i18next/no-literal-string");
   });
 });

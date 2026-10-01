@@ -3,6 +3,230 @@
     "name": "Reverb",
     "loading": "Loading…"
   },
+  "common": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "retry": "Try again",
+    "loading": "Loading…",
+    "save": "Save",
+    "back": "Back"
+  },
+  "titlebar": {
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Close window"
+  },
+  "nav": {
+    "main": "Main navigation",
+    "home": "Home",
+    "library": "Library",
+    "playlists": "Playlists",
+    "activity": "Activity",
+    "review": "Review",
+    "settings": "Settings",
+    "more": "More"
+  },
+  "commandBar": {
+    "placeholder": "Paste a link or search for a song…",
+    "label": "Command bar",
+    "hint": "Paste a YouTube link or type a song name. Esc closes."
+  },
+  "shortcuts": {
+    "commandBar": "Open the command bar",
+    "paste": "Paste a link into the command bar",
+    "home": "Go to Home",
+    "activity": "Go to Activity",
+    "library": "Go to Library",
+    "settings": "Open Settings",
+    "toggleQueue": "Pause or resume the queue",
+    "close": "Close panel or clear the bar",
+    "submit": "Submit the command bar"
+  },
+  "heal": {
+    "banner": "YouTube changed something — updating yt-dlp…"
+  },
+  "stages": {
+    "waiting": "Queued",
+    "waiting_retry": "Waiting to retry",
+    "analyzing": "Analyzing",
+    "downloading": "Downloading",
+    "converting": "Converting",
+    "metadata": "Fetching metadata",
+    "artwork": "Fetching artwork",
+    "lyrics": "Fetching lyrics",
+    "loudness": "Normalizing volume",
+    "tagging": "Writing tags",
+    "moving": "Organizing",
+    "done": "Done"
+  },
+  "profiles": {
+    "original": "Original (no re-encoding)",
+    "mp3_v0": "MP3 V0",
+    "mp3_320": "MP3 320 kbps",
+    "aac_256": "AAC 256 kbps",
+    "opus_96": "Opus 96 kbps",
+    "flac": "FLAC",
+    "reencodeWarning": "Re-encodes the audio and may lose quality."
+  },
+  "home": {
+    "title": "Home",
+    "subtitle": "Download audio from YouTube and YouTube Music with the right metadata.",
+    "inProgress": "In progress",
+    "seeAll": "See all",
+    "empty": {
+      "title": "Nothing downloading right now",
+      "description": "Paste a link in the bar above or search for a song to get started."
+    }
+  },
+  "preview": {
+    "title": "Preview",
+    "subtitle": "Check the track before downloading."
+  },
+  "collection": {
+    "title": "Collection",
+    "subtitle": "Choose which tracks of the playlist or album to download."
+  },
+  "activity": {
+    "title": "Activity",
+    "counters": "{{running}} active · {{queued}} pending · {{done}} done",
+    "tabsLabel": "Activity filters",
+    "progressLabel": "Progress of {{title}}",
+    "tabs": {
+      "active": "In progress",
+      "done": "Done",
+      "failed": "Failed"
+    },
+    "empty": {
+      "active": {
+        "title": "No downloads in progress",
+        "description": "Active downloads and the queue show up here."
+      },
+      "done": {
+        "title": "Nothing finished yet",
+        "description": "Downloaded tracks show up here."
+      },
+      "failed": {
+        "title": "No failures",
+        "description": "If something goes wrong, you can retry it from here."
+      }
+    }
+  },
+  "library": {
+    "title": "Library",
+    "subtitle": "Your downloaded music, with instant search.",
+    "empty": {
+      "title": "Your library is empty",
+      "description": "Tracks you download will show up here."
+    }
+  },
+  "review": {
+    "title": "Review",
+    "subtitle": "Tracks whose metadata deserve a second look.",
+    "empty": {
+      "title": "Nothing to review",
+      "description": "When Reverb is unsure about a track, it shows up here."
+    }
+  },
+  "tagEditor": {
+    "title": "Tag editor",
+    "subtitle": "Adjust a file's title, artist, album, cover and lyrics.",
+    "empty": {
+      "title": "No file open",
+      "description": "Open a file from the Library to edit its tags."
+    }
+  },
+  "playlists": {
+    "title": "Playlists",
+    "subtitle": "Playlists that sync automatically.",
+    "empty": {
+      "title": "No synced playlists",
+      "description": "Analyze a playlist and choose to sync it to follow new tracks."
+    }
+  },
+  "playlistDetail": {
+    "title": "Playlist",
+    "subtitle": "Tracks and sync status.",
+    "empty": {
+      "title": "Playlist not found",
+      "description": "Go back to the playlist list to pick one."
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Make Reverb work your way.",
+    "tabsLabel": "Settings sections",
+    "saveFailed": "Could not save the setting.",
+    "tabs": {
+      "general": "General",
+      "downloads": "Downloads",
+      "metadata": "Metadata",
+      "integration": "Integration",
+      "updates": "Updates",
+      "advanced": "Advanced"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "theme": "Theme",
+      "language": "Language",
+      "transparency": "Transparency",
+      "themes": {
+        "dark": "Dark",
+        "light": "Light",
+        "system": "Follow the system"
+      },
+      "transparencies": {
+        "auto": "Automatic",
+        "full": "Full",
+        "reduced": "Reduced"
+      }
+    },
+    "empty": {
+      "downloads": {
+        "title": "Downloads",
+        "description": "Destination folder, profile, parallel downloads and file naming are coming soon."
+      },
+      "metadata": {
+        "title": "Metadata",
+        "description": "Metadata lookup, covers, lyrics and optional keys are coming soon."
+      },
+      "integration": {
+        "title": "Integration",
+        "description": "Clipboard, global shortcut and cookies are coming soon."
+      },
+      "updates": {
+        "title": "Updates",
+        "description": "The status of the app and its tools will show up here soon."
+      },
+      "advanced": {
+        "title": "Advanced",
+        "description": "JS runtime, diagnostics and backup are coming soon."
+      }
+    }
+  },
+  "onboarding": {
+    "title": "Welcome to Reverb",
+    "subtitle": "Let's get everything ready so you can download your favorite music."
+  },
+  "updater": {
+    "idle": "Idle",
+    "checking": "Checking…",
+    "upToDate": "Up to date",
+    "available": "Update available",
+    "downloading": "Downloading…",
+    "ready": "Ready to restart",
+    "error": "Update failed"
+  },
+  "tools": {
+    "ytdlp": "yt-dlp",
+    "deno": "Deno",
+    "ffmpeg": "FFmpeg",
+    "fpcalc": "fpcalc",
+    "bgutil": "bgutil",
+    "upToDate": "Up to date",
+    "updateAvailable": "Update available",
+    "missing": "Not installed"
+  },
   "errors": {
     "extractorPersistent": "YouTube changed and even the latest yt-dlp could not keep up. Try again later."
   },

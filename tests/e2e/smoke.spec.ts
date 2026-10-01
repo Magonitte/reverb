@@ -1,14 +1,12 @@
 import { expect, test } from "@playwright/test";
+import { collectErrors } from "./helpers";
 
-test("página carrega, mostra Reverb e não registra erros no console", async ({ page }) => {
-  const errors: string[] = [];
-  page.on("console", (msg) => {
-    if (msg.type() === "error") errors.push(msg.text());
-  });
-  page.on("pageerror", (err) => errors.push(err.message));
+test("página carrega, mostra o Início e não registra erros no console", async ({ page }) => {
+  const errors = collectErrors(page);
 
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Reverb" })).toBeVisible();
-  await expect(page.getByTestId("app-info")).toContainText("0.1.0");
+  await expect(page.getByRole("heading", { level: 1, name: "Início" })).toBeVisible();
+  await expect(page.getByRole("textbox", { name: "Barra de comando" })).toBeVisible();
+  await expect(page.getByTestId("sidebar")).toBeVisible();
   expect(errors).toEqual([]);
 });

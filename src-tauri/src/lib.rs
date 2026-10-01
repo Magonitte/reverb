@@ -84,12 +84,22 @@ pub fn run() {
                 sink,
             });
 
-            WebviewWindowBuilder::new(app, "main", WebviewUrl::default())
+            // Janela por plataforma (design §1): Windows transparente com Mica; Linux opaca
+            // (WebKitGTK é lento com transparência; a UI usa `data-transparency="reduced"`).
+            let builder = WebviewWindowBuilder::new(app, "main", WebviewUrl::default())
                 .title("Reverb")
                 .inner_size(1200.0, 800.0)
                 .min_inner_size(900.0, 600.0)
-                .decorations(false)
-                .build()?;
+                .decorations(false);
+            #[cfg(windows)]
+            let builder = builder.transparent(true).effects(
+                tauri::window::EffectsBuilder::new()
+                    .effect(tauri::window::Effect::Mica)
+                    .build(),
+            );
+            #[cfg(not(windows))]
+            let builder = builder.transparent(false);
+            builder.build()?;
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![

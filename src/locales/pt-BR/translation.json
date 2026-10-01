@@ -3,6 +3,230 @@
     "name": "Reverb",
     "loading": "Carregando…"
   },
+  "common": {
+    "close": "Fechar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "retry": "Tentar de novo",
+    "loading": "Carregando…",
+    "save": "Salvar",
+    "back": "Voltar"
+  },
+  "titlebar": {
+    "minimize": "Minimizar",
+    "maximize": "Maximizar",
+    "close": "Fechar janela"
+  },
+  "nav": {
+    "main": "Navegação principal",
+    "home": "Início",
+    "library": "Biblioteca",
+    "playlists": "Playlists",
+    "activity": "Atividade",
+    "review": "Revisar",
+    "settings": "Configurações",
+    "more": "Mais"
+  },
+  "commandBar": {
+    "placeholder": "Cole um link ou pesquise uma música…",
+    "label": "Barra de comando",
+    "hint": "Cole um link do YouTube ou digite o nome de uma música. Esc fecha."
+  },
+  "shortcuts": {
+    "commandBar": "Abrir a barra de comando",
+    "paste": "Colar um link na barra de comando",
+    "home": "Ir para o Início",
+    "activity": "Ir para a Atividade",
+    "library": "Ir para a Biblioteca",
+    "settings": "Abrir as Configurações",
+    "toggleQueue": "Pausar ou retomar a fila",
+    "close": "Fechar painel ou limpar a barra",
+    "submit": "Enviar a barra de comando"
+  },
+  "heal": {
+    "banner": "O YouTube mudou algo — atualizando o yt-dlp…"
+  },
+  "stages": {
+    "waiting": "Na fila",
+    "waiting_retry": "Aguardando nova tentativa",
+    "analyzing": "Analisando",
+    "downloading": "Baixando",
+    "converting": "Convertendo",
+    "metadata": "Buscando metadados",
+    "artwork": "Baixando capa",
+    "lyrics": "Buscando letra",
+    "loudness": "Normalizando volume",
+    "tagging": "Gravando tags",
+    "moving": "Organizando",
+    "done": "Concluído"
+  },
+  "profiles": {
+    "original": "Original (sem recodificar)",
+    "mp3_v0": "MP3 V0",
+    "mp3_320": "MP3 320 kbps",
+    "aac_256": "AAC 256 kbps",
+    "opus_96": "Opus 96 kbps",
+    "flac": "FLAC",
+    "reencodeWarning": "Recodifica o áudio e pode perder qualidade."
+  },
+  "home": {
+    "title": "Início",
+    "subtitle": "Baixe áudio do YouTube e do YouTube Music com os metadados certos.",
+    "inProgress": "Em andamento",
+    "seeAll": "Ver tudo",
+    "empty": {
+      "title": "Nada baixando agora",
+      "description": "Cole um link na barra acima ou pesquise uma música para começar."
+    }
+  },
+  "preview": {
+    "title": "Pré-visualização",
+    "subtitle": "Confira a faixa antes de baixar."
+  },
+  "collection": {
+    "title": "Coleção",
+    "subtitle": "Escolha quais faixas da playlist ou do álbum baixar."
+  },
+  "activity": {
+    "title": "Atividade",
+    "counters": "{{running}} ativos · {{queued}} pendentes · {{done}} concluídos",
+    "tabsLabel": "Filtros da atividade",
+    "progressLabel": "Progresso de {{title}}",
+    "tabs": {
+      "active": "Em andamento",
+      "done": "Concluídos",
+      "failed": "Falhas"
+    },
+    "empty": {
+      "active": {
+        "title": "Nenhum download em andamento",
+        "description": "Os downloads ativos e a fila aparecem aqui."
+      },
+      "done": {
+        "title": "Nada concluído ainda",
+        "description": "As faixas baixadas aparecem aqui."
+      },
+      "failed": {
+        "title": "Nenhuma falha",
+        "description": "Se algo der errado, você poderá tentar de novo daqui."
+      }
+    }
+  },
+  "library": {
+    "title": "Biblioteca",
+    "subtitle": "Suas músicas baixadas, com busca instantânea.",
+    "empty": {
+      "title": "Sua biblioteca está vazia",
+      "description": "As faixas que você baixar vão aparecer aqui."
+    }
+  },
+  "review": {
+    "title": "Revisar",
+    "subtitle": "Faixas cujos metadados merecem uma segunda olhada.",
+    "empty": {
+      "title": "Nada para revisar",
+      "description": "Quando o Reverb tiver dúvida sobre uma faixa, ela aparece aqui."
+    }
+  },
+  "tagEditor": {
+    "title": "Editor de tags",
+    "subtitle": "Ajuste título, artista, álbum, capa e letra de um arquivo.",
+    "empty": {
+      "title": "Nenhum arquivo aberto",
+      "description": "Abra um arquivo pela Biblioteca para editar as tags."
+    }
+  },
+  "playlists": {
+    "title": "Playlists",
+    "subtitle": "Playlists sincronizadas automaticamente.",
+    "empty": {
+      "title": "Nenhuma playlist sincronizada",
+      "description": "Analise uma playlist e escolha sincronizá-la para acompanhar as novidades."
+    }
+  },
+  "playlistDetail": {
+    "title": "Playlist",
+    "subtitle": "Faixas e estado da sincronização.",
+    "empty": {
+      "title": "Playlist não encontrada",
+      "description": "Volte à lista de playlists para escolher uma."
+    }
+  },
+  "settings": {
+    "title": "Configurações",
+    "subtitle": "Ajuste o Reverb ao seu jeito.",
+    "tabsLabel": "Seções das configurações",
+    "saveFailed": "Não foi possível salvar a configuração.",
+    "tabs": {
+      "general": "Geral",
+      "downloads": "Downloads",
+      "metadata": "Metadados",
+      "integration": "Integração",
+      "updates": "Atualizações",
+      "advanced": "Avançado"
+    },
+    "appearance": {
+      "title": "Aparência",
+      "theme": "Tema",
+      "language": "Idioma",
+      "transparency": "Transparência",
+      "themes": {
+        "dark": "Escuro",
+        "light": "Claro",
+        "system": "Seguir o sistema"
+      },
+      "transparencies": {
+        "auto": "Automática",
+        "full": "Completa",
+        "reduced": "Reduzida"
+      }
+    },
+    "empty": {
+      "downloads": {
+        "title": "Downloads",
+        "description": "Pasta de destino, perfil, downloads simultâneos e modelo de nomes chegam em breve."
+      },
+      "metadata": {
+        "title": "Metadados",
+        "description": "Busca de metadados, capas, letras e chaves opcionais chegam em breve."
+      },
+      "integration": {
+        "title": "Integração",
+        "description": "Área de transferência, atalho global e cookies chegam em breve."
+      },
+      "updates": {
+        "title": "Atualizações",
+        "description": "O estado do app e das ferramentas aparece aqui em breve."
+      },
+      "advanced": {
+        "title": "Avançado",
+        "description": "Runtime JS, diagnóstico e backup chegam em breve."
+      }
+    }
+  },
+  "onboarding": {
+    "title": "Bem-vindo ao Reverb",
+    "subtitle": "Vamos preparar tudo para você baixar suas músicas favoritas."
+  },
+  "updater": {
+    "idle": "Ocioso",
+    "checking": "Verificando…",
+    "upToDate": "Atualizado",
+    "available": "Atualização disponível",
+    "downloading": "Baixando…",
+    "ready": "Pronto para reiniciar",
+    "error": "Erro ao atualizar"
+  },
+  "tools": {
+    "ytdlp": "yt-dlp",
+    "deno": "Deno",
+    "ffmpeg": "FFmpeg",
+    "fpcalc": "fpcalc",
+    "bgutil": "bgutil",
+    "upToDate": "Atualizado",
+    "updateAvailable": "Atualização disponível",
+    "missing": "Não instalado"
+  },
   "errors": {
     "extractorPersistent": "O YouTube mudou e nem o yt-dlp mais recente conseguiu acompanhar. Tente de novo mais tarde."
   },

@@ -4,6 +4,7 @@ const steps = [
   ["typecheck", "npm run typecheck"],
   ["lint", "npm run lint"],
   ["check:i18n", "npm run check:i18n"],
+  ["check:ipc", "npm run check:ipc"],
   ["test (vitest)", "npm test"],
   ["build", "npm run build"],
   ["cargo fmt", "cargo fmt --all --check"],

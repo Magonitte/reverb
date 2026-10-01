@@ -1,16 +1,13 @@
-import { mockIPC } from "@tauri-apps/api/mocks";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { App } from "@/App";
 
-describe("App (T6)", () => {
-  it("mostra o nome e a versão vindos do app_info mockado", async () => {
-    mockIPC((cmd) => {
-      if (cmd === "app_info") return { version: "9.9.9", platform: "windows", arch: "x86_64" };
-      return undefined;
-    });
+describe("App", () => {
+  it("monta a casca com HashRouter e mostra o Início", async () => {
+    window.location.hash = "#/";
     render(<App />);
-    expect(screen.getByRole("heading", { name: "Reverb" })).toBeInTheDocument();
-    expect(await screen.findByTestId("app-info")).toHaveTextContent("9.9.9 · windows");
+    expect(await screen.findByRole("heading", { level: 1, name: "Início" })).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Barra de comando" })).toBeInTheDocument();
+    expect(screen.getByTestId("sidebar")).toBeInTheDocument();
   });
 });

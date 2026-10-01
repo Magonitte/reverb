@@ -1,1 +1,110 @@
 @import "tailwindcss";
+
+/* Tokens → utilidades. `inline` faz a utilidade ler a variável na hora, então o tema troca sem recompilar. */
+@theme inline {
+  --color-bg-deep: var(--bg-deep);
+  --color-bg-base: var(--bg-base);
+  --color-bg-warm: var(--bg-warm);
+  --color-glass: var(--glass-bg);
+  --color-glass-hover: var(--glass-bg-hover);
+  --color-glass-elevated: var(--glass-bg-elevated);
+  --color-glass-border: var(--glass-border);
+  --color-glass-border-hover: var(--glass-border-hover);
+  --color-glass-border-focus: var(--glass-border-focus);
+  --color-acrylic: var(--acrylic-bg);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-pressed: var(--accent-pressed);
+  --color-accent-muted: var(--accent-muted);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-on: var(--accent-on);
+  --color-gold: var(--gold);
+  --color-fg: var(--fg);
+  --color-fg-secondary: var(--fg-secondary);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-dim: var(--fg-dim);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-info: var(--info);
+  --color-hover: var(--surface-hover);
+  --color-field: var(--surface-field);
+  --color-field-hover: var(--surface-field-hover);
+  --color-track: var(--track);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-glow: var(--shadow-glow);
+  --shadow-glow-sm: var(--shadow-glow-sm);
+  --font-display: var(--font-display);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-mono);
+  --ease-out: var(--ease-out);
+}
+
+/* Superfícies de vidro. Ficam em `components` (abaixo das utilidades) e só nas superfícies grandes. */
+@layer components {
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+  }
+  .glass-elevated {
+    background: var(--glass-bg-elevated);
+    backdrop-filter: blur(var(--glass-blur-heavy));
+    -webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+    border: 1px solid var(--glass-border);
+  }
+  .acrylic {
+    background: var(--acrylic-bg);
+    backdrop-filter: blur(var(--acrylic-blur));
+    -webkit-backdrop-filter: blur(var(--acrylic-blur));
+  }
+  :root[data-transparency="reduced"] :is(.glass, .glass-elevated, .acrylic) {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .vinyl-grooves::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: repeating-radial-gradient(
+      circle at 50% 50%,
+      transparent,
+      transparent 18px,
+      var(--groove-1) 18px,
+      var(--groove-1) 19px
+    );
+    pointer-events: none;
+  }
+}
+
+@keyframes reverb-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes reverb-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(380%);
+  }
+}
+@keyframes reverb-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

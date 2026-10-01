@@ -28,6 +28,7 @@ import {
 
 export { mockBus } from "./bus";
 export { resetMockQueue } from "./queue";
+export { applyScenario, scenarioFromLocation, startMock } from "./scenarios";
 export { resetMockSettings } from "./settings";
 export { resetMockTools, seedMockTool } from "./tools";
 

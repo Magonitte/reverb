@@ -1,0 +1,99 @@
+/* Estilos globais. TUDO dentro de @layer base: CSS fora de layer vence as utilidades (T6 guarda isso). */
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--fg);
+    background-color: var(--window-bg);
+    background-image:
+      radial-gradient(ellipse 120% 80% at 30% 20%, var(--groove-1) 0%, transparent 60%),
+      radial-gradient(ellipse 80% 60% at 70% 80%, var(--groove-2) 0%, transparent 50%),
+      repeating-radial-gradient(
+        circle at 22% 18%,
+        transparent 0,
+        transparent 22px,
+        var(--groove-2) 22px,
+        var(--groove-2) 23px
+      );
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  /* Janela transparente (Mica) no Windows: o fundo fica a cargo do sistema. */
+  :root[data-mica="true"] body {
+    background-color: transparent;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+  }
+
+  :focus {
+    outline: none;
+  }
+  :focus-visible {
+    outline: 2px solid var(--glass-border-focus);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px var(--accent-muted);
+  }
+
+  /* Campos têm o próprio estado de foco (borda + brilho): sem o anel duplo. */
+  :is(input, textarea, select):focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+
+  ::selection {
+    background: var(--accent-muted);
+    color: var(--fg);
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-hover);
+  }
+
+  button,
+  [role="button"] {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

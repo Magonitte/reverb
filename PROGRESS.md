@@ -5,8 +5,8 @@
 
 ## Situação atual
 
-- **Fase atual:** F05 — NÃO INICIADA (F00–F04 concluídas)
-- **Último ponto de parada:** F04 concluída e com tag `fase-04-ok`; próximo passo: ler `plano/fases/F05-shell-ui-e-design.md`
+- **Fase atual:** F06 — NÃO INICIADA (F00–F05 concluídas)
+- **Último ponto de parada:** F05 concluída e com tag `fase-05-ok`; próximo passo: ler `plano/fases/F06-atualizacoes-e-release.md`
 - **Pendências humanas abertas:** nenhuma
 - **Pendência técnica (não humana):** F02/T13 — o job Linux do CI (`test:prepare` + `scripts/verify-tools.mjs`) só roda depois do remoto GitHub da F06; a F06 só conclui com ele verde (ver seção F02).
 
@@ -147,3 +147,21 @@
   - Dependências novas no core: `uuid` (v4); dev: `tokio/test-util`.
 - **Pendências humanas:** nenhuma.
 - **Commit/tag:** `feat(F04): fila persistente, retry e autocura` · tag `fase-04-ok`
+
+### F05 — Shell da UI, design system, temas, i18n e backend mock
+
+- **Status:** CONCLUÍDA
+- **Início / fim:** 2026-10-01 / 2026-10-01
+- **Tarefas:** [x] 1 estudo da referência · [x] 2 estilos · [x] 3 layout · [x] 4 rotas · [x] 5 componentes base · [x] 6 temas e transparência · [x] 7 i18n · [x] 8 atalhos · [x] 9 mock + cenários · [x] 9b `check:ipc` · [x] 10 stores · [x] 11 janela Mica/Linux
+- **Estudo da referência (T1):** além dos tokens de `02-design.md` §1, o HTML traz `--dur-slow: 400ms`, corpo em 13px/1.5, fundo da janela `#0a0a10` com dois radiais ambientes, sulcos concêntricos, ícone da titlebar em disco (gradiente radial 18px), barra ativa da sidebar e preenchimento da barra de progresso por estágio (download/convert/done/error). Foram para `tokens.css`/`base.css`: `--dur-slow`, `--window-bg`, `--accent-on`, `--surface-*`, `--track`, `--overlay`, `--scrollbar*`, `--stage-*`, `--bottomnav-h`, sulcos via `repeating-radial-gradient` e Inter Variable no fallback (Linux).
+- **Checagem visual (T10):** bases em `tests/e2e/visual.spec.ts-snapshots/` (rotas nos dois temas, busy, heal, overlay Ctrl+K, 390×844). Conferidas contra o HTML: trilho de 58px, âmbar, sulcos, titlebar e barra de comando batem. O protótipo ainda mostra ações rápidas, recentes e itens completos da fila — isso é conteúdo da F07 (§3.1–3.4), não da casca. Telas sem dados ficam em `EmptyState`. Diferença corrigida antes das bases: acento do tema claro escurecido para passar no axe (ver desvios).
+- **Portão (última rodada):** 2026-10-01 · Rust 329 (igual à F04; a F05 não adiciona testes Rust) · Vitest 114 · Playwright 35 · rede 0 (não há nesta fase) · app real 0 (F07) · `npm run verify` OK em 294 s · `npm run e2e` OK em 40 s · `cargo build -p reverb` OK · autoteste headless OK
+- **Falhas e correções:** nenhuma falha de teste do portão nesta rodada.
+- **Desvios do plano:**
+  - Tema claro: `--accent` `#b05e12` (plano: `#c46a16`), `--accent-hover`/`--accent-pressed`/`--gold`/`--warning`/`--success` e `--fg-dim` um passo mais escuros, para contraste AA (T9, axe nos dois temas).
+  - `analyze`/`search` não são comandos Tauri até a F07. As fixtures FX1–FX4 viraram dados TS (`src/lib/ipc/mock/fixtures.ts`) e alimentam os cenários `busy`/`errors`/`heal`; a simulação temporizada de estágios fica em `queue.ts`.
+  - Contador de revisão na sidebar espera a fila de revisão (F10). Nesta fase os indicadores são o badge de jobs ativos e o ponto de atualização de ferramenta em Configurações.
+  - Início, nesta fase: título, barra de comando (só foco; a lógica é da F07) e até 3 jobs. Ações rápidas e recentes entram na F07. As outras abas de Configurações são estado vazio; só Aparência grava tema, idioma e transparência.
+  - `check:ipc` compara quatro conjuntos (Rust, `COMMANDS`, wrappers e mock) e entrou no `verify`.
+- **Pendências humanas:** nenhuma.
+- **Commit/tag:** `feat(F05): shell da UI, temas e i18n` · tag `fase-05-ok`

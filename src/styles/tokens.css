@@ -1,0 +1,154 @@
+/* Tokens do design (plano/02-design.md §1). Só variáveis: nada aqui compete com as utilidades. */
+:root,
+:root[data-theme="dark"] {
+  --bg-deep: #0f0f14;
+  --bg-base: #18181f;
+  --bg-warm: #1c1b1e;
+  --glass-bg: rgba(28, 27, 32, 0.72);
+  --glass-bg-hover: rgba(36, 34, 42, 0.78);
+  --glass-bg-elevated: rgba(32, 30, 38, 0.82);
+  --glass-border: rgba(255, 255, 255, 0.07);
+  --glass-border-hover: rgba(255, 255, 255, 0.13);
+  --glass-border-focus: rgba(245, 158, 75, 0.35);
+  --glass-blur: 24px;
+  --glass-blur-heavy: 40px;
+  --acrylic-bg: rgba(18, 17, 22, 0.78);
+  --acrylic-blur: 32px;
+  --accent: #f59e4b;
+  --accent-hover: #f6b06a;
+  --accent-pressed: #e08a35;
+  --accent-muted: rgba(245, 158, 75, 0.12);
+  --accent-glow: rgba(245, 158, 75, 0.25);
+  --accent-soft: rgba(245, 158, 75, 0.08);
+  --accent-on: #1a1208;
+  --gold: #e2a854;
+  --gold-muted: rgba(226, 168, 84, 0.15);
+  --fg: #f2efe9;
+  --fg-secondary: #cfccc6;
+  --fg-muted: #a09d97;
+  --fg-dim: #706d68;
+  --success: #5cdb8b;
+  --warning: #f5c842;
+  --error: #f8716b;
+  --info: #6db3f5;
+  --groove-1: rgba(245, 158, 75, 0.04);
+  --groove-2: rgba(226, 168, 84, 0.03);
+  --surface-hover: rgba(255, 255, 255, 0.05);
+  --surface-field: rgba(255, 255, 255, 0.04);
+  --surface-field-hover: rgba(255, 255, 255, 0.06);
+  --track: rgba(255, 255, 255, 0.06);
+  --overlay: rgba(6, 6, 12, 0.7);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 28px var(--accent-glow);
+  --shadow-glow-sm: 0 0 12px rgba(245, 158, 75, 0.18);
+  --scrollbar: rgba(255, 255, 255, 0.08);
+  --scrollbar-hover: rgba(255, 255, 255, 0.16);
+  --window-bg: #0a0a10;
+
+  --font-display:
+    "Segoe UI Variable Display", "Segoe UI", "Inter Variable", Inter, system-ui, sans-serif;
+  --font-body: "Segoe UI Variable Text", "Segoe UI", "Inter Variable", Inter, system-ui, sans-serif;
+  --font-mono: "Cascadia Code", "JetBrains Mono", ui-monospace, monospace;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 999px;
+
+  --titlebar-h: 36px;
+  --sidebar-w: 58px;
+  --bottomnav-h: 56px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 140ms;
+  --dur-normal: 240ms;
+  --dur-slow: 400ms;
+
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg-deep: #efebe5;
+  --bg-base: #f7f4ef;
+  --bg-warm: #f3efe9;
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-bg-hover: rgba(255, 255, 255, 0.85);
+  --glass-bg-elevated: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(20, 16, 10, 0.09);
+  --glass-border-hover: rgba(20, 16, 10, 0.16);
+  --glass-border-focus: rgba(196, 106, 22, 0.45);
+  --acrylic-bg: rgba(250, 247, 242, 0.82);
+  --accent: #b05e12;
+  --accent-hover: #97500f;
+  --accent-pressed: #7f430c;
+  --accent-muted: rgba(196, 106, 22, 0.12);
+  --accent-glow: rgba(196, 106, 22, 0.22);
+  --accent-soft: rgba(196, 106, 22, 0.07);
+  --accent-on: #ffffff;
+  --gold: #8a5f18;
+  --gold-muted: rgba(168, 116, 31, 0.14);
+  --fg: #1d1a16;
+  --fg-secondary: #3b362f;
+  --fg-muted: #5f584e;
+  --fg-dim: #6f675b;
+  --success: #1f7a44;
+  --warning: #8a5f00;
+  --error: #c23b33;
+  --info: #2a6fb5;
+  --groove-1: rgba(196, 106, 22, 0.05);
+  --groove-2: rgba(168, 116, 31, 0.04);
+  --surface-hover: rgba(20, 16, 10, 0.05);
+  --surface-field: rgba(20, 16, 10, 0.04);
+  --surface-field-hover: rgba(20, 16, 10, 0.06);
+  --track: rgba(20, 16, 10, 0.08);
+  --overlay: rgba(40, 32, 20, 0.35);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.14);
+  --shadow-glow-sm: 0 0 12px rgba(196, 106, 22, 0.16);
+  --scrollbar: rgba(20, 16, 10, 0.14);
+  --scrollbar-hover: rgba(20, 16, 10, 0.26);
+  --window-bg: #e6e1d9;
+
+  color-scheme: light;
+}
+
+/* Transparência reduzida: sem backdrop-filter, vidro vira cor quase sólida (§1). */
+:root[data-theme="dark"][data-transparency="reduced"] {
+  --glass-bg: rgba(28, 27, 32, 0.97);
+  --glass-bg-hover: rgba(36, 34, 42, 0.98);
+  --glass-bg-elevated: rgba(32, 30, 38, 0.98);
+  --acrylic-bg: rgba(18, 17, 22, 0.98);
+  --overlay: rgba(6, 6, 12, 0.82);
+}
+
+:root[data-theme="light"][data-transparency="reduced"] {
+  --glass-bg: rgba(255, 255, 255, 0.97);
+  --glass-bg-hover: rgba(255, 255, 255, 0.99);
+  --glass-bg-elevated: rgba(255, 255, 255, 0.99);
+  --acrylic-bg: rgba(250, 247, 242, 0.98);
+  --overlay: rgba(40, 32, 20, 0.5);
+}
+
+/* Cores de estágio da barra de progresso (referência: .progress-bar-fill.*). */
+:root {
+  --stage-download: linear-gradient(90deg, #e08a35, #f59e4b, #f6b06a);
+  --stage-convert: linear-gradient(90deg, #d4942a, #f5c842);
+  --stage-done: linear-gradient(90deg, #3db864, #5cdb8b);
+  --stage-error: linear-gradient(90deg, #e8503a, #f8716b);
+}

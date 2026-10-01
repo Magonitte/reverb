@@ -21,6 +21,30 @@ export async function call<T>(cmd: string, args?: Record<string, unknown>): Prom
   return invoke<T>(cmd, args);
 }
 
+export const COMMANDS = [
+  "app_info",
+  "settings_get",
+  "settings_update",
+  "settings_reset",
+  "tools_status",
+  "tools_install_missing",
+  "tools_check_updates",
+  "tools_update",
+  "tools_rollback",
+  "enqueue",
+  "check_duplicates",
+  "jobs_list",
+  "job_cancel",
+  "job_retry",
+  "job_remove",
+  "job_move",
+  "jobs_clear_finished",
+  "queue_pause",
+  "queue_resume",
+  "queue_state",
+  "jobs_cancel_all",
+] as const;
+
 export const api = {
   appInfo: () => call<AppInfo>("app_info"),
   settingsGet: () => call<SettingsView>("settings_get"),

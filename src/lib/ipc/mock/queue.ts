@@ -7,11 +7,14 @@ import { mockBus } from "./bus";
 
 let jobs: Job[] = [];
 let paused = false;
+let healing = false;
 let counter = 0;
 
 export function resetMockQueue(): void {
+  stopMockSimulation();
   jobs = [];
   paused = false;
+  healing = false;
   counter = 0;
 }
 
@@ -38,7 +41,7 @@ export function mockQueueState(): QueueState {
     paused,
     running: jobs.filter((j) => j.status === "running").length,
     queued: jobs.filter((j) => j.status === "queued").length,
-    healing: false,
+    healing,
   };
 }
 
@@ -195,4 +198,117 @@ export function mockQueuePause(): void {
 export function mockQueueResume(): void {
   paused = false;
   emitState();
+}
+
+/** Autocura em andamento (cenário `heal`): reflete em `queue://state.healing`. */
+export function setMockHealing(value: boolean): void {
+  healing = value;
+  emitState();
+}
+
+/** Insere jobs prontos (cenários); campos omitidos recebem valores de um job pendente. */
+export function seedMockJobs(seeds: Array<Partial<Job> & { sourceUrl: string }>): Job[] {
+  const created = seeds.map((seed) => {
+    counter += 1;
+    const job: Job = {
+      id: `mock-job-${counter}`,
+      kind: "single",
+      provider: "youtube",
+      sourceId: null,
+      title: null,
+      artist: null,
+      thumbnail: null,
+      durationS: null,
+      profileId: "original",
+      options: {},
+      metadataOverride: null,
+      warnings: [],
+      playlistCtx: null,
+      syncId: null,
+      status: "queued",
+      stage: "waiting",
+      progress: 0,
+      overallProgress: 0,
+      speedBps: null,
+      etaS: null,
+      errorKind: null,
+      errorMessage: null,
+      attempts: 0,
+      outputPath: null,
+      libraryId: null,
+      position: counter,
+      createdAt: counter,
+      updatedAt: counter,
+      finishedAt: null,
+      ...seed,
+    };
+    jobs.push(job);
+    return job;
+  });
+  created.forEach(emitJob);
+  emitState();
+  return created;
+}
+
+/** Estágios simulados, na ordem do pipeline (arquitetura §10). */
+const SIM_STAGES: Job["stage"][] = ["analyzing", "downloading", "converting", "metadata", "moving"];
+const SIM_STEP = 0.34;
+
+/**
+ * Um passo da simulação: promove pendentes (até `parallelism`) e avança os que rodam por estágios.
+ * Determinístico — os testes chamam direto; a página usa `startMockSimulation`.
+ */
+export function mockSimulationStep(parallelism = 2): void {
+  if (!paused) {
+    const free = parallelism - jobs.filter((j) => j.status === "running").length;
+    mockJobsList()
+      .filter((j) => j.status === "queued")
+      .slice(0, Math.max(0, free))
+      .forEach((job) => {
+        job.status = "running";
+        job.stage = SIM_STAGES[0]!;
+        job.attempts += 1;
+        emitJob(job);
+      });
+  }
+  for (const job of jobs.filter((j) => j.status === "running")) {
+    job.progress = Math.min(1, job.progress + SIM_STEP);
+    const index = SIM_STAGES.indexOf(job.stage);
+    if (job.progress >= 1) {
+      if (index + 1 >= SIM_STAGES.length) {
+        job.status = "done";
+        job.stage = "done";
+        job.progress = 1;
+        job.overallProgress = 1;
+        job.speedBps = null;
+        job.etaS = null;
+        job.finishedAt = job.updatedAt + 1;
+      } else {
+        job.stage = SIM_STAGES[index + 1]!;
+        job.progress = 0;
+      }
+    }
+    if (job.status === "running") {
+      job.overallProgress = (SIM_STAGES.indexOf(job.stage) + job.progress) / SIM_STAGES.length;
+      const downloading = job.stage === "downloading";
+      job.speedBps = downloading ? 2_400_000 : null;
+      job.etaS = downloading ? Math.round((1 - job.progress) * 6) : null;
+    }
+    job.updatedAt += 1;
+    emitJob(job);
+  }
+  emitState();
+}
+
+let simulation: ReturnType<typeof setInterval> | null = null;
+
+/** Liga a simulação temporizada (progresso por estágios) para o desenvolvimento no navegador. */
+export function startMockSimulation(intervalMs = 700): void {
+  if (simulation !== null) return;
+  simulation = setInterval(() => mockSimulationStep(), intervalMs);
+}
+
+export function stopMockSimulation(): void {
+  if (simulation !== null) clearInterval(simulation);
+  simulation = null;
 }
