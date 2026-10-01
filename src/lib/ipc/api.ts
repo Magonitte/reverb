@@ -1,5 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { AppInfo } from "@/bindings/AppInfo";
+import type { SettingsPatch } from "@/bindings/SettingsPatch";
+import type { SettingsView } from "@/bindings/SettingsView";
 import { isTauri } from "./isTauri";
 
 export async function call<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {
@@ -12,4 +14,7 @@ export async function call<T>(cmd: string, args?: Record<string, unknown>): Prom
 
 export const api = {
   appInfo: () => call<AppInfo>("app_info"),
+  settingsGet: () => call<SettingsView>("settings_get"),
+  settingsUpdate: (patch: SettingsPatch) => call<SettingsView>("settings_update", { patch }),
+  settingsReset: () => call<SettingsView>("settings_reset"),
 };

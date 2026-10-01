@@ -1,5 +1,5 @@
-use serde::ser::SerializeStruct;
 use serde::{Serialize, Serializer};
+use ts_rs::TS;
 
 pub type CoreResult<T> = Result<T, CoreError>;
 
@@ -10,6 +10,10 @@ pub enum CoreError {
     Io(#[from] std::io::Error),
     #[error("{0}")]
     Json(#[from] serde_json::Error),
+    #[error("{0}")]
+    Db(#[from] rusqlite::Error),
+    #[error("{0}")]
+    Internal(String),
     #[error("{message}")]
     Invalid {
         message: String,
@@ -36,6 +40,8 @@ impl CoreError {
         match self {
             Self::Io(_) => "io",
             Self::Json(_) => "json",
+            Self::Db(_) => "db",
+            Self::Internal(_) => "internal",
             Self::Invalid { .. } => "invalid",
         }
     }
@@ -48,17 +54,30 @@ impl CoreError {
     }
 }
 
+/// Formato serializado de `CoreError` (o que a UI recebe como erro de comando).
+#[derive(Debug, Clone, Serialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export, rename = "CoreError", optional_fields)]
+pub struct ErrorPayload {
+    pub kind: String,
+    pub message: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub i18n_key: Option<String>,
+}
+
+impl From<&CoreError> for ErrorPayload {
+    fn from(err: &CoreError) -> Self {
+        Self {
+            kind: err.kind().to_string(),
+            message: err.to_string(),
+            i18n_key: err.i18n_key().map(str::to_string),
+        }
+    }
+}
+
 impl Serialize for CoreError {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        let key = self.i18n_key();
-        let mut state =
-            serializer.serialize_struct("CoreError", if key.is_some() { 3 } else { 2 })?;
-        state.serialize_field("kind", self.kind())?;
-        state.serialize_field("message", &self.to_string())?;
-        if let Some(key) = key {
-            state.serialize_field("i18nKey", key)?;
-        }
-        state.end()
+        ErrorPayload::from(self).serialize(serializer)
     }
 }
 

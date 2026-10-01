@@ -1,0 +1,34 @@
+use std::sync::Arc;
+
+use reverb_core::{DataPaths, Db, EventSink, SettingsService};
+use tauri::{AppHandle, Emitter};
+
+/// Estado gerenciado do app, criado no `setup()` (arquitetura §3).
+pub struct AppState {
+    #[allow(dead_code)] // F02+: ferramentas, fila e biblioteca usam os diretórios.
+    pub paths: DataPaths,
+    #[allow(dead_code)] // F04+: fila e biblioteca usam o banco diretamente.
+    pub db: Db,
+    pub settings: Arc<SettingsService>,
+    #[allow(dead_code)] // F02+: ferramentas e fila emitem eventos pelo sink.
+    pub sink: Arc<dyn EventSink>,
+}
+
+/// `EventSink` que publica os eventos do core na WebView com `app.emit`.
+pub struct TauriSink {
+    handle: AppHandle,
+}
+
+impl TauriSink {
+    pub fn new(handle: AppHandle) -> Self {
+        Self { handle }
+    }
+}
+
+impl EventSink for TauriSink {
+    fn emit(&self, event: &str, payload: serde_json::Value) {
+        if let Err(e) = self.handle.emit(event, payload) {
+            tracing::warn!(event, error = %e, "falha ao emitir evento");
+        }
+    }
+}

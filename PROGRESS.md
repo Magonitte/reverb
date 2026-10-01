@@ -5,8 +5,8 @@
 
 ## Situação atual
 
-- **Fase atual:** F01 — NÃO INICIADA (F00 concluída)
-- **Último ponto de parada:** F00 concluída e com tag `fase-00-ok`; próximo passo: ler `plano/fases/F01-banco-e-configuracoes.md`
+- **Fase atual:** F02 — NÃO INICIADA (F00 e F01 concluídas)
+- **Último ponto de parada:** F01 concluída e com tag `fase-01-ok`; próximo passo: ler `plano/fases/F02-gerenciador-de-ferramentas.md`
 - **Pendências humanas abertas:** nenhuma
 
 ## Ambiente (preenchido na F00, 2026-10-01)
@@ -57,3 +57,19 @@
 - **Desvios do plano:** ver tabela de decisões acima (pasta de trabalho, modo do plugin i18next, versões).
 - **Pendências humanas:** nenhuma. Observação: o CI (`ci.yml`) só roda depois do remoto GitHub da F06; o job Linux não foi exercitado ainda.
 - **Commit/tag:** `feat(F00): fundação do monorepo` · tag `fase-00-ok`
+
+### F01 — Banco, configurações, logs e tipos TS
+
+- **Status:** CONCLUÍDA
+- **Início / fim:** 2026-10-01 / 2026-10-01
+- **Tarefas:** [x] 1 db + migração 0001 + triggers FTS5 · [x] 2 settings (macro gera `Settings`/`SettingsView`/`SettingsPatch`) · [x] 3 `default_music_dir`/`resolve_output_dir` · [x] 4 logging (rotação diária, 14 arquivos, redação) · [x] 5 bindings ts-rs (`AppInfo`, `SettingsView`, `SettingsPatch`, `SecretsStatus`, `CoreError`, enums) · [x] 6 Tauri `AppState`/`TauriSink`/comandos · [x] 7 store zustand + mock · [x] 8 CLI `settings get/set`
+- **Portão (última rodada):** 2026-10-01 · Rust 68 testes (core 55 + logging_init 1, cli 5, fake-tool 7) · Vitest 16 · Playwright 1 · rede 0 · app real 0 · `npm run verify` OK em 71 s · `npm run e2e` OK · autoteste headless OK
+- **Falhas e correções:** só erros de compilação do próprio desenvolvimento (borrow em teste, move de `key` no CLI, re-export de comandos Tauri exige caminho `commands::settings::...`); nenhuma falha de teste do portão.
+- **Desvios do plano:**
+  - Enums das configurações (`theme`, `language`, `transparency`, `splitChapters`, `cookiesSource`, `ytdlpChannel`, `jsRuntime`, `potProvider`) são enums Rust reais (TS vira união de literais) em vez de `String` validada.
+  - `CoreError` ganhou `Db` e `Internal`; o TS `CoreError` vem de `ErrorPayload` (`#[ts(rename = "CoreError")]`), pois o enum usa `Serialize` manual.
+  - `globalShortcut` tem só validação sintática (modificador + tecla); a F12 confere com o plugin de atalho global.
+  - `Db::call_blocking` (síncrono) adicionado para testes/CLI além do `call` assíncrono.
+  - Registrar segredos para redação é aditivo e global ao processo (nunca remove; valores com < 4 caracteres são ignorados).
+- **Pendências humanas:** nenhuma.
+- **Commit/tag:** `feat(F01): banco, configurações, logs e tipos TS` · tag `fase-01-ok`

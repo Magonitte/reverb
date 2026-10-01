@@ -3,6 +3,8 @@
 
 use std::path::{Path, PathBuf};
 
+use crate::settings::Settings;
+
 pub const APP_IDENTIFIER: &str = "com.reverb.desktop";
 pub const PORTABLE_MARKER: &str = "portable.txt";
 
@@ -64,6 +66,23 @@ pub fn default_app_data_dir() -> Option<PathBuf> {
     dirs::data_dir().map(|dir| dir.join(APP_IDENTIFIER))
 }
 
+/// Pasta de música padrão: `dirs::audio_dir()/Reverb` (fallback `~/Music/Reverb`).
+pub fn default_music_dir() -> PathBuf {
+    dirs::audio_dir()
+        .or_else(|| dirs::home_dir().map(|home| home.join("Music")))
+        .unwrap_or_else(|| PathBuf::from("Music"))
+        .join("Reverb")
+}
+
+/// Pasta de destino efetiva: `outputDir` das configurações ou a pasta de música padrão.
+pub fn resolve_output_dir(settings: &Settings) -> PathBuf {
+    if settings.output_dir.is_empty() {
+        default_music_dir()
+    } else {
+        PathBuf::from(&settings.output_dir)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -97,6 +116,14 @@ mod tests {
         assert_eq!(paths.tmp_dir(), Path::new("/x").join("tmp"));
         assert_eq!(paths.cache_dir(), Path::new("/x").join("cache"));
         assert_eq!(paths.backups_dir(), Path::new("/x").join("backups"));
+    }
+
+    #[test]
+    fn pasta_de_saida_usa_a_configuracao_ou_o_padrao() {
+        let mut settings = Settings::default();
+        assert!(resolve_output_dir(&settings).ends_with("Reverb"));
+        settings.output_dir = "/musicas".to_string();
+        assert_eq!(resolve_output_dir(&settings), PathBuf::from("/musicas"));
     }
 
     #[test]

@@ -19,4 +19,8 @@ thiserror = "2"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 ts-rs = "12"
+regex = "1"
+rusqlite = { version = "0.40", features = ["bundled"] }
+tokio = { version = "1", features = ["full"] }
+tracing-appender = "0.2"
 reverb-core = { path = "crates/reverb-core" }
