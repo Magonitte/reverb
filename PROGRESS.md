@@ -5,10 +5,10 @@
 
 ## Situação atual
 
-- **Fase atual:** F06 — EM ANDAMENTO (F00–F05 concluídas)
-- **Último ponto de parada:** F06 em código local (atualizador, aba, scripts, workflow). Parado no ponto humano: repositório, visibilidade, push, licença e senha da chave — sem ação externa até resposta explícita.
+- **Fase atual:** F06 — aguardando T10 (checagem manual do usuário); F00–F05 concluídas
+- **Último ponto de parada:** F06 T1–T9 verdes (CI nos dois SOs, releases v0.1.0/v0.1.1, atualização real 0.1.0→0.1.1). Falta só o T10 manual.
 - **Pendências humanas abertas:** nenhuma
-- **Pendência técnica (não humana):** F02/T13 — o job Linux do CI (`test:prepare` + `scripts/verify-tools.mjs`) só roda depois do remoto GitHub da F06; a F06 só conclui com ele verde (ver seção F02).
+- **Pendência técnica:** nenhuma (F02/T13 resolvida: job Linux do CI verde).
 
 ## Ambiente (preenchido na F00, 2026-10-01)
 
@@ -48,17 +48,14 @@
 
 ### F06 — Atualização automática do app e pipeline de release
 
-- **Status:** EM ANDAMENTO — parado no ponto humano (nenhuma ação externa)
+- **Status:** EM ANDAMENTO — falta T10 (manual)
 - **Início / fim:** 2026-10-01 /
-- **Tarefas:** [ ] 1 chave · [ ] 2 repositório/segredos/push · [x] 3 bundle (falta `plugins.updater.pubkey` e o endpoint, que entram com a chave) · [x] 4 serviço + comandos · [x] 5 modos headless no `setup()` · [x] 6 aba Atualizações + mock · [x] 7 `bump-version.mjs` / `release.mjs` (o push só com `--push`) · [x] 8 `release.yml` · [ ] 9 CI nos dois SOs (depende do push)
-- **Testes locais:** T1 Rust 4 · T2 Vitest 4 · T3 Playwright 1. Portão local (2026-10-01): `npm run verify` OK (303 s) · `npm run e2e` 36 passed. T4–T10 ainda pendentes: são externos (CI, releases, instalação).
-- **O que falta antes de qualquer `git push`, segredo ou release:** respostas explícitas abaixo.
-  1. Repositório. Sugestão: `Magonitte/reverb`.
-  2. Público (o atualizador baixa `latest.json` sem login).
-  3. Autorizar criar o repo, primeiro push, `gh secret set`, releases `v0.1.0` e `v0.1.1`, e instalar o teste em `%LOCALAPPDATA%`.
-  4. Licença: MIT ou GPL-3.0 (GPL permite biblioteca GPL no Android, Rota B do estudo E7; MIT não).
-  5. Senha da chave de assinatura (o usuário define, ou autoriza uma aleatória). Perder `%USERPROFILE%\.tauri\reverb.key` ou a senha impede atualizações futuras.
-- **Desvios do plano:** `plugins.updater` ainda não está no `tauri.conf.json` porque a pubkey só existe depois da chave. `is_newer` filtra de novo a resposta do plugin (semver estritamente maior).
+- **Tarefas:** [x] 1–9 todas
+- **Portão:** `npm run verify` OK · `npm run e2e` 36 · T4 CI verde (run 36938667940; antes, 36934994374) · T5/T6 releases v0.1.0 e v0.1.1 com `.exe`, `.AppImage`, `.deb`, `.sig` e `latest.json` (windows-x86_64 e linux-x86_64) · T7 instalado em `%LOCALAPPDATA%\Reverbeverb.exe` (check: available false) · T8 check = available true 0.1.1 (o `latest.json` demorou alguns minutos para propagar) · T9 `--headless-update-install` saiu 0 e o selftest passou a 0.1.1.
+- **Decisões:** repo `Magonitte/reverb` público; licença GPL-3.0 (`LICENSE`, Cargo `GPL-3.0-only`); chave em `%USERPROFILE%\.taurieverb.key` e senha em `reverb.key.password` (guarde cópia fora do repo).
+- **Falhas e correções:** testes de árvore de processos no Linux (zumbi contava como vivo; kill-on-drop só matava o líder, agora `KillGroupOnDrop`) · CI sem `cargo build -p reverb` antes do autoteste · delimitador `NOTES` do release.yml · `release.mjs` sem `shell` no Windows.
+- **Pendente:** T10 (usuário abre o app 0.1.1 instalado e confere a aba Atualizações). A versão de teste continua instalada; desinstalar só se o usuário pedir.
+- **Desvios do plano:** `is_newer` filtra de novo a resposta do plugin (semver estritamente maior).
 
 ### F00 — Fundação
 
