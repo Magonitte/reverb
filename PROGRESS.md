@@ -5,7 +5,7 @@
 
 ## Situação atual
 
-- **Fase atual:** F06 — aguardando T10 (checagem manual do usuário); F00–F05 concluídas
+- **Fase atual:** F06 — CONCLUÍDA; próxima: F07 (F00–F06 concluídas)
 - **Último ponto de parada:** F06 T1–T9 verdes (CI nos dois SOs, releases v0.1.0/v0.1.1, atualização real 0.1.0→0.1.1). Falta só o T10 manual.
 - **Pendências humanas abertas:** nenhuma
 - **Pendência técnica:** nenhuma (F02/T13 resolvida: job Linux do CI verde).
@@ -48,13 +48,15 @@
 
 ### F06 — Atualização automática do app e pipeline de release
 
-- **Status:** EM ANDAMENTO — falta T10 (manual)
+- **Status:** CONCLUÍDA
 - **Início / fim:** 2026-10-01 /
 - **Tarefas:** [x] 1–9 todas
-- **Portão:** `npm run verify` OK · `npm run e2e` 36 · T4 CI verde (run 36938667940; antes, 36934994374) · T5/T6 releases v0.1.0 e v0.1.1 com `.exe`, `.AppImage`, `.deb`, `.sig` e `latest.json` (windows-x86_64 e linux-x86_64) · T7 instalado em `%LOCALAPPDATA%\Reverbeverb.exe` (check: available false) · T8 check = available true 0.1.1 (o `latest.json` demorou alguns minutos para propagar) · T9 `--headless-update-install` saiu 0 e o selftest passou a 0.1.1.
-- **Decisões:** repo `Magonitte/reverb` público; licença GPL-3.0 (`LICENSE`, Cargo `GPL-3.0-only`); chave em `%USERPROFILE%\.taurieverb.key` e senha em `reverb.key.password` (guarde cópia fora do repo).
+- **Portão:** `npm run verify` OK · `npm run e2e` 36 · T4 CI verde (run 36938667940; antes, 36934994374) · T5/T6 releases v0.1.0 e v0.1.1 com `.exe`, `.AppImage`, `.deb`, `.sig` e `latest.json` (windows-x86_64 e linux-x86_64) · T7 instalado em `%LOCALAPPDATA%\Reverb
+everb.exe` (check: available false) · T8 check = available true 0.1.1 (o `latest.json` demorou alguns minutos para propagar) · T9 `--headless-update-install` saiu 0 e o selftest passou a 0.1.1.
+- **Decisões:** repo `Magonitte/reverb` público; licença GPL-3.0 (`LICENSE`, Cargo `GPL-3.0-only`); chave em `%USERPROFILE%\.tauri
+everb.key` e senha em `reverb.key.password` (guarde cópia fora do repo).
 - **Falhas e correções:** testes de árvore de processos no Linux (zumbi contava como vivo; kill-on-drop só matava o líder, agora `KillGroupOnDrop`) · CI sem `cargo build -p reverb` antes do autoteste · delimitador `NOTES` do release.yml · `release.mjs` sem `shell` no Windows.
-- **Pendente:** T10 (usuário abre o app 0.1.1 instalado e confere a aba Atualizações). A versão de teste continua instalada; desinstalar só se o usuário pedir.
+- **T10:** o usuário abriu o app 0.1.1 e confirmou a aba Atualizações (ferramentas: yt-dlp e FFmpeg atualizados; Deno aparece "Não instalado", a investigar na F07). A versão de teste continua instalada por pedido do usuário.
 - **Desvios do plano:** `is_newer` filtra de novo a resposta do plugin (semver estritamente maior).
 
 ### F00 — Fundação
