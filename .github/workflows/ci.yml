@@ -53,5 +53,7 @@ jobs:
         if: runner.os == 'Windows'
         run: npm run e2e
 
+      - run: cargo build -p reverb
+
       - name: Autoteste headless
         run: node scripts/verify-app-headless.mjs
