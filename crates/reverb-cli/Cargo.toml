@@ -1,0 +1,20 @@
+[package]
+name = "reverb-cli"
+description = "Linha de comando do Reverb (testes e diagnóstico)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "reverb-cli"
+path = "src/main.rs"
+
+[dependencies]
+anyhow.workspace = true
+clap.workspace = true
+reverb-core.workspace = true
+serde_json.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true

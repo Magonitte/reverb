@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependências do Linux (Tauri)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev patchelf
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+
+      - run: npm ci
+
+      - name: Playwright (Linux)
+        if: runner.os == 'Linux'
+        run: npx playwright install --with-deps chromium
+
+      - name: Playwright (Windows)
+        if: runner.os == 'Windows'
+        run: npx playwright install chromium
+
+      - run: npm run test:prepare
+      - run: npm run verify
+
+      - name: E2E (mock)
+        if: runner.os == 'Windows'
+        run: npm run e2e
+
+      - name: Autoteste headless
+        run: node scripts/verify-app-headless.mjs

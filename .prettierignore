@@ -1,0 +1,7 @@
+plano/
+referencias/
+dist/
+target/
+src/bindings/
+node_modules/
+package-lock.json

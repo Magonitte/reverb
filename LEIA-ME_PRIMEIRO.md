@@ -34,26 +34,26 @@ leia este arquivo, o protocolo (`00`), e o `PROGRESS.md`. Continue de onde parou
 
 ## Mapa das fases
 
-| Fase | Arquivo | Resultado verificável |
-|------|---------|----------------------|
-| F00 | `fases/F00-fundacao.md` | Monorepo compila; testes, lint, CI e self-test headless funcionando |
-| F01 | `fases/F01-banco-e-configuracoes.md` | SQLite com migrações, configurações, logs, tipos TS gerados |
-| F02 | `fases/F02-gerenciador-de-ferramentas.md` | yt-dlp, Deno, FFmpeg baixados, verificados, atualizáveis, com rollback |
-| F03 | `fases/F03-motor-de-download.md` | Analisar/baixar/converter via CLI com progresso, cancelamento e erros classificados |
-| F04 | `fases/F04-fila-e-autocura.md` | Fila persistente, paralela, com retry e autocura do yt-dlp |
-| F05 | `fases/F05-shell-ui-e-design.md` | UI base fiel ao design, temas, i18n, mock de backend, testes visuais |
-| F06 | `fases/F06-atualizacoes-e-release.md` | Atualizador do app + botão "Atualizar" + CI de release Windows/Linux testados de verdade |
-| F07 | `fases/F07-fluxo-de-download-ui.md` | Início, barra de comando, preview, coleção, Atividade — fluxo completo na UI |
-| F08 | `fases/F08-metadados.md` | Identificação com nota de confiança, YouTube Music oficial, tipo de conteúdo |
-| F09 | `fases/F09-pos-processamento.md` | Capas, letras, ReplayGain, tags, organização em pastas, biblioteca indexada |
-| F10 | `fases/F10-biblioteca-revisao-editor.md` | Biblioteca, fila de revisão, editor de tags, importação, vigia de pasta |
-| F11 | `fases/F11-playlists-e-sincronizacao.md` | Playlists sincronizadas, diff, .m3u8, agendamento |
-| F12 | `fases/F12-integracao-e-onboarding.md` | Bandeja, notificações, deep link, área de transferência, atalho global, onboarding, diagnóstico |
-| F13 | `fases/F13-qualidade-avancada.md` | Cookies/Premium, "Melhorar qualidade", capítulos, AcoustID, Spotify/Discogs |
-| F14 | `fases/F14-provedores-extras.md` | SoundCloud, Bandcamp, Internet Archive, Jamendo, verificador de FLAC |
-| F15 | `fases/F15-importacao-e-colecao.md` | Importar playlists do Deezer/Spotify, seguir artistas, "Faltando", qualidade-alvo |
-| F16 | `fases/F16-polimento-e-release.md` | Desempenho, acessibilidade, regressão total, release 3.0.0 |
-| A0–A3 | `04-android.md` | Android (condicional ao spike A0 dar certo) |
+| Fase  | Arquivo                                   | Resultado verificável                                                                           |
+| ----- | ----------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| F00   | `fases/F00-fundacao.md`                   | Monorepo compila; testes, lint, CI e self-test headless funcionando                             |
+| F01   | `fases/F01-banco-e-configuracoes.md`      | SQLite com migrações, configurações, logs, tipos TS gerados                                     |
+| F02   | `fases/F02-gerenciador-de-ferramentas.md` | yt-dlp, Deno, FFmpeg baixados, verificados, atualizáveis, com rollback                          |
+| F03   | `fases/F03-motor-de-download.md`          | Analisar/baixar/converter via CLI com progresso, cancelamento e erros classificados             |
+| F04   | `fases/F04-fila-e-autocura.md`            | Fila persistente, paralela, com retry e autocura do yt-dlp                                      |
+| F05   | `fases/F05-shell-ui-e-design.md`          | UI base fiel ao design, temas, i18n, mock de backend, testes visuais                            |
+| F06   | `fases/F06-atualizacoes-e-release.md`     | Atualizador do app + botão "Atualizar" + CI de release Windows/Linux testados de verdade        |
+| F07   | `fases/F07-fluxo-de-download-ui.md`       | Início, barra de comando, preview, coleção, Atividade — fluxo completo na UI                    |
+| F08   | `fases/F08-metadados.md`                  | Identificação com nota de confiança, YouTube Music oficial, tipo de conteúdo                    |
+| F09   | `fases/F09-pos-processamento.md`          | Capas, letras, ReplayGain, tags, organização em pastas, biblioteca indexada                     |
+| F10   | `fases/F10-biblioteca-revisao-editor.md`  | Biblioteca, fila de revisão, editor de tags, importação, vigia de pasta                         |
+| F11   | `fases/F11-playlists-e-sincronizacao.md`  | Playlists sincronizadas, diff, .m3u8, agendamento                                               |
+| F12   | `fases/F12-integracao-e-onboarding.md`    | Bandeja, notificações, deep link, área de transferência, atalho global, onboarding, diagnóstico |
+| F13   | `fases/F13-qualidade-avancada.md`         | Cookies/Premium, "Melhorar qualidade", capítulos, AcoustID, Spotify/Discogs                     |
+| F14   | `fases/F14-provedores-extras.md`          | SoundCloud, Bandcamp, Internet Archive, Jamendo, verificador de FLAC                            |
+| F15   | `fases/F15-importacao-e-colecao.md`       | Importar playlists do Deezer/Spotify, seguir artistas, "Faltando", qualidade-alvo               |
+| F16   | `fases/F16-polimento-e-release.md`        | Desempenho, acessibilidade, regressão total, release 3.0.0                                      |
+| A0–A3 | `04-android.md`                           | Android (condicional ao spike A0 dar certo)                                                     |
 
 As fases são **estritamente sequenciais**. Nunca comece uma fase antes de a anterior estar
 marcada como `CONCLUÍDA` no `PROGRESS.md` com todos os testes do portão passando.
