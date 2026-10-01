@@ -1,6 +1,7 @@
 pub mod queue;
 pub mod settings;
 pub mod tools;
+pub mod updater;
 
 use reverb_core::AppInfo;
 use tauri::AppHandle;

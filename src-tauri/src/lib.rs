@@ -1,6 +1,7 @@
 mod commands;
 mod headless;
 mod state;
+mod updater;
 
 use std::sync::Arc;
 
@@ -14,12 +15,20 @@ use crate::state::{AppState, TauriSink};
 
 pub fn run() {
     let args: Vec<String> = std::env::args().skip(1).collect();
-    if let Some(code) = headless::handle(&args) {
-        std::process::exit(code);
-    }
+    let headless_update = match headless::classify(&args) {
+        Ok(mode) => mode,
+        Err(code) => std::process::exit(code),
+    };
 
     tauri::Builder::default()
-        .setup(|app| {
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_process::init())
+        .setup(move |app| {
+            if let Some(mode) = &headless_update {
+                let code =
+                    tauri::async_runtime::block_on(updater::run_headless(app.handle(), mode));
+                std::process::exit(code);
+            }
             // Fonte única do diretório de dados: o valor do core (arquitetura §4 / F00).
             let paths = headless::resolve_data_paths()?;
             std::fs::create_dir_all(&paths.data_dir)?;
@@ -83,6 +92,7 @@ pub fn run() {
                 queue,
                 sink,
             });
+            updater::spawn_auto_check(app.handle().clone());
 
             // Janela por plataforma (design §1): Windows transparente com Mica; Linux opaca
             // (WebKitGTK é lento com transparência; a UI usa `data-transparency="reduced"`).
@@ -124,6 +134,9 @@ pub fn run() {
             commands::queue::queue_resume,
             commands::queue::queue_state,
             commands::queue::jobs_cancel_all,
+            commands::updater::updater_check,
+            commands::updater::updater_install,
+            commands::updater::app_restart,
         ])
         .build(tauri::generate_context!())
         .expect("erro ao construir o Reverb")

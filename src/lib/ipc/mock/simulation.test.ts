@@ -68,7 +68,15 @@ describe("cenários (?scenario=)", () => {
     expect(scenarioFromLocation("?x=1&scenario=heal")).toBe("heal");
     expect(scenarioFromLocation("?scenario=outro")).toBeNull();
     expect(scenarioFromLocation("")).toBeNull();
-    expect([...SCENARIOS]).toEqual(["empty", "busy", "errors", "heal"]);
+    expect([...SCENARIOS]).toEqual([
+      "empty",
+      "busy",
+      "errors",
+      "heal",
+      "update-available",
+      "update-downloading",
+      "update-error",
+    ]);
   });
 
   it("empty não cria nada; busy cria rodando + pendentes + concluído", () => {

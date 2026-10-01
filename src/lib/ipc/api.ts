@@ -11,6 +11,7 @@ import type { SettingsView } from "@/bindings/SettingsView";
 import type { Tool } from "@/bindings/Tool";
 import type { ToolStatus } from "@/bindings/ToolStatus";
 import type { UpdateInfo } from "@/bindings/UpdateInfo";
+import type { AppUpdateInfo } from "@/lib/updater";
 import { isTauri } from "./isTauri";
 
 export async function call<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {
@@ -43,6 +44,9 @@ export const COMMANDS = [
   "queue_resume",
   "queue_state",
   "jobs_cancel_all",
+  "updater_check",
+  "updater_install",
+  "app_restart",
 ] as const;
 
 export const api = {
@@ -69,4 +73,7 @@ export const api = {
   queueResume: () => call<void>("queue_resume"),
   queueState: () => call<QueueState>("queue_state"),
   jobsCancelAll: () => call<void>("jobs_cancel_all"),
+  updaterCheck: () => call<AppUpdateInfo | null>("updater_check"),
+  updaterInstall: () => call<void>("updater_install"),
+  appRestart: () => call<void>("app_restart"),
 };

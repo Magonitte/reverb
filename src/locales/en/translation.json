@@ -165,6 +165,22 @@
       "updates": "Updates",
       "advanced": "Advanced"
     },
+    "updates": {
+      "appTitle": "Reverb",
+      "toolsTitle": "Tools",
+      "installNow": "Update now",
+      "check": "Check for updates",
+      "retry": "Try again",
+      "rollback": "Roll back",
+      "rollbackFailed": "Could not roll the tool back.",
+      "channel": "yt-dlp channel",
+      "channelStable": "Stable",
+      "channelNightly": "Nightly",
+      "autoApp": "Check the app automatically",
+      "autoTools": "Update tools automatically",
+      "toVersion": "{{current}} → {{version}} available",
+      "percent": "{{percent}}%"
+    },
     "appearance": {
       "title": "Appearance",
       "theme": "Theme",
@@ -215,7 +231,10 @@
     "available": "Update available",
     "downloading": "Downloading…",
     "ready": "Ready to restart",
-    "error": "Update failed"
+    "restarting": "Restarting…",
+    "error": "Update failed",
+    "toastAvailable": "Reverb {{version}} is available.",
+    "windowsCloseNotice": "Reverb will close to install the update."
   },
   "tools": {
     "ytdlp": "yt-dlp",

@@ -5,8 +5,8 @@
 
 ## Situação atual
 
-- **Fase atual:** F06 — NÃO INICIADA (F00–F05 concluídas)
-- **Último ponto de parada:** F05 concluída e com tag `fase-05-ok`; próximo passo: ler `plano/fases/F06-atualizacoes-e-release.md`
+- **Fase atual:** F06 — EM ANDAMENTO (F00–F05 concluídas)
+- **Último ponto de parada:** F06 em código local (atualizador, aba, scripts, workflow). Parado no ponto humano: repositório, visibilidade, push, licença e senha da chave — sem ação externa até resposta explícita.
 - **Pendências humanas abertas:** nenhuma
 - **Pendência técnica (não humana):** F02/T13 — o job Linux do CI (`test:prepare` + `scripts/verify-tools.mjs`) só roda depois do remoto GitHub da F06; a F06 só conclui com ele verde (ver seção F02).
 
@@ -45,6 +45,20 @@
 ---
 
 ## Registro das fases
+
+### F06 — Atualização automática do app e pipeline de release
+
+- **Status:** EM ANDAMENTO — parado no ponto humano (nenhuma ação externa)
+- **Início / fim:** 2026-10-01 /
+- **Tarefas:** [ ] 1 chave · [ ] 2 repositório/segredos/push · [x] 3 bundle (falta `plugins.updater.pubkey` e o endpoint, que entram com a chave) · [x] 4 serviço + comandos · [x] 5 modos headless no `setup()` · [x] 6 aba Atualizações + mock · [x] 7 `bump-version.mjs` / `release.mjs` (o push só com `--push`) · [x] 8 `release.yml` · [ ] 9 CI nos dois SOs (depende do push)
+- **Testes locais:** T1 Rust 4 · T2 Vitest 4 · T3 Playwright 1. Portão local (2026-10-01): `npm run verify` OK (303 s) · `npm run e2e` 36 passed. T4–T10 ainda pendentes: são externos (CI, releases, instalação).
+- **O que falta antes de qualquer `git push`, segredo ou release:** respostas explícitas abaixo.
+  1. Repositório. Sugestão: `Magonitte/reverb`.
+  2. Público (o atualizador baixa `latest.json` sem login).
+  3. Autorizar criar o repo, primeiro push, `gh secret set`, releases `v0.1.0` e `v0.1.1`, e instalar o teste em `%LOCALAPPDATA%`.
+  4. Licença: MIT ou GPL-3.0 (GPL permite biblioteca GPL no Android, Rota B do estudo E7; MIT não).
+  5. Senha da chave de assinatura (o usuário define, ou autoriza uma aleatória). Perder `%USERPROFILE%\.tauri\reverb.key` ou a senha impede atualizações futuras.
+- **Desvios do plano:** `plugins.updater` ainda não está no `tauri.conf.json` porque a pubkey só existe depois da chave. `is_newer` filtra de novo a resposta do plugin (semver estritamente maior).
 
 ### F00 — Fundação
 

@@ -28,20 +28,39 @@ pub fn resolve_tools_dir(paths: &DataPaths) -> PathBuf {
     paths.tools_dir()
 }
 
-/// Trata as flags headless. Devolve `Some(código)` se o processo deve sair já.
-pub fn handle(args: &[String]) -> Option<i32> {
-    let position = args.iter().position(|a| a == "--headless-selftest")?;
-    let Some(output) = args.get(position + 1) else {
-        eprintln!("--headless-selftest exige o caminho do arquivo de saída");
-        return Some(2);
-    };
-    Some(match selftest(Path::new(output)) {
-        Ok(()) => 0,
-        Err(message) => {
-            eprintln!("autoteste falhou: {message}");
-            1
-        }
-    })
+/// Modos que precisam do plugin de atualização e por isso rodam dentro do `setup()`.
+pub enum UpdateMode {
+    Check(PathBuf),
+    Install,
+}
+
+/// Autoteste sai já (não precisa do Tauri). Atualização devolve o modo para o `setup()`.
+/// `Err(código)` encerra o processo.
+pub fn classify(args: &[String]) -> Result<Option<UpdateMode>, i32> {
+    if let Some(position) = args.iter().position(|a| a == "--headless-selftest") {
+        let Some(output) = args.get(position + 1) else {
+            eprintln!("--headless-selftest exige o caminho do arquivo de saída");
+            return Err(2);
+        };
+        return Err(match selftest(Path::new(output)) {
+            Ok(()) => 0,
+            Err(message) => {
+                eprintln!("autoteste falhou: {message}");
+                1
+            }
+        });
+    }
+    if let Some(position) = args.iter().position(|a| a == "--headless-update-check") {
+        let Some(output) = args.get(position + 1).filter(|p| !p.starts_with("--")) else {
+            eprintln!("--headless-update-check exige o caminho do arquivo de saída");
+            return Err(2);
+        };
+        return Ok(Some(UpdateMode::Check(PathBuf::from(output))));
+    }
+    if args.iter().any(|a| a == "--headless-update-install") {
+        return Ok(Some(UpdateMode::Install));
+    }
+    Ok(None)
 }
 
 fn selftest(output: &Path) -> Result<(), String> {

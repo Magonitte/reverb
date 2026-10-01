@@ -25,12 +25,14 @@ import {
   mockToolsStatus,
   mockToolsUpdate,
 } from "./tools";
+import { mockAppRestart, mockUpdaterCheck, mockUpdaterInstall } from "./updater";
 
 export { mockBus } from "./bus";
 export { resetMockQueue } from "./queue";
 export { applyScenario, scenarioFromLocation, startMock } from "./scenarios";
 export { resetMockSettings } from "./settings";
-export { resetMockTools, seedMockTool } from "./tools";
+export { resetMockTools, seedMockTool, seedMockToolVersions } from "./tools";
+export { resetMockUpdater, setMockUpdaterMode } from "./updater";
 
 const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
   app_info: (): AppInfo => ({ version: "0.1.0", platform: "windows", arch: "x86_64" }),
@@ -39,7 +41,7 @@ const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
   settings_reset: () => mockSettingsReset(),
   tools_status: () => mockToolsStatus(),
   tools_install_missing: () => mockToolsInstallMissing(),
-  tools_check_updates: () => mockToolsCheckUpdates(),
+  tools_check_updates: (args) => mockToolsCheckUpdates(Boolean(args?.force)),
   tools_update: (args) => mockToolsUpdate(args?.tool as Tool),
   tools_rollback: (args) => mockToolsRollback(args?.tool as Tool),
   enqueue: (args) => mockEnqueue(args?.request as EnqueueRequest),
@@ -55,6 +57,9 @@ const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
   queue_resume: () => mockQueueResume(),
   queue_state: () => mockQueueState(),
   jobs_cancel_all: () => mockJobsCancelAll(),
+  updater_check: () => mockUpdaterCheck(),
+  updater_install: () => mockUpdaterInstall(),
+  app_restart: () => mockAppRestart(),
 };
 
 export async function mockCall<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {

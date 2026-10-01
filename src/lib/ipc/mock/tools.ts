@@ -74,7 +74,14 @@ export function mockToolsInstallMissing(): Tool[] {
   return installed;
 }
 
-export function mockToolsCheckUpdates(): UpdateInfo[] {
+let lastForce = false;
+
+export function mockToolsCheckForce() {
+  return lastForce;
+}
+
+export function mockToolsCheckUpdates(force = false): UpdateInfo[] {
+  lastForce = force;
   const infos: UpdateInfo[] = [];
   for (const tool of ORDER) {
     const s = state[tool];
@@ -112,6 +119,11 @@ export function seedMockTool(tool: Tool, old = true) {
   state[tool] = { current: old ? OLDER[tool] : LATEST[tool], previous: null, latestKnown: null };
 }
 
+export function seedMockToolVersions(tool: Tool, current: string, previous: string | null) {
+  state[tool] = { current, previous, latestKnown: LATEST[tool] };
+}
+
 export function resetMockTools() {
   state = fresh();
+  lastForce = false;
 }

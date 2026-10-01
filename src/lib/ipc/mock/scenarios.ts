@@ -1,9 +1,20 @@
 import type { Job } from "@/bindings/Job";
+import { initialUpdaterState, useUpdaterStore } from "@/stores/updater";
 import { mockBus } from "./bus";
 import { FX1_VIDEO, FX2_MUSIC, FX3_CLIP, FX4_ALBUM } from "./fixtures";
 import { seedMockJobs, setMockHealing, startMockSimulation } from "./queue";
+import { seedMockTool } from "./tools";
+import { MOCK_UPDATE, setMockUpdaterMode } from "./updater";
 
-export const SCENARIOS = ["empty", "busy", "errors", "heal"] as const;
+export const SCENARIOS = [
+  "empty",
+  "busy",
+  "errors",
+  "heal",
+  "update-available",
+  "update-downloading",
+  "update-error",
+] as const;
 export type Scenario = (typeof SCENARIOS)[number];
 
 /** Lê `?scenario=` da URL (o HashRouter deixa a query string antes do `#`). */
@@ -80,6 +91,36 @@ export function applyScenario(name: Scenario): void {
       seedMockJobs([{ ...fromVideo(FX2_MUSIC), status: "queued" }]);
       setMockHealing(true);
       mockBus.emit("heal://state", { stage: "checking" });
+      return;
+    case "update-available":
+      for (const tool of ["ytdlp", "deno", "ffmpeg"] as const) seedMockTool(tool, false);
+      mockBus.emit("tools://changed", { tool: "ytdlp", version: "2026.10.01" });
+      setMockUpdaterMode("available");
+      mockBus.emit("updater://available", MOCK_UPDATE);
+      return;
+    case "update-downloading":
+      for (const tool of ["ytdlp", "deno", "ffmpeg"] as const) seedMockTool(tool, false);
+      mockBus.emit("tools://changed", { tool: "ytdlp", version: "2026.10.01" });
+      setMockUpdaterMode("available");
+      useUpdaterStore.setState({
+        ...initialUpdaterState,
+        phase: "downloading",
+        available: true,
+        version: MOCK_UPDATE.version,
+        currentVersion: MOCK_UPDATE.currentVersion,
+        notes: MOCK_UPDATE.notes,
+        date: MOCK_UPDATE.date,
+        downloaded: 40,
+        total: 100,
+      });
+      return;
+    case "update-error":
+      setMockUpdaterMode("error");
+      useUpdaterStore.setState({
+        ...initialUpdaterState,
+        phase: "error",
+        error: "Sem conexão com o GitHub",
+      });
       return;
   }
 }

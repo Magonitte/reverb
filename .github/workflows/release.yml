@@ -1,0 +1,61 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: A tag é v<package.json version>
+        shell: bash
+        run: node --input-type=module -e "import {readFileSync} from 'node:fs'; const v = JSON.parse(readFileSync('package.json','utf8')).version; if ('v'+v !== process.env.GITHUB_REF_NAME) { console.error(process.env.GITHUB_REF_NAME, '!=', 'v'+v); process.exit(1); }"
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+
+      - name: Dependências do Linux (Tauri)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev patchelf
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - run: npm ci
+
+      - name: Notas da versão
+        id: notes
+        shell: bash
+        run: |
+          echo "body<<NOTES" >> "$GITHUB_OUTPUT"
+          node scripts/changelog-notes.mjs >> "$GITHUB_OUTPUT"
+          echo "NOTES" >> "$GITHUB_OUTPUT"
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: Reverb ${{ github.ref_name }}
+          releaseBody: ${{ steps.notes.outputs.body }}
+          releaseDraft: false
+          prerelease: false
+          includeUpdaterJson: true

@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter, useLocation } from "react-router";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import i18n from "@/lib/i18n";
-import { mockBus, resetMockQueue, resetMockSettings, resetMockTools } from "@/lib/ipc/mock";
+import { mockBus, resetMockQueue, resetMockSettings, resetMockTools, resetMockUpdater } from "@/lib/ipc/mock";
 import { applyScenario } from "@/lib/ipc/mock/scenarios";
 import { AppRoutes } from "@/routes";
 import { useHealStore } from "@/stores/heal";
@@ -12,7 +12,7 @@ import { initJobsStore, useJobsStore } from "@/stores/jobs";
 import { useSettingsStore } from "@/stores/settings";
 import { useToolsStore } from "@/stores/tools";
 import { useUiStore } from "@/stores/ui";
-import { useUpdaterStore } from "@/stores/updater";
+import { initialUpdaterState, useUpdaterStore } from "@/stores/updater";
 
 function Where() {
   const { pathname } = useLocation();
@@ -34,6 +34,7 @@ beforeEach(() => {
   resetMockQueue();
   resetMockSettings();
   resetMockTools();
+  resetMockUpdater();
   mockBus.clear();
   useJobsStore.setState({
     jobs: {},
@@ -41,7 +42,7 @@ beforeEach(() => {
   });
   useToolsStore.setState({ statuses: [], progress: {} });
   useHealStore.setState({ stage: null });
-  useUpdaterStore.setState({ available: false, version: null });
+  useUpdaterStore.setState(initialUpdaterState);
   useUiStore.setState({
     commandBarOpen: false,
     commandBarText: "",

@@ -10,6 +10,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Select } from "@/components/ui/Select";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Tabs } from "@/components/ui/Tabs";
+import { UpdatesTab } from "./UpdatesTab";
 import { useSettingsStore } from "@/stores/settings";
 import { useUiStore } from "@/stores/ui";
 
@@ -97,7 +98,8 @@ export default function Settings() {
         tabs={SETTINGS_TABS.map((id) => ({ id, label: t(`settings.tabs.${id}`) }))}
       >
         {tab === "general" && <Appearance />}
-        {tab !== "general" && (
+        {tab === "updates" && <UpdatesTab />}
+        {tab !== "general" && tab !== "updates" && (
           <EmptyState
             icon={<SettingsIcon aria-hidden="true" />}
             title={t(`settings.empty.${tab}.title`)}
