@@ -3,7 +3,7 @@
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Instant;
 
-use sysinfo::{Pid, ProcessesToUpdate, System};
+use sysinfo::{Pid, ProcessStatus, ProcessesToUpdate, System};
 
 use super::*;
 use crate::tools::testutil::fake_tool_path;
@@ -109,7 +109,10 @@ fn config(idle: Duration) -> PotServerConfig {
 fn pid_alive(pid: u32) -> bool {
     let mut system = System::new();
     system.refresh_processes(ProcessesToUpdate::All, true);
-    system.process(Pid::from_u32(pid)).is_some()
+    // Zumbi (morto, ainda não colhido pelo init do contêiner) conta como morto.
+    system
+        .process(Pid::from_u32(pid))
+        .is_some_and(|p| p.status() != ProcessStatus::Zombie)
 }
 
 fn kill_pid(pid: u32) {
