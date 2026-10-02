@@ -596,6 +596,10 @@
     "copyBookmarklet": "Copy bookmarklet",
     "bookmarkletTitle": "Download from your browser",
     "bookmarkletHelp": "Copy the code and save it as the address of a bookmark, or drag the Reverb bookmark to your bookmarks bar. Use it on a YouTube page to add audio to the Reverb queue.",
-    "autostartFailed": "Could not change startup with the system"
+    "autostartFailed": "Could not change startup with the system",
+    "clipboardWatch": "Watch copied links",
+    "analyzeCopied": "Analyze",
+    "clipboardDetected": "Copied link detected",
+    "downloadCopied": "Download"
   }
 }

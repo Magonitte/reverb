@@ -596,6 +596,10 @@
     "copyBookmarklet": "Copiar bookmarklet",
     "bookmarkletTitle": "Baixar do navegador",
     "bookmarkletHelp": "Copie o código e salve como endereço de um favorito, ou arraste o favorito Reverb para a barra de favoritos. Ao usá-lo em uma página do YouTube, o Reverb adiciona o áudio à fila.",
-    "autostartFailed": "Não foi possível alterar a inicialização com o sistema"
+    "autostartFailed": "Não foi possível alterar a inicialização com o sistema",
+    "clipboardWatch": "Observar links copiados",
+    "analyzeCopied": "Analisar",
+    "clipboardDetected": "Link copiado encontrado",
+    "downloadCopied": "Baixar"
   }
 }

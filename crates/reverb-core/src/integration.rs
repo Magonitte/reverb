@@ -21,6 +21,21 @@ pub fn supported_url(input: &str) -> Option<String> {
     }
 }
 
+#[derive(Default)]
+pub struct ClipboardDedup {
+    last: Option<String>,
+}
+impl ClipboardDedup {
+    pub fn observe(&mut self, text: &str) -> Option<String> {
+        let url = supported_url(text)?;
+        if self.last.as_ref() == Some(&url) {
+            return None;
+        }
+        self.last = Some(url.clone());
+        Some(url)
+    }
+}
+
 pub fn add_link(input: &str) -> CoreResult<String> {
     let url = supported_url(input).ok_or_else(|| CoreError::invalid("unsupported URL"))?;
     let mut link =
@@ -69,6 +84,18 @@ pub fn parse_deep_link(input: &str) -> CoreResult<DeepLinkAction> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn clipboard_deduplicates_canonical_urls_and_ignores_text() {
+        let mut watcher = ClipboardDedup::default();
+        assert!(watcher.observe("ordinary text").is_none());
+        assert!(watcher.observe("https://youtu.be/jNQXAC9IVRw").is_some());
+        assert!(watcher
+            .observe("https://www.youtube.com/watch?v=jNQXAC9IVRw&t=2")
+            .is_none());
+        assert!(watcher.observe("ordinary text").is_none());
+        assert!(watcher.observe("https://youtu.be/jNQXAC9IVRw").is_none());
+        assert!(watcher.observe("https://youtu.be/dQw4w9WgXcQ").is_some());
+    }
 
     #[test]
     fn copied_links_use_the_same_validated_entry_point() {

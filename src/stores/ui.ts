@@ -8,6 +8,8 @@ export interface Toast {
   tone: ToastTone;
   actionLabel?: string;
   onAction?: () => void;
+  secondaryActionLabel?: string;
+  onSecondaryAction?: () => void;
 }
 
 interface UiState {

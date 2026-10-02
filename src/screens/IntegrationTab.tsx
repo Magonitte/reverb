@@ -5,11 +5,15 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { api } from "@/lib/ipc/api";
 import { useUiStore } from "@/stores/ui";
+import { Toggle } from "@/components/ui/Toggle";
+import { useSettingsStore } from "@/stores/settings";
 
 export function IntegrationTab() {
   const { t } = useTranslation();
   const [code, setCode] = useState("");
   const toast = useUiStore((state) => state.pushToast);
+  const settings = useSettingsStore((state) => state.settings);
+  const update = useSettingsStore((state) => state.update);
   useEffect(() => {
     let active = true;
     api.bookmarkletCode().then(
@@ -34,6 +38,20 @@ export function IntegrationTab() {
   };
   return (
     <Card className="space-y-4">
+      {settings && (
+        <div className="flex items-center justify-between gap-4">
+          <span className="text-sm">{t("integration.clipboardWatch")}</span>
+          <Toggle
+            label={t("integration.clipboardWatch")}
+            checked={settings.clipboardWatch}
+            onChange={(clipboardWatch) => {
+              void update({ clipboardWatch }).catch(() =>
+                toast({ message: t("settings.saveFailed"), tone: "error" }),
+              );
+            }}
+          />
+        </div>
+      )}
       <h2 className="text-sm font-semibold">{t("integration.bookmarkletTitle")}</h2>
       <p className="text-sm text-fg-muted">{t("integration.bookmarkletHelp")}</p>
       <Input label={t("integration.bookmarkletCode")} value={code} readOnly />

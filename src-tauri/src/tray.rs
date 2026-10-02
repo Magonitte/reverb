@@ -1,5 +1,5 @@
 use reverb_core::desktop::texts;
-use reverb_core::integration::{add_link, supported_url};
+use reverb_core::integration::{add_link, supported_url, ClipboardDedup};
 use reverb_core::{CoreError, CoreResult};
 use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIcon, TrayIconBuilder, TrayIconEvent};
@@ -140,29 +140,55 @@ pub fn initialize(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
     let handle = app.clone();
     let cancel = app.state::<AppState>().background_cancel.clone();
     tauri::async_runtime::spawn(async move {
+        let mut watcher = ClipboardDedup::default();
         let mut interval = tokio::time::interval(std::time::Duration::from_millis(1500));
         loop {
             tokio::select! { _ = cancel.cancelled() => break, _ = interval.tick() => {} }
-            if let Err(error) = refresh(&handle).await {
-                tracing::debug!(%error, "tray refresh failed");
+            match refresh(&handle).await {
+                Ok(copied) => {
+                    let state = handle.state::<AppState>();
+                    if state.settings.get().clipboard_watch {
+                        if let Some(url) = copied.and_then(|text| watcher.observe(&text)) {
+                            let visible = handle
+                                .get_webview_window("main")
+                                .and_then(|window| window.is_visible().ok())
+                                .unwrap_or(false);
+                            state.sink.emit(
+                                "clipboard://url",
+                                serde_json::json!({"url":url,"visible":visible}),
+                            );
+                            if !visible {
+                                crate::notifications::show(
+                                    &handle,
+                                    texts::text(state.settings.get().language, "copied"),
+                                );
+                            }
+                        }
+                    } else {
+                        watcher = ClipboardDedup::default();
+                    }
+                }
+                Err(error) => tracing::debug!(%error, "tray refresh failed"),
             }
         }
     });
     Ok(())
 }
 
-async fn refresh(app: &AppHandle) -> CoreResult<()> {
+async fn refresh(app: &AppHandle) -> CoreResult<Option<String>> {
     let state = app.state::<AppState>();
     let language = state.settings.get().language;
     let queue = state.queue.state().await?;
     let controls = app.state::<TrayControls>();
     let title = texts::active(language, (queue.running + queue.queued) as usize);
-    let copied = app
-        .clipboard()
-        .read_text()
-        .ok()
-        .and_then(|text| supported_url(&text))
-        .is_some();
+    let clipboard = match app.clipboard().read_text() {
+        Ok(text) => Some(text),
+        Err(error) => {
+            tracing::debug!(%error, "clipboard read unavailable");
+            None
+        }
+    };
+    let copied = clipboard.as_deref().and_then(supported_url).is_some();
     let apply = || -> tauri::Result<()> {
         controls.header.set_text(&title)?;
         controls.tray.set_tooltip(Some(&title))?;
@@ -179,5 +205,6 @@ async fn refresh(app: &AppHandle) -> CoreResult<()> {
         controls.exit.set_text(texts::text(language, "exit"))?;
         Ok(())
     };
-    apply().map_err(|error| CoreError::Internal(error.to_string()))
+    apply().map_err(|error| CoreError::Internal(error.to_string()))?;
+    Ok(clipboard)
 }
