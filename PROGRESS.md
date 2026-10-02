@@ -6,7 +6,7 @@
 ## Situação atual
 
 - **Fase atual:** F12 — EM ANDAMENTO (F00–F11 concluídas).
-- **Último ponto de parada:** Retomada em codex/f12-integration a partir de a7e354c. Tarefa 1 implementada e verificada no core/native check; T10/T10b adicionados para o portão real. Tarefa 2 concluída (bookmarklet/IPC/mock/UI), tarefa 3 concluída (bandeja); tarefa 4 concluída; tarefa 5 concluída; tarefa 6 concluída; tarefa 7 concluída; próxima tarefa 8 (atalho global).
+- **Último ponto de parada:** Retomada em codex/f12-integration a partir de a7e354c. Tarefa 1 implementada e verificada no core/native check; T10/T10b adicionados para o portão real. Tarefa 2 concluída (bookmarklet/IPC/mock/UI), tarefa 3 concluída (bandeja); tarefa 4 concluída; tarefa 5 concluída; tarefa 6 concluída; tarefa 7 concluída; tarefa 8 implementada e UI verificada; próxima tarefa 9 (onboarding).
 - **Pendências humanas abertas:** nenhuma
 - **Pendência técnica:** nenhuma (F02/T13 resolvida: job Linux do CI verde).
 
@@ -50,7 +50,7 @@
 
 - **Status:** EM ANDAMENTO
 - **Início / fim:** 2026-10-02 / —
-- **Tarefas:** [x] 1 · [x] 2 · [x] 3 · [x] 4 · [x] 5 · [x] 6 · [x] 7 · [ ] 8 · [ ] 9 · [ ] 10 · [ ] 11 · [ ] 12
+- **Tarefas:** [x] 1 · [x] 2 · [x] 3 · [x] 4 · [x] 5 · [x] 6 · [x] 7 · [x] 8 · [ ] 9 · [ ] 10 · [ ] 11 · [ ] 12
 - **Verificação da tarefa 1:** parser puro com tabela de casos válidos/inválidos passou; cargo check -p reverb passou; check:i18n e check:ipc verdes (60 comandos). T10/T10b implementados, execução pendente do build embutido no portão e2e:app. Portão completo ainda não executado.
 - **Verificação da tarefa 2:** typecheck/lint/i18n/IPC (63 comandos) verdes; 2 Vitest e 1 Playwright passaram; cargo check -p reverb passou. Falha Playwright inicial era servidor antigo de outro worktree em 1421: harness agora recusa reutilização e suporta REVERB_E2E_PORT; repetição em 1521 verde. Correção lint de expressão ternária no T10, sem mudança de asserções. T1 commit/push 6124d8a.
 - **Verificação da tarefa 3:** cargo check -p reverb verde; 2 testes do core de entradas externas verdes. Bandeja traduzida pt-BR/en, contagem e pausa dinâmicas, download do clipboard validado, pasta e saída. Polling cancelável 1,5 s sincroniza menu, idioma e disponibilidade de URL. Reaproveitada a tabela de textos da retomada anterior (5d4f) sem modificar seus arquivos. API open_path adaptada para string e método obsoleto menu_on_left_click substituído conforme Tauri instalado. T2 commit/push b12b1df.
@@ -58,6 +58,7 @@
 - **Verificação da tarefa 5:** cargo check -p reverb verde; T3 com relógio Tokio pausado verde (5 conclusões/3 s → 1 mensagem após janela de 10 s). Plugin notification usado só do Rust; notificações de conclusão respeitam configuração e não reemitem jobs antigos; falha definitiva, sync, atualização e autocura com textos pt-BR/en. Diagnóstico semanal usa esse sink na tarefa 10. T4 commit/push bd10a18.
 - **Verificação da tarefa 6:** cargo check -p reverb, lint e i18n verdes. Autostart sincronizado com launchAtStartup, argumento --minimized e janela inicialmente escondida só quando startMinimized. Updates/reset aplicam efeito nativo antes de persistir e tentam rollback em falha; serialização por mutex. Debug isolado usa nome exclusivo Reverb-test-<pasta temporária>, sem alterar autostart do Reverb instalado. T11 lê HKCU Run, confere exe/--minimized e remoção; execução no portão real pendente. T5 commit/push 1679341.
 - **Verificação da tarefa 7:** native check, typecheck/lint/i18n verdes; 3 testes core de integração (inclui T2 deduplicação) e 3 Vitest passaram. Polling 1,5 s compartilha leitura com bandeja; URLs canônicas diferentes emitem clipboard://url; janela visível mostra Baixar/Analisar, escondida recebe notificação discreta; erros de clipboard só debug. Mock acompanha evento e deduplicação; toggle persistido e segunda ação de toast. T6 commit/push 36638e3.
+- **Verificação da tarefa 8:** cargo check -p reverb, typecheck/lint verdes; 30 Vitest (integração + componentes existentes) e 2 Playwright passaram. Atalho nativo só age em Pressed, usa clipboard/perfil padrão, mostra aviso se sem URL; substituição registra novo antes de remover antigo e rollback acompanha persistência/autostart. Componente ShortcutRecorder existente foi mantido e integrado com erros/conflito/desligar/Wayland. T4 do plugin adicionado, build do teste interrompido preventivamente com C: <1 GB e retomado após mover cache reutilizável de 5d4f/target para D:/CodexBuildCache/Reverb-a45c; nenhuma fonte do outro worktree modificada. T7 commit/push 78237c7.
 - **Pendências humanas:** T13 após implementação e verificações automatizadas.
 - **Worktree:** a45c/Reverb, limpo ao iniciar; HEAD inicial F08 corrigido para o head publicado da F11, sem modificar os demais worktrees.
 

@@ -11,6 +11,18 @@ beforeEach(async () => {
   await useSettingsStore.getState().load();
 });
 describe("F12 bookmarklet", () => {
+  it("records an accelerator, clears it, and persists clipboard watching", async () => {
+    const user = userEvent.setup();
+    renderApp("/settings/integration");
+    const field = await screen.findByRole("button", { name: "Atalho global" });
+    await user.click(field);
+    await user.keyboard("{Control>}{Shift>}D{/Shift}{/Control}");
+    expect((await api.settingsGet()).globalShortcut).toBe("Ctrl+Shift+D");
+    await user.click(screen.getByRole("button", { name: "Desligar atalho" }));
+    expect((await api.settingsGet()).globalShortcut).toBe("");
+    await user.click(screen.getByRole("switch", { name: "Observar links copiados" }));
+    expect((await api.settingsGet()).clipboardWatch).toBe(true);
+  });
   it("shows instructions and copies the exact bookmarklet through Rust IPC", async () => {
     renderApp("/settings/integration");
     const button = await screen.findByRole("button", { name: "Copiar bookmarklet" });

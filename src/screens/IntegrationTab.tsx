@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/Input";
 import { api } from "@/lib/ipc/api";
 import { useUiStore } from "@/stores/ui";
 import { Toggle } from "@/components/ui/Toggle";
+import { ShortcutSettings } from "./ShortcutSettings";
 import { useSettingsStore } from "@/stores/settings";
 
 export function IntegrationTab() {
@@ -38,6 +39,12 @@ export function IntegrationTab() {
   };
   return (
     <Card className="space-y-4">
+      {settings && (
+        <ShortcutSettings
+          value={settings.globalShortcut}
+          onChange={(globalShortcut) => update({ globalShortcut })}
+        />
+      )}
       {settings && (
         <div className="flex items-center justify-between gap-4">
           <span className="text-sm">{t("integration.clipboardWatch")}</span>

@@ -19,16 +19,12 @@ pub async fn settings_update(
     let mut next = previous.clone();
     next.apply(patch.clone());
     reverb_core::settings::validate(&next)?;
-    if previous.launch_at_startup != next.launch_at_startup {
-        crate::startup::apply(&app, next.launch_at_startup)?;
-    }
+    crate::startup::apply_settings(&app, &previous, &next)?;
     let view = match state.settings.update(patch).await {
         Ok(settings) => settings.view(),
         Err(error) => {
-            if previous.launch_at_startup != next.launch_at_startup {
-                if let Err(rollback) = crate::startup::apply(&app, previous.launch_at_startup) {
-                    tracing::error!(kind = rollback.kind(), "autostart rollback failed");
-                }
+            if let Err(rollback) = crate::startup::apply_settings(&app, &next, &previous) {
+                tracing::error!(kind = rollback.kind(), "native settings rollback failed");
             }
             return Err(error);
         }
@@ -45,15 +41,16 @@ pub async fn settings_reset(
 ) -> Result<SettingsView, CoreError> {
     let _guard = crate::startup::SETTINGS_EFFECTS.lock().await;
     let previous = state.settings.get();
-    crate::startup::apply(&app, false)?;
+    let next = reverb_core::Settings::default();
+    crate::startup::apply_settings(&app, &previous, &next)?;
     match state.settings.reset().await {
         Ok(settings) => {
             state.queue.wake();
             Ok(settings.view())
         }
         Err(error) => {
-            if let Err(rollback) = crate::startup::apply(&app, previous.launch_at_startup) {
-                tracing::error!(kind = rollback.kind(), "autostart rollback failed");
+            if let Err(rollback) = crate::startup::apply_settings(&app, &next, &previous) {
+                tracing::error!(kind = rollback.kind(), "native settings rollback failed");
             }
             Err(error)
         }

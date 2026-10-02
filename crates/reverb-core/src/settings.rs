@@ -327,7 +327,7 @@ const SHORTCUT_NAMED_KEYS: &[&str] = &[
 ];
 
 /// Validação sintática do acelerador (a F12 confere com o plugin de atalho global).
-fn validate_shortcut(shortcut: &str) -> CoreResult<()> {
+pub fn validate_shortcut(shortcut: &str) -> CoreResult<()> {
     if shortcut.is_empty() {
         return Ok(());
     }

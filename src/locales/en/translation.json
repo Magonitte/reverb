@@ -600,6 +600,14 @@
     "clipboardWatch": "Watch copied links",
     "analyzeCopied": "Analyze",
     "clipboardDetected": "Copied link detected",
-    "downloadCopied": "Download"
+    "downloadCopied": "Download",
+    "shortcutInvalid": "Use a valid combination, such as Ctrl+Shift+D",
+    "shortcutDisable": "Disable shortcut",
+    "shortcutHelp": "Click the field and press a combination with Ctrl, Alt or Shift.",
+    "wayland": "Global shortcuts may not work on Linux with Wayland.",
+    "shortcut": "Global shortcut",
+    "shortcutConflict": "Shortcut is already in use or unavailable",
+    "shortcutEmpty": "None",
+    "shortcutRecording": "Press the keys…"
   }
 }

@@ -600,6 +600,14 @@
     "clipboardWatch": "Observar links copiados",
     "analyzeCopied": "Analisar",
     "clipboardDetected": "Link copiado encontrado",
-    "downloadCopied": "Baixar"
+    "downloadCopied": "Baixar",
+    "shortcutInvalid": "Use uma combinação válida, como Ctrl+Shift+D",
+    "shortcutDisable": "Desligar atalho",
+    "shortcutHelp": "Clique no campo e pressione uma combinação com Ctrl, Alt ou Shift.",
+    "wayland": "No Linux com Wayland, atalhos globais podem não funcionar.",
+    "shortcut": "Atalho global",
+    "shortcutConflict": "Atalho já em uso ou indisponível",
+    "shortcutEmpty": "Nenhum",
+    "shortcutRecording": "Pressione as teclas…"
   }
 }

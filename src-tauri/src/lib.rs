@@ -2,6 +2,7 @@ mod commands;
 mod headless;
 mod integration;
 mod notifications;
+mod shortcut;
 mod startup;
 mod state;
 mod tray;
@@ -34,6 +35,11 @@ pub fn run() {
         }))
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_notification::init())
+        .plugin(
+            tauri_plugin_global_shortcut::Builder::new()
+                .with_handler(shortcut::handler)
+                .build(),
+        )
         .plugin(
             tauri_plugin_autostart::Builder::new()
                 .arg("--minimized")
@@ -192,6 +198,14 @@ pub fn run() {
             window::initialize(app.handle());
             notifications::initialize(app.handle())?;
             integration::initialize(app.handle())?;
+            let accelerator = app.state::<AppState>().settings.get().global_shortcut;
+            if let Err(error) = shortcut::apply(app.handle(), "", &accelerator) {
+                tracing::warn!(kind = error.kind(), "global shortcut registration failed");
+                app.state::<AppState>().sink.emit(
+                    "notice",
+                    serde_json::json!({"level":"error","i18nKey":"integration.shortcutConflict"}),
+                );
+            }
             let launch = app.state::<AppState>().settings.get().launch_at_startup;
             if let Err(error) = startup::apply(app.handle(), launch) {
                 tracing::warn!(kind = error.kind(), "autostart synchronization failed");
