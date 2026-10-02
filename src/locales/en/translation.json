@@ -473,7 +473,41 @@
   },
   "onboarding": {
     "title": "Welcome to Reverb",
-    "subtitle": "Let's get everything ready so you can download your favorite music."
+    "subtitle": "Let's get everything ready so you can download your favorite music.",
+    "install": "Install tools",
+    "finish": "Start using Reverb",
+    "back": "Back",
+    "stepsLabel": "Setup steps",
+    "folder": "Music folder",
+    "missing": "Not installed",
+    "installed": "Installed",
+    "next": "Continue",
+    "runtime": "JavaScript runtime",
+    "runtimes": {
+      "auto": "Automatic",
+      "system-deno": "System Deno",
+      "system-node": "System Node",
+      "managed-deno": "Managed Deno"
+    },
+    "installFailed": "Installation failed. Check your connection and try again.",
+    "toolsRequired": "Install the required tools before finishing",
+    "readyHelp": "You are ready to download. You can change these choices in Settings.",
+    "metadataHelp": "Artwork, lyrics and metadata work without API keys. You can configure optional services later.",
+    "toolsReady": "Tools ready",
+    "folderInvalid": "Choose an absolute folder path",
+    "clipboardWatch": "Watch copied links",
+    "steps": {
+      "ready": "Ready",
+      "tools": "Tools",
+      "welcome": "Welcome",
+      "integration": "Integration",
+      "folder": "Music folder",
+      "metadata": "Metadata"
+    },
+    "chooseFolder": "Choose folder",
+    "welcomeHelp": "Download tracks and playlists with organized artwork, lyrics and metadata.",
+    "toolsHelp": "yt-dlp and FFmpeg are required. Use system Node or Deno, or install managed Deno.",
+    "launchAtStartup": "Start with the system"
   },
   "updater": {
     "idle": "Idle",

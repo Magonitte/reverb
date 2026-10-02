@@ -1,6 +1,7 @@
 import type { SettingsPatch } from "@/bindings/SettingsPatch";
 import type { SettingsView } from "@/bindings/SettingsView";
 import { mockBus } from "./bus";
+import { mockToolsStatus, mockRuntimeChoices } from "./tools";
 
 const SECRET_KEYS = [
   "acoustidKey",
@@ -49,7 +50,8 @@ export const DEFAULT_SETTINGS: SettingsView = {
   clipboardWatch: false,
   globalShortcut: "",
   weeklySelfTest: true,
-  onboardingCompleted: false,
+  // Most browser scenarios represent an already configured installation.
+  onboardingCompleted: true,
   cookiesSource: "none",
   cookiesFile: "",
   ytdlpChannel: "stable",
@@ -130,6 +132,22 @@ export function mockSettingsUpdate(patch: SettingsPatch): SettingsView {
     }
   }
   validate(next);
+  if (
+    next.onboardingCompleted &&
+    !current.onboardingCompleted &&
+    (!["ytdlp", "ffmpeg"].every((tool) =>
+      mockToolsStatus().some((status) => status.tool === tool && status.installed),
+    ) ||
+      (next.jsRuntime === "auto"
+        ? !mockRuntimeChoices().length
+        : !mockRuntimeChoices().includes(next.jsRuntime)))
+  ) {
+    throw {
+      kind: "invalid",
+      message: "Required tools are missing",
+      i18nKey: "onboarding.toolsRequired",
+    };
+  }
   next.secretsStatus = statusOf(nextSecrets);
   current = next;
   secrets = nextSecrets;

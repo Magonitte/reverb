@@ -473,7 +473,41 @@
   },
   "onboarding": {
     "title": "Bem-vindo ao Reverb",
-    "subtitle": "Vamos preparar tudo para você baixar suas músicas favoritas."
+    "subtitle": "Vamos preparar tudo para você baixar suas músicas favoritas.",
+    "install": "Instalar ferramentas",
+    "finish": "Começar a usar",
+    "back": "Voltar",
+    "stepsLabel": "Passos de configuração",
+    "folder": "Pasta de músicas",
+    "missing": "Não instalado",
+    "installed": "Instalado",
+    "next": "Continuar",
+    "runtime": "Runtime JavaScript",
+    "runtimes": {
+      "auto": "Automático",
+      "system-deno": "Deno do sistema",
+      "system-node": "Node do sistema",
+      "managed-deno": "Deno gerenciado"
+    },
+    "installFailed": "A instalação falhou. Confira a conexão e tente de novo.",
+    "toolsRequired": "Instale as ferramentas obrigatórias antes de concluir",
+    "readyHelp": "Tudo pronto para baixar. Você pode mudar estas escolhas nas Configurações.",
+    "metadataHelp": "Capas, letras e metadados funcionam sem chaves de API. Você pode configurar serviços opcionais depois.",
+    "toolsReady": "Ferramentas prontas",
+    "folderInvalid": "Escolha uma pasta com caminho absoluto",
+    "clipboardWatch": "Observar links copiados",
+    "steps": {
+      "ready": "Pronto",
+      "tools": "Ferramentas",
+      "welcome": "Boas-vindas",
+      "integration": "Integração",
+      "folder": "Pasta de músicas",
+      "metadata": "Metadados"
+    },
+    "chooseFolder": "Escolher pasta",
+    "welcomeHelp": "Baixe faixas e playlists com capas, letras e metadados organizados.",
+    "toolsHelp": "yt-dlp e FFmpeg são obrigatórios. Use Node ou Deno do sistema, ou instale o Deno gerenciado.",
+    "launchAtStartup": "Iniciar com o sistema"
   },
   "updater": {
     "idle": "Ocioso",

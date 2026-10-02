@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { Analysis } from "@/bindings/Analysis";
+import type { JsRuntime } from "@/bindings/JsRuntime";
 import type { AppInfo } from "@/bindings/AppInfo";
 import type { Candidate } from "@/bindings/Candidate";
 import type { DuplicateHit } from "@/bindings/DuplicateHit";
@@ -42,6 +43,7 @@ export async function call<T>(cmd: string, args?: Record<string, unknown>): Prom
 }
 
 export const COMMANDS = [
+  "runtime_choices",
   "bookmarklet_code",
   "bookmarklet_copy",
   "deeplink_test",
@@ -110,6 +112,7 @@ export const COMMANDS = [
 export type SearchSource = "ytmusic" | "youtube";
 
 export const api = {
+  runtimeChoices: () => call<JsRuntime[]>("runtime_choices"),
   bookmarkletCode: () => call<string>("bookmarklet_code"),
   bookmarkletCopy: () => call<void>("bookmarklet_copy"),
   deeplinkTest: (link: string) => call<void>("deeplink_test", { link }),

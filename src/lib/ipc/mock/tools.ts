@@ -3,6 +3,16 @@ import type { Tool } from "@/bindings/Tool";
 import type { ToolStatus } from "@/bindings/ToolStatus";
 import type { UpdateInfo } from "@/bindings/UpdateInfo";
 import { mockBus } from "./bus";
+import type { JsRuntime } from "@/bindings/JsRuntime";
+let installFailures = 0;
+export function failMockInstall(count = 1) {
+  installFailures = count;
+}
+export function mockRuntimeChoices(): JsRuntime[] {
+  const choices: JsRuntime[] = ["system-node"];
+  if (state.deno.current) choices.push("managed-deno");
+  return choices;
+}
 
 const ORDER: Tool[] = ["ytdlp", "deno", "ffmpeg", "fpcalc", "bgutil"];
 const REQUIRED: Tool[] = ["ytdlp", "ffmpeg"];
@@ -64,6 +74,10 @@ export function mockToolsStatus(): ToolStatus[] {
 }
 
 export function mockToolsInstallMissing(): Tool[] {
+  if (installFailures > 0) {
+    --installFailures;
+    throw { kind: "network", message: "Tool installation failed" };
+  }
   const installed: Tool[] = [];
   for (const tool of ["ytdlp", "ffmpeg", "deno"] as Tool[]) {
     if (state[tool].current === null) {
@@ -124,6 +138,7 @@ export function seedMockToolVersions(tool: Tool, current: string, previous: stri
 }
 
 export function resetMockTools() {
+  installFailures = 0;
   state = fresh();
   lastForce = false;
 }

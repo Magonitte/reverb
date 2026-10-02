@@ -1,4 +1,5 @@
 import type { AppInfo } from "@/bindings/AppInfo";
+import { mockRuntimeChoices } from "./tools";
 import { BOOKMARKLET, mockBookmarkletCopy, mockDeepLinkTest } from "./integration";
 import type { SyncCreate } from "@/bindings/SyncCreate";
 import type { SyncUpdate } from "@/bindings/SyncUpdate";
@@ -98,6 +99,7 @@ const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
   settings_update: (args) => mockSettingsUpdate((args?.patch ?? {}) as SettingsPatch),
   settings_reset: () => mockSettingsReset(),
   tools_status: () => mockToolsStatus(),
+  runtime_choices: () => mockRuntimeChoices(),
   tools_install_missing: () => mockToolsInstallMissing(),
   tools_check_updates: (args) => mockToolsCheckUpdates(Boolean(args?.force)),
   tools_update: (args) => mockToolsUpdate(args?.tool as Tool),

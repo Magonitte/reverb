@@ -221,6 +221,7 @@ pub fn run() {
             commands::settings::settings_update,
             commands::settings::settings_reset,
             commands::tools::tools_status,
+            commands::tools::runtime_choices,
             commands::tools::tools_install_missing,
             commands::tools::tools_check_updates,
             commands::tools::tools_update,

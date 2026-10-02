@@ -6,10 +6,14 @@ import { mockBus } from "./bus";
 import { FX1_VIDEO, FX2_MUSIC, FX3_CLIP, FX4_ALBUM } from "./fixtures";
 import { seedMockJobs, setMockHealing, startMockSimulation } from "./queue";
 import { seedMockTool } from "./tools";
+import { failMockInstall } from "./tools";
+import { mockSettingsUpdate } from "./settings";
 import { MOCK_UPDATE, setMockUpdaterMode } from "./updater";
 import { seedMockSyncs } from "./syncs";
 
 export const SCENARIOS = [
+  "onboarding",
+  "onboarding-error",
   "playlists",
   "empty",
   "big",
@@ -40,6 +44,11 @@ const fromVideo = (v: typeof FX1_VIDEO): Partial<Job> & { sourceUrl: string } =>
 /** Estado estático e determinístico para os testes visuais e E2E. */
 export function applyScenario(name: Scenario): void {
   switch (name) {
+    case "onboarding":
+    case "onboarding-error":
+      mockSettingsUpdate({ onboardingCompleted: false });
+      if (name === "onboarding-error") failMockInstall();
+      return;
     case "playlists":
       void seedMockSyncs();
       return;
