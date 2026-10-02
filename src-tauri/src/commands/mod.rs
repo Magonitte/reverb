@@ -1,3 +1,6 @@
+pub mod backup;
+pub mod diagnostics;
+pub mod integration;
 pub mod library;
 pub mod media;
 pub mod metadata;

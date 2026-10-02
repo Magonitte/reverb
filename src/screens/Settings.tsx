@@ -1,4 +1,3 @@
-import { Settings as SettingsIcon } from "lucide-react";
 import { useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { Language } from "@/bindings/Language";
@@ -6,11 +5,13 @@ import type { Theme } from "@/bindings/Theme";
 import type { Transparency } from "@/bindings/Transparency";
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { Card } from "@/components/ui/Card";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { Select } from "@/components/ui/Select";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Tabs } from "@/components/ui/Tabs";
 import { UpdatesTab } from "./UpdatesTab";
+import { AdvancedTab } from "./AdvancedTab";
+import { DesktopSettings } from "./DesktopSettings";
+import { IntegrationTab } from "./IntegrationTab";
 import { PostprocessSettings } from "./PostprocessSettings";
 import { useSettingsStore } from "@/stores/settings";
 import { useUiStore } from "@/stores/ui";
@@ -98,16 +99,16 @@ export default function Settings() {
         onChange={(id) => navigate(`/settings/${id}`)}
         tabs={SETTINGS_TABS.map((id) => ({ id, label: t(`settings.tabs.${id}`) }))}
       >
-        {tab === "general" && <Appearance />}
-        {tab === "updates" && <UpdatesTab />}
-        {(tab === "downloads" || tab === "metadata") && <PostprocessSettings key={tab} tab={tab} />}
-        {tab !== "general" && tab !== "updates" && tab !== "downloads" && tab !== "metadata" && (
-          <EmptyState
-            icon={<SettingsIcon aria-hidden="true" />}
-            title={t(`settings.empty.${tab}.title`)}
-            description={t(`settings.empty.${tab}.description`)}
-          />
+        {tab === "general" && (
+          <div className="space-y-4">
+            <DesktopSettings />
+            <Appearance />
+          </div>
         )}
+        {tab === "updates" && <UpdatesTab />}
+        {tab === "integration" && <IntegrationTab />}
+        {(tab === "downloads" || tab === "metadata") && <PostprocessSettings key={tab} tab={tab} />}
+        {tab === "advanced" && <AdvancedTab />}
       </Tabs>
     </section>
   );

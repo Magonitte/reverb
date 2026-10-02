@@ -469,11 +469,93 @@
       "preview": "Example path",
       "previewPending": "Updating preview…",
       "watchLibrary": "Watch library folder"
+    },
+    "desktop": {
+      "title": "Desktop behavior",
+      "launchAtStartup": "Launch at startup",
+      "startMinimized": "Start minimized",
+      "minimizeToTray": "Minimize to tray",
+      "closeToTray": "Close to tray",
+      "completionNotifications": "Download completion notifications"
+    },
+    "advanced": {
+      "tools": "Download tools",
+      "weekly": "Run weekly diagnostics",
+      "diagnostics": "Diagnostics",
+      "run": "Run now",
+      "last": "Last run: {{date}}",
+      "never": "Diagnostics have not run yet.",
+      "result": "Diagnostic results",
+      "data": "Data and backups",
+      "backupHelp": "Backups contain the database and settings. Audio, API secrets and cookies are excluded. Restoring restarts Reverb.",
+      "portable": "Portable mode",
+      "installed": "Installed mode",
+      "logs": "Export logs",
+      "backup": "Create backup",
+      "restore": "Restore backup",
+      "open": "Open data folder",
+      "reset": "Restore defaults",
+      "failed": "The operation failed. Check your tools, connection and selected file, then try again.",
+      "exported": "Archive saved",
+      "restarting": "Backup restored. Restarting Reverb…",
+      "restoreConfirm": "Replace the current database and settings with this backup? Reverb will save a backup of the current data, stop downloads and restart.",
+      "resetConfirm": "Restore default settings? API secrets are kept. The setup wizard will open again.",
+      "levels": {
+        "ok": "OK",
+        "warning": "Warning",
+        "error": "Error"
+      },
+      "items": {
+        "ytdlp": "yt-dlp executable",
+        "ffmpeg": "FFmpeg executable",
+        "ffprobe": "ffprobe executable",
+        "runtime": "JavaScript runtime",
+        "ytdlpVersion": "Latest yt-dlp version",
+        "simulate": "YouTube extraction test",
+        "outputWrite": "Output folder access",
+        "diskSpace": "Available disk space",
+        "database": "Database integrity",
+        "pot": "PO token provider"
+      }
     }
   },
   "onboarding": {
     "title": "Welcome to Reverb",
-    "subtitle": "Let's get everything ready so you can download your favorite music."
+    "subtitle": "Let's get everything ready so you can download your favorite music.",
+    "install": "Install tools",
+    "finish": "Start using Reverb",
+    "back": "Back",
+    "stepsLabel": "Setup steps",
+    "folder": "Music folder",
+    "missing": "Not installed",
+    "installed": "Installed",
+    "next": "Continue",
+    "runtime": "JavaScript runtime",
+    "runtimes": {
+      "auto": "Automatic",
+      "system-deno": "System Deno",
+      "system-node": "System Node",
+      "managed-deno": "Managed Deno"
+    },
+    "installFailed": "Installation failed. Check your connection and try again.",
+    "toolsRequired": "Install the required tools before finishing",
+    "readyHelp": "You are ready to download. You can change these choices in Settings.",
+    "metadataHelp": "Artwork, lyrics and metadata work without API keys. You can configure optional services later.",
+    "toolsReady": "Tools ready",
+    "folderInvalid": "Choose an absolute folder path",
+    "clipboardWatch": "Watch copied links",
+    "steps": {
+      "ready": "Ready",
+      "tools": "Tools",
+      "welcome": "Welcome",
+      "integration": "Integration",
+      "folder": "Music folder",
+      "metadata": "Metadata"
+    },
+    "chooseFolder": "Choose folder",
+    "welcomeHelp": "Download tracks and playlists with organized artwork, lyrics and metadata.",
+    "toolsHelp": "yt-dlp and FFmpeg are required. Use system Node or Deno, or install managed Deno.",
+    "launchAtStartup": "Start with the system"
   },
   "updater": {
     "idle": "Idle",
@@ -587,5 +669,31 @@
     "nextHours_one": "Next in {{count}} hour",
     "nextHours_other": "Next in {{count}} hours",
     "pacing": "Pause between playlist track starts (seconds)"
+  },
+  "integration": {
+    "linkAdded": "Link added to the queue",
+    "linkFailed": "Could not add the link to the queue",
+    "bookmarkletCode": "Bookmarklet code",
+    "bookmarkletCopied": "Bookmarklet copied",
+    "copyBookmarklet": "Copy bookmarklet",
+    "bookmarkletTitle": "Download from your browser",
+    "bookmarkletHelp": "Copy the code and save it as the address of a bookmark, or drag the Reverb bookmark to your bookmarks bar. Use it on a YouTube page to add audio to the Reverb queue.",
+    "autostartFailed": "Could not change startup with the system",
+    "clipboardWatch": "Watch copied links",
+    "analyzeCopied": "Analyze",
+    "clipboardDetected": "Copied link detected",
+    "downloadCopied": "Download",
+    "shortcutInvalid": "Use a valid combination, such as Ctrl+Shift+D",
+    "shortcutDisable": "Disable shortcut",
+    "shortcutHelp": "Click the field and press a combination with Ctrl, Alt or Shift.",
+    "wayland": "Global shortcuts may not work on Linux with Wayland.",
+    "shortcut": "Global shortcut",
+    "shortcutConflict": "Shortcut is already in use or unavailable",
+    "shortcutEmpty": "None",
+    "shortcutRecording": "Press the keys…",
+    "testLink": "Deep link to test",
+    "test": "Test link",
+    "testSuccess": "Link received",
+    "testFailed": "Invalid or unsupported deep link"
   }
 }

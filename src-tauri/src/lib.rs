@@ -1,7 +1,14 @@
 mod commands;
+mod diagnostics;
 mod headless;
+mod integration;
+mod notifications;
+mod shortcut;
+mod startup;
 mod state;
+mod tray;
 mod updater;
+mod window;
 
 use std::sync::Arc;
 
@@ -22,12 +29,45 @@ pub fn run() {
         Err(code) => std::process::exit(code),
     };
 
-    tauri::Builder::default()
+    let builder = tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            // The deep-link feature forwards the arguments through on_open_url.
+            integration::show_window(app);
+        }))
+        .plugin(tauri_plugin_deep_link::init())
+        .plugin(tauri_plugin_notification::init())
+        .plugin(
+            tauri_plugin_global_shortcut::Builder::new()
+                .with_handler(shortcut::handler)
+                .build(),
+        )
+        .plugin(
+            tauri_plugin_autostart::Builder::new()
+                .arg("--minimized")
+                .app_name(startup::app_name())
+                .build(),
+        )
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
-        .plugin(tauri_plugin_clipboard_manager::init())
+        .plugin(tauri_plugin_clipboard_manager::init());
+    // The plugin always creates app_config_dir when saving. Isolated debug test
+    // runs must never write to the installed application's user data directory.
+    let builder = if cfg!(debug_assertions) && std::env::var_os("REVERB_DATA_DIR").is_some() {
+        builder
+    } else {
+        builder.plugin(
+            tauri_plugin_window_state::Builder::default()
+                .with_state_flags(
+                    tauri_plugin_window_state::StateFlags::SIZE
+                        | tauri_plugin_window_state::StateFlags::POSITION
+                        | tauri_plugin_window_state::StateFlags::MAXIMIZED,
+                )
+                .build(),
+        )
+    };
+    builder
         .setup(move |app| {
             if let Some(mode) = &headless_update {
                 let code =
@@ -65,7 +105,8 @@ pub fn run() {
                 Arc::clone(&sink),
             )?);
             // Ferramentas faltantes e atualizações automáticas, em segundo plano (§16).
-            tauri::async_runtime::spawn(Arc::clone(&tools).background_startup());
+            let tools_startup =
+                tauri::async_runtime::spawn(Arc::clone(&tools).background_startup());
             let backend: Arc<dyn DownloadBackend> = Arc::new(YtDlpProcessBackend::new(
                 YtDlpRunner::new(Some(Arc::clone(&tools))),
                 Arc::new(ToolsContext::new(Arc::clone(&tools), Arc::clone(&settings))),
@@ -125,6 +166,7 @@ pub fn run() {
                 db,
                 settings,
                 tools,
+                tools_startup: tokio::sync::Mutex::new(Some(tools_startup)),
                 queue,
                 syncs,
                 background_cancel,
@@ -137,6 +179,11 @@ pub fn run() {
             // Janela por plataforma (design §1): Windows transparente com Mica; Linux opaca
             // (WebKitGTK é lento com transparência; a UI usa `data-transparency="reduced"`).
             let builder = WebviewWindowBuilder::new(app, "main", WebviewUrl::default())
+                .visible(
+                    !(args.iter().any(|arg| arg == "--minimized")
+                        && app.state::<AppState>().settings.get().start_minimized),
+                )
+                .data_directory(app.state::<AppState>().paths.data_dir.join("webview"))
                 .title("Reverb")
                 .inner_size(1200.0, 800.0)
                 .min_inner_size(900.0, 600.0)
@@ -150,14 +197,43 @@ pub fn run() {
             #[cfg(not(windows))]
             let builder = builder.transparent(false);
             builder.build()?;
+            tray::initialize(app.handle())?;
+            window::initialize(app.handle());
+            notifications::initialize(app.handle())?;
+            diagnostics::initialize(app.handle());
+            integration::initialize(app.handle())?;
+            let accelerator = app.state::<AppState>().settings.get().global_shortcut;
+            if let Err(error) = shortcut::apply(app.handle(), "", &accelerator) {
+                tracing::warn!(kind = error.kind(), "global shortcut registration failed");
+                app.state::<AppState>().sink.emit(
+                    "notice",
+                    serde_json::json!({"level":"error","i18nKey":"integration.shortcutConflict"}),
+                );
+            }
+            let launch = app.state::<AppState>().settings.get().launch_at_startup;
+            if let Err(error) = startup::apply(app.handle(), launch) {
+                tracing::warn!(kind = error.kind(), "autostart synchronization failed");
+            }
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
             commands::app_info,
+            commands::diagnostics::diagnostics_run,
+            commands::diagnostics::diagnostics_last,
+            commands::backup::logs_export,
+            commands::backup::data_export,
+            commands::backup::data_import,
+            commands::backup::open_data_dir,
+            commands::backup::data_paths,
+            commands::backup::pick_backup_path,
+            commands::integration::bookmarklet_code,
+            commands::integration::bookmarklet_copy,
+            commands::integration::deeplink_test,
             commands::settings::settings_get,
             commands::settings::settings_update,
             commands::settings::settings_reset,
             commands::tools::tools_status,
+            commands::tools::runtime_choices,
             commands::tools::tools_install_missing,
             commands::tools::tools_check_updates,
             commands::tools::tools_update,

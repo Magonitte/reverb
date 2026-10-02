@@ -469,11 +469,93 @@
       "preview": "Exemplo de caminho",
       "previewPending": "Atualizando prévia…",
       "watchLibrary": "Monitorar pasta da biblioteca"
+    },
+    "desktop": {
+      "title": "Comportamento da janela",
+      "launchAtStartup": "Iniciar com o sistema",
+      "startMinimized": "Iniciar minimizado",
+      "minimizeToTray": "Minimizar para a bandeja",
+      "closeToTray": "Fechar para a bandeja",
+      "completionNotifications": "Notificar ao concluir downloads"
+    },
+    "advanced": {
+      "tools": "Ferramentas de download",
+      "weekly": "Rodar diagnóstico semanal",
+      "diagnostics": "Diagnóstico",
+      "run": "Rodar agora",
+      "last": "Última execução: {{date}}",
+      "never": "O diagnóstico ainda não foi executado.",
+      "result": "Resultados do diagnóstico",
+      "data": "Dados e backups",
+      "backupHelp": "O backup contém o banco e as configurações. Áudios, chaves de API e cookies ficam de fora. A restauração reinicia o Reverb.",
+      "portable": "Modo portátil",
+      "installed": "Modo instalado",
+      "logs": "Exportar logs",
+      "backup": "Criar backup",
+      "restore": "Restaurar backup",
+      "open": "Abrir pasta de dados",
+      "reset": "Restaurar padrões",
+      "failed": "A operação falhou. Confira as ferramentas, a conexão e o arquivo escolhido e tente novamente.",
+      "exported": "Arquivo salvo",
+      "restarting": "Backup restaurado. Reiniciando o Reverb…",
+      "restoreConfirm": "Substituir o banco e as configurações pelo backup escolhido? O Reverb salvará um backup dos dados atuais, interromperá downloads e reiniciará.",
+      "resetConfirm": "Restaurar as configurações padrão? As chaves de API serão mantidas. O assistente de configuração será aberto novamente.",
+      "levels": {
+        "ok": "OK",
+        "warning": "Aviso",
+        "error": "Erro"
+      },
+      "items": {
+        "ytdlp": "Executável do yt-dlp",
+        "ffmpeg": "Executável do FFmpeg",
+        "ffprobe": "Executável do ffprobe",
+        "runtime": "Runtime JavaScript",
+        "ytdlpVersion": "Última versão do yt-dlp",
+        "simulate": "Teste de extração do YouTube",
+        "outputWrite": "Acesso à pasta de destino",
+        "diskSpace": "Espaço livre no disco",
+        "database": "Integridade do banco",
+        "pot": "Provedor de PO token"
+      }
     }
   },
   "onboarding": {
     "title": "Bem-vindo ao Reverb",
-    "subtitle": "Vamos preparar tudo para você baixar suas músicas favoritas."
+    "subtitle": "Vamos preparar tudo para você baixar suas músicas favoritas.",
+    "install": "Instalar ferramentas",
+    "finish": "Começar a usar",
+    "back": "Voltar",
+    "stepsLabel": "Passos de configuração",
+    "folder": "Pasta de músicas",
+    "missing": "Não instalado",
+    "installed": "Instalado",
+    "next": "Continuar",
+    "runtime": "Runtime JavaScript",
+    "runtimes": {
+      "auto": "Automático",
+      "system-deno": "Deno do sistema",
+      "system-node": "Node do sistema",
+      "managed-deno": "Deno gerenciado"
+    },
+    "installFailed": "A instalação falhou. Confira a conexão e tente de novo.",
+    "toolsRequired": "Instale as ferramentas obrigatórias antes de concluir",
+    "readyHelp": "Tudo pronto para baixar. Você pode mudar estas escolhas nas Configurações.",
+    "metadataHelp": "Capas, letras e metadados funcionam sem chaves de API. Você pode configurar serviços opcionais depois.",
+    "toolsReady": "Ferramentas prontas",
+    "folderInvalid": "Escolha uma pasta com caminho absoluto",
+    "clipboardWatch": "Observar links copiados",
+    "steps": {
+      "ready": "Pronto",
+      "tools": "Ferramentas",
+      "welcome": "Boas-vindas",
+      "integration": "Integração",
+      "folder": "Pasta de músicas",
+      "metadata": "Metadados"
+    },
+    "chooseFolder": "Escolher pasta",
+    "welcomeHelp": "Baixe faixas e playlists com capas, letras e metadados organizados.",
+    "toolsHelp": "yt-dlp e FFmpeg são obrigatórios. Use Node ou Deno do sistema, ou instale o Deno gerenciado.",
+    "launchAtStartup": "Iniciar com o sistema"
   },
   "updater": {
     "idle": "Ocioso",
@@ -587,5 +669,31 @@
     "nextHours_one": "Próxima em {{count}} hora",
     "nextHours_other": "Próxima em {{count}} horas",
     "pacing": "Pausa entre inícios de faixas da playlist (segundos)"
+  },
+  "integration": {
+    "linkAdded": "Link adicionado à fila",
+    "linkFailed": "Não foi possível adicionar o link à fila",
+    "bookmarkletCode": "Código do bookmarklet",
+    "bookmarkletCopied": "Bookmarklet copiado",
+    "copyBookmarklet": "Copiar bookmarklet",
+    "bookmarkletTitle": "Baixar do navegador",
+    "bookmarkletHelp": "Copie o código e salve como endereço de um favorito, ou arraste o favorito Reverb para a barra de favoritos. Ao usá-lo em uma página do YouTube, o Reverb adiciona o áudio à fila.",
+    "autostartFailed": "Não foi possível alterar a inicialização com o sistema",
+    "clipboardWatch": "Observar links copiados",
+    "analyzeCopied": "Analisar",
+    "clipboardDetected": "Link copiado encontrado",
+    "downloadCopied": "Baixar",
+    "shortcutInvalid": "Use uma combinação válida, como Ctrl+Shift+D",
+    "shortcutDisable": "Desligar atalho",
+    "shortcutHelp": "Clique no campo e pressione uma combinação com Ctrl, Alt ou Shift.",
+    "wayland": "No Linux com Wayland, atalhos globais podem não funcionar.",
+    "shortcut": "Atalho global",
+    "shortcutConflict": "Atalho já em uso ou indisponível",
+    "shortcutEmpty": "Nenhum",
+    "shortcutRecording": "Pressione as teclas…",
+    "testLink": "Link para testar",
+    "test": "Testar link",
+    "testSuccess": "Link recebido",
+    "testFailed": "Link inválido ou não suportado"
   }
 }

@@ -1,5 +1,8 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { Analysis } from "@/bindings/Analysis";
+import type { DiagnosticReport } from "@/bindings/DiagnosticReport";
+import type { DataPaths } from "@/bindings/DataPaths";
+import type { JsRuntime } from "@/bindings/JsRuntime";
 import type { AppInfo } from "@/bindings/AppInfo";
 import type { Candidate } from "@/bindings/Candidate";
 import type { DuplicateHit } from "@/bindings/DuplicateHit";
@@ -42,7 +45,24 @@ export async function call<T>(cmd: string, args?: Record<string, unknown>): Prom
 }
 
 export const COMMANDS = [
-  "syncs_list", "sync_create", "sync_update", "sync_delete", "sync_run", "sync_items",
+  "diagnostics_run",
+  "diagnostics_last",
+  "logs_export",
+  "data_export",
+  "data_import",
+  "open_data_dir",
+  "data_paths",
+  "pick_backup_path",
+  "runtime_choices",
+  "bookmarklet_code",
+  "bookmarklet_copy",
+  "deeplink_test",
+  "syncs_list",
+  "sync_create",
+  "sync_update",
+  "sync_delete",
+  "sync_run",
+  "sync_items",
   "app_info",
   "settings_get",
   "settings_update",
@@ -102,6 +122,18 @@ export const COMMANDS = [
 export type SearchSource = "ytmusic" | "youtube";
 
 export const api = {
+  diagnosticsRun: () => call<DiagnosticReport>("diagnostics_run"),
+  diagnosticsLast: () => call<DiagnosticReport | null>("diagnostics_last"),
+  logsExport: () => call<string | null>("logs_export"),
+  dataExport: (path: string) => call<void>("data_export", { path }),
+  dataImport: (path: string) => call<string>("data_import", { path }),
+  openDataDir: () => call<void>("open_data_dir"),
+  dataPaths: () => call<DataPaths>("data_paths"),
+  pickBackupPath: (restore = false) => call<string | null>("pick_backup_path", { restore }),
+  runtimeChoices: () => call<JsRuntime[]>("runtime_choices"),
+  bookmarkletCode: () => call<string>("bookmarklet_code"),
+  bookmarkletCopy: () => call<void>("bookmarklet_copy"),
+  deeplinkTest: (link: string) => call<void>("deeplink_test", { link }),
   syncsList: () => call<Sync[]>("syncs_list"),
   syncCreate: (request: SyncCreate) => call<Sync>("sync_create", { request }),
   syncUpdate: (id: string, request: SyncUpdate) => call<Sync>("sync_update", { id, request }),

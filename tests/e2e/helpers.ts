@@ -82,7 +82,7 @@ export async function settle(page: Page) {
 /** Muda o tema pela tela de Configurações (caminho real: store → useAppearance). */
 export async function setTheme(page: Page, theme: "dark" | "light") {
   await goHash(page, "/settings");
-  await page.getByLabel("Tema").selectOption(theme);
+  await page.getByLabel("Tema", { exact: true }).selectOption(theme);
   await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
 }
 

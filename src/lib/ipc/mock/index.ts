@@ -1,7 +1,18 @@
+import { mockDiagnosticsLast, mockDiagnosticsRun } from "./diagnostics";
+import { mockCalls } from "./media";
 import type { AppInfo } from "@/bindings/AppInfo";
+import { mockRuntimeChoices } from "./tools";
+import { BOOKMARKLET, mockBookmarkletCopy, mockDeepLinkTest } from "./integration";
 import type { SyncCreate } from "@/bindings/SyncCreate";
 import type { SyncUpdate } from "@/bindings/SyncUpdate";
-import { mockSyncsList, mockSyncCreate, mockSyncUpdate, mockSyncDelete, mockSyncRun, mockSyncItems } from "./syncs";
+import {
+  mockSyncsList,
+  mockSyncCreate,
+  mockSyncUpdate,
+  mockSyncDelete,
+  mockSyncRun,
+  mockSyncItems,
+} from "./syncs";
 export { resetMockSyncs } from "./syncs";
 import type { LibraryQuery } from "@/bindings/LibraryQuery";
 import type { TrackTags } from "@/bindings/TrackTags";
@@ -76,6 +87,27 @@ export { resetMockTools, seedMockTool, seedMockToolVersions } from "./tools";
 export { resetMockUpdater, setMockUpdaterMode } from "./updater";
 
 const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
+  data_paths: () => ({ dataDir: "C:/Reverb", portable: false }),
+  logs_export: () => {
+    mockCalls.push({ cmd: "logs_export" });
+    return "C:/Reverb/logs.zip";
+  },
+  data_export: (args) => {
+    mockCalls.push({ cmd: "data_export", args });
+  },
+  data_import: (args) => {
+    mockCalls.push({ cmd: "data_import", args });
+    return "C:/Reverb/backups/before-restore.zip";
+  },
+  open_data_dir: () => {
+    mockCalls.push({ cmd: "open_data_dir" });
+  },
+  pick_backup_path: (args) => {
+    mockCalls.push({ cmd: "pick_backup_path", args });
+    return "C:/Reverb/backup.zip";
+  },
+  diagnostics_last: () => mockDiagnosticsLast(),
+  diagnostics_run: () => mockDiagnosticsRun(),
   syncs_list: () => mockSyncsList(),
   sync_create: (args) => mockSyncCreate(args?.request as SyncCreate),
   sync_update: (args) => mockSyncUpdate(args?.id as string, args?.request as SyncUpdate),
@@ -83,10 +115,14 @@ const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
   sync_run: (args) => mockSyncRun(args?.id as string),
   sync_items: (args) => mockSyncItems(args?.id as string),
   app_info: (): AppInfo => ({ version: "0.1.0", platform: "windows", arch: "x86_64" }),
+  bookmarklet_code: () => BOOKMARKLET,
+  bookmarklet_copy: () => mockBookmarkletCopy(),
+  deeplink_test: (args) => mockDeepLinkTest(args?.link as string),
   settings_get: () => mockSettingsGet(),
   settings_update: (args) => mockSettingsUpdate((args?.patch ?? {}) as SettingsPatch),
   settings_reset: () => mockSettingsReset(),
   tools_status: () => mockToolsStatus(),
+  runtime_choices: () => mockRuntimeChoices(),
   tools_install_missing: () => mockToolsInstallMissing(),
   tools_check_updates: (args) => mockToolsCheckUpdates(Boolean(args?.force)),
   tools_update: (args) => mockToolsUpdate(args?.tool as Tool),
@@ -117,8 +153,13 @@ const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
   library_delete: (args) => mockLibraryDelete(args?.ids as number[], Boolean(args?.deleteFiles)),
   library_clear: () => mockLibraryClear(),
   review_dismiss: (args) => mockReviewDismiss(args?.id as number),
-  review_list: (args) => mockLibraryList({needsReview:true,offset:args?.offset as number}),
-  review_apply: (args) => mockReviewApply(args?.id as number,args?.candidate as Candidate | null,args?.manual as TrackTags | null),
+  review_list: (args) => mockLibraryList({ needsReview: true, offset: args?.offset as number }),
+  review_apply: (args) =>
+    mockReviewApply(
+      args?.id as number,
+      args?.candidate as Candidate | null,
+      args?.manual as TrackTags | null,
+    ),
   find_official_version: (args) =>
     mockFindOfficialVersion(args?.video as VideoInfo, args?.isrc as string | null | undefined),
   metadata_preview: (args) => mockMetadataPreview(args?.request as PreviewRequest),

@@ -4,21 +4,34 @@ import type { UrlKind } from "@/bindings/UrlKind";
 import type { VideoInfo } from "@/bindings/VideoInfo";
 import { hintKind } from "@/lib/urlkind";
 import { FX1_VIDEO, FX2_MUSIC, FX3_CLIP, FX4_ALBUM, FX7_SEARCH } from "./fixtures";
+import { mockSettingsGet } from "./settings";
+import { mockBus } from "./bus";
 
 /** Chamadas das ações de sistema, para os testes conferirem (ex.: `library_reveal`). */
 export const mockCalls: Array<{ cmd: string; args?: unknown }> = [];
 
 let clipboard = "";
+let lastClipboardUrl = "";
 let pickedFolder: string | null = "C:/Musicas/Reverb";
 
 export function resetMockMedia(): void {
   mockCalls.length = 0;
   clipboard = "";
+  lastClipboardUrl = "";
   pickedFolder = "C:/Musicas/Reverb";
 }
 
 export function setMockClipboard(text: string): void {
   clipboard = text;
+  if (!mockSettingsGet().clipboardWatch) {
+    lastClipboardUrl = "";
+    return;
+  }
+  const kind = mockUrlClassify(text);
+  if ((kind.kind === "video" || kind.kind === "collection") && kind.url !== lastClipboardUrl) {
+    lastClipboardUrl = kind.url;
+    mockBus.emit("clipboard://url", { url: kind.url, visible: true });
+  }
 }
 
 export function setMockPickedFolder(path: string | null): void {
