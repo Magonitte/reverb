@@ -4,6 +4,7 @@ mod integration;
 mod state;
 mod tray;
 mod updater;
+mod window;
 
 use std::sync::Arc;
 
@@ -24,7 +25,7 @@ pub fn run() {
         Err(code) => std::process::exit(code),
     };
 
-    tauri::Builder::default()
+    let builder = tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             // The deep-link feature forwards the arguments through on_open_url.
             integration::show_window(app);
@@ -34,7 +35,23 @@ pub fn run() {
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
-        .plugin(tauri_plugin_clipboard_manager::init())
+        .plugin(tauri_plugin_clipboard_manager::init());
+    // The plugin always creates app_config_dir when saving. Isolated debug test
+    // runs must never write to the installed application's user data directory.
+    let builder = if cfg!(debug_assertions) && std::env::var_os("REVERB_DATA_DIR").is_some() {
+        builder
+    } else {
+        builder.plugin(
+            tauri_plugin_window_state::Builder::default()
+                .with_state_flags(
+                    tauri_plugin_window_state::StateFlags::SIZE
+                        | tauri_plugin_window_state::StateFlags::POSITION
+                        | tauri_plugin_window_state::StateFlags::MAXIMIZED,
+                )
+                .build(),
+        )
+    };
+    builder
         .setup(move |app| {
             if let Some(mode) = &headless_update {
                 let code =
@@ -144,6 +161,7 @@ pub fn run() {
             // Janela por plataforma (design §1): Windows transparente com Mica; Linux opaca
             // (WebKitGTK é lento com transparência; a UI usa `data-transparency="reduced"`).
             let builder = WebviewWindowBuilder::new(app, "main", WebviewUrl::default())
+                .data_directory(app.state::<AppState>().paths.data_dir.join("webview"))
                 .title("Reverb")
                 .inner_size(1200.0, 800.0)
                 .min_inner_size(900.0, 600.0)
@@ -158,6 +176,7 @@ pub fn run() {
             let builder = builder.transparent(false);
             builder.build()?;
             tray::initialize(app.handle())?;
+            window::initialize(app.handle());
             integration::initialize(app.handle())?;
             Ok(())
         })

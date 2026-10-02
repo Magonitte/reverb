@@ -6,7 +6,7 @@
 ## Situação atual
 
 - **Fase atual:** F12 — EM ANDAMENTO (F00–F11 concluídas).
-- **Último ponto de parada:** Retomada em codex/f12-integration a partir de a7e354c. Tarefa 1 implementada e verificada no core/native check; T10/T10b adicionados para o portão real. Tarefa 2 concluída (bookmarklet/IPC/mock/UI), tarefa 3 concluída (bandeja); próxima tarefa 4 (janela).
+- **Último ponto de parada:** Retomada em codex/f12-integration a partir de a7e354c. Tarefa 1 implementada e verificada no core/native check; T10/T10b adicionados para o portão real. Tarefa 2 concluída (bookmarklet/IPC/mock/UI), tarefa 3 concluída (bandeja); tarefa 4 concluída; próxima tarefa 5 (notificações).
 - **Pendências humanas abertas:** nenhuma
 - **Pendência técnica:** nenhuma (F02/T13 resolvida: job Linux do CI verde).
 
@@ -50,10 +50,11 @@
 
 - **Status:** EM ANDAMENTO
 - **Início / fim:** 2026-10-02 / —
-- **Tarefas:** [x] 1 · [x] 2 · [x] 3 · [ ] 4 · [ ] 5 · [ ] 6 · [ ] 7 · [ ] 8 · [ ] 9 · [ ] 10 · [ ] 11 · [ ] 12
+- **Tarefas:** [x] 1 · [x] 2 · [x] 3 · [x] 4 · [ ] 5 · [ ] 6 · [ ] 7 · [ ] 8 · [ ] 9 · [ ] 10 · [ ] 11 · [ ] 12
 - **Verificação da tarefa 1:** parser puro com tabela de casos válidos/inválidos passou; cargo check -p reverb passou; check:i18n e check:ipc verdes (60 comandos). T10/T10b implementados, execução pendente do build embutido no portão e2e:app. Portão completo ainda não executado.
 - **Verificação da tarefa 2:** typecheck/lint/i18n/IPC (63 comandos) verdes; 2 Vitest e 1 Playwright passaram; cargo check -p reverb passou. Falha Playwright inicial era servidor antigo de outro worktree em 1421: harness agora recusa reutilização e suporta REVERB_E2E_PORT; repetição em 1521 verde. Correção lint de expressão ternária no T10, sem mudança de asserções. T1 commit/push 6124d8a.
 - **Verificação da tarefa 3:** cargo check -p reverb verde; 2 testes do core de entradas externas verdes. Bandeja traduzida pt-BR/en, contagem e pausa dinâmicas, download do clipboard validado, pasta e saída. Polling cancelável 1,5 s sincroniza menu, idioma e disponibilidade de URL. Reaproveitada a tabela de textos da retomada anterior (5d4f) sem modificar seus arquivos. API open_path adaptada para string e método obsoleto menu_on_left_click substituído conforme Tauri instalado. T2 commit/push b12b1df.
+- **Verificação da tarefa 4:** cargo check -p reverb verde. closeToTray impede fechamento e esconde; minimizeToTray esconde ao minimizar; plugin window-state preserva tamanho/posição/maximização, sem restaurar visibilidade escondida. WebView usa data_dir/webview. Em debug isolado (REVERB_DATA_DIR), plugin de persistência fica desligado porque 2.5.0 cria obrigatoriamente app_config_dir real ao salvar; decisão necessária pelo protocolo §7.11, comportamento de fechar/minimizar continua real e T13 verifica persistência no app normal. T3 commit/push c8fe969.
 - **Pendências humanas:** T13 após implementação e verificações automatizadas.
 - **Worktree:** a45c/Reverb, limpo ao iniciar; HEAD inicial F08 corrigido para o head publicado da F11, sem modificar os demais worktrees.
 
