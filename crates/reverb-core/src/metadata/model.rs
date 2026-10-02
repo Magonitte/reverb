@@ -197,7 +197,7 @@ pub struct MetadataResult {
     /// `youtube_music`, `youtube`, `deezer`, `itunes`, `musicbrainz` ou `user`.
     pub source: String,
     pub bucket: Bucket,
-    /// Até 5, do melhor para o pior (só quando há o que revisar).
+    /// Até 5, do melhor para o pior; também reutilizados pelas capas na F09.
     pub candidates: Vec<ScoredCandidate>,
     pub content_type: ContentType,
     pub isrc: Option<String>,

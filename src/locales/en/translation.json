@@ -244,7 +244,8 @@
     },
     "confidence": "{{percent}}%",
     "confidenceReview": "{{percent}}% · review",
-    "confidenceHint": "Identified by: {{source}}"
+    "confidenceHint": "Identified by: {{source}}",
+    "openFile": "Open file"
   },
   "library": {
     "title": "Library",
@@ -352,6 +353,23 @@
         "title": "Advanced",
         "description": "JS runtime, diagnostics and backup are coming soon."
       }
+    },
+    "postprocess": {
+      "autoOrganize": "Organize downloads into folders",
+      "fetchMetadata": "Identify music",
+      "preferOfficialAudio": "Prefer official audio",
+      "offlineMode": "Offline mode",
+      "fetchArtwork": "Fetch artwork",
+      "writeFolderCover": "Write cover.jpg in the album folder",
+      "fetchLyrics": "Fetch lyrics from LRCLIB",
+      "writeLrcFile": "Write synchronized lyrics as .lrc",
+      "normalizeVolume": "Analyze ReplayGain",
+      "replayGainHint": "Stores volume adjustment tags without changing the audio.",
+      "template": "File naming template",
+      "variables": "Variables: {artist}, {albumartist}, {album}, {title}, {track:02}, {disc}, {year}, {genre}, {channel}, {source_id}, {playlist}, {playlist_index}.",
+      "invalidTemplate": "Check the variables and braces in your template.",
+      "preview": "Example path",
+      "previewPending": "Updating preview…"
     }
   },
   "onboarding": {
@@ -403,5 +421,11 @@
   },
   "toasts": {
     "queued": "Added to the queue"
+  },
+  "warnings": {
+    "artwork": "Artwork could not be fetched.",
+    "lyrics": "Lyrics could not be fetched.",
+    "loudness": "ReplayGain could not be analyzed.",
+    "other": "Some additional information could not be saved."
   }
 }

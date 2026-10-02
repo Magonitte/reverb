@@ -110,6 +110,18 @@ fn open_path(app: &AppHandle, path: &Path) -> Result<(), CoreError> {
         .map_err(|e| CoreError::Internal(e.to_string()))
 }
 
+#[tauri::command]
+pub fn library_open_file(app: AppHandle, path: String) -> Result<(), CoreError> {
+    let path = PathBuf::from(path);
+    if !path.is_file() {
+        return Err(CoreError::coded(
+            "file_missing",
+            "Arquivo de áudio não encontrado",
+        ));
+    }
+    open_path(&app, &path)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

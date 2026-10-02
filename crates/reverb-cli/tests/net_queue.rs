@@ -63,6 +63,25 @@ fn probe(file: &Path) -> serde_json::Value {
     serde_json::from_slice(&output.stdout).unwrap()
 }
 
+fn audio_files(dir: &Path) -> Vec<PathBuf> {
+    std::fs::read_dir(dir)
+        .unwrap()
+        .flat_map(|entry| {
+            let entry = entry.unwrap();
+            if entry.file_type().unwrap().is_dir() {
+                audio_files(&entry.path())
+            } else if matches!(
+                entry.path().extension().and_then(|ext| ext.to_str()),
+                Some("opus" | "mp3" | "m4a" | "flac" | "ogg" | "wav")
+            ) {
+                vec![entry.path()]
+            } else {
+                Vec::new()
+            }
+        })
+        .collect()
+}
+
 #[test]
 #[ignore = "network"]
 fn t15_fila_baixa_tres_perfis_em_paralelo_e_deixa_o_tmp_vazio() {
@@ -87,12 +106,26 @@ fn t15_fila_baixa_tres_perfis_em_paralelo_e_deixa_o_tmp_vazio() {
     assert_eq!(jobs.len(), 3);
     assert!(jobs.iter().all(|j| j["status"] == "done"), "{jobs:#?}");
 
-    let mut files: Vec<PathBuf> = std::fs::read_dir(&out)
-        .unwrap()
-        .map(|e| e.unwrap().path())
-        .collect();
+    // F09 organiza a fila em subpastas e escreve sidecars; ainda devem existir exatamente
+    // os três áudios, associados à biblioteca e com os mesmos codecs/tamanhos do T15.
+    let mut files = audio_files(&out);
     files.sort();
     assert_eq!(files.len(), 3, "{files:?}");
+    let mut recorded: Vec<PathBuf> = jobs
+        .iter()
+        .map(|job| {
+            assert!(
+                job["libraryId"].as_i64().is_some_and(|id| id > 0),
+                "{job:#?}"
+            );
+            PathBuf::from(job["outputPath"].as_str().unwrap())
+        })
+        .collect();
+    recorded.sort();
+    assert_eq!(files, recorded);
+    assert!(files
+        .iter()
+        .all(|file| file.starts_with(out.join("Outros/jawed"))));
     let mut codecs: Vec<String> = files
         .iter()
         .map(|f| {

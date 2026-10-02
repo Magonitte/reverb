@@ -20,6 +20,7 @@ use reverb_core::{Db, MemorySink, SettingsService, ToolsConfig, ToolsManager};
 use tokio_util::sync::CancellationToken;
 
 const FX1: &str = "https://www.youtube.com/watch?v=jNQXAC9IVRw";
+const FX2: &str = "https://music.youtube.com/watch?v=lYBUbBu4W08";
 const FX3: &str = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 const OFFICIAL_ID: &str = "lYBUbBu4W08";
 
@@ -281,4 +282,85 @@ async fn t15_job_real_do_fx3_sem_prefer_official_audio_mantem_o_clipe() {
     assert_ne!(result.source, "youtube_music");
     assert_eq!(job.title.as_deref(), Some("Never Gonna Give You Up"));
     assert_eq!(job.artist.as_deref(), Some("Rick Astley"));
+}
+
+#[tokio::test]
+#[ignore = "network"]
+async fn f09_t11_fx2_tags_capa_letra_replaygain_caminho_e_biblioteca() {
+    let stack = stack().await;
+    let job = run_job(&stack, FX2, OFFICIAL_ID).await;
+    let path = std::path::Path::new(job.output_path.as_ref().unwrap());
+    assert!(
+        path.starts_with(
+            stack
+                ._temp
+                .path()
+                .join("musicas/Rick Astley/Whenever You Need Somebody")
+        ),
+        "{}",
+        path.display()
+    );
+    assert!(path
+        .to_string_lossy()
+        .ends_with("Never Gonna Give You Up.opus"));
+    let tags = reverb_core::tagging::read_tags(path).unwrap();
+    assert_eq!(tags.title, "Never Gonna Give You Up");
+    assert_eq!(tags.artist.as_deref(), Some("Rick Astley"));
+    let cover = image::load_from_memory(&tags.cover.unwrap().data).unwrap();
+    assert_eq!(cover.width(), cover.height());
+    assert!(cover.width() >= 500);
+    let lyrics = tags.lyrics.expect("letra embutida");
+    assert_eq!(
+        std::fs::read_to_string(path.with_extension("lrc")).unwrap(),
+        lyrics
+    );
+    assert!(tags.replay_gain_track_gain.is_some());
+    assert!(tags.replay_gain_track_peak.is_some());
+    assert!(tags.r128_track_gain.is_some());
+    assert!(path.parent().unwrap().join("cover.jpg").is_file());
+    let id = job.library_id.expect("biblioteca");
+    stack
+        .db
+        .call(move |conn| {
+            let item = reverb_core::library::get(conn, id)?.unwrap();
+            assert!(item.has_synced_lyrics && item.replaygain_db.is_some());
+            Ok(())
+        })
+        .await
+        .unwrap();
+    assert_eq!(
+        std::fs::read_dir(stack.data.join("tmp")).unwrap().count(),
+        0
+    );
+}
+
+#[tokio::test]
+#[ignore = "network"]
+async fn f09_t12_fx1_outros_jawed_sem_letra() {
+    let stack = stack().await;
+    let job = run_job(&stack, FX1, "jNQXAC9IVRw").await;
+    let path = std::path::Path::new(job.output_path.as_ref().unwrap());
+    assert_eq!(
+        path.strip_prefix(stack._temp.path().join("musicas"))
+            .unwrap(),
+        std::path::Path::new("Outros/jawed/Me at the zoo.opus")
+    );
+    assert!(!path.with_extension("lrc").exists());
+    assert!(reverb_core::tagging::read_tags(path)
+        .unwrap()
+        .lyrics
+        .is_none());
+    assert!(!job.warnings.iter().any(|w| w == "warnings.lyrics"));
+    let id = job.library_id.unwrap();
+    stack
+        .db
+        .call(move |conn| {
+            assert_eq!(
+                reverb_core::library::get(conn, id)?.unwrap().content_type,
+                ContentType::Other
+            );
+            Ok(())
+        })
+        .await
+        .unwrap();
 }

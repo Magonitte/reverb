@@ -44,6 +44,9 @@ fn job(job_id: &str, out_dir: &Path) -> PipelineJob {
         sponsorblock: None,
         metadata_override: None,
         fetch_metadata: None,
+        settings: None,
+        options: Default::default(),
+        playlist_ctx: None,
     }
 }
 

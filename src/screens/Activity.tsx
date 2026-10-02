@@ -117,6 +117,7 @@ export default function Activity() {
       const path = job.outputPath;
       if (path) void run(() => api.libraryReveal(path));
     },
+    onOpen: (job) => { const path = job.outputPath; if (path) void run(() => api.libraryOpenFile(path)); },
   };
 
   const onDragEnd = ({ active, over }: DragEndEvent) => {

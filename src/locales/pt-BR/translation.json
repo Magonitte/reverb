@@ -244,7 +244,8 @@
     },
     "confidence": "{{percent}}%",
     "confidenceReview": "{{percent}}% · revisar",
-    "confidenceHint": "Identificado por: {{source}}"
+    "confidenceHint": "Identificado por: {{source}}",
+    "openFile": "Abrir arquivo"
   },
   "library": {
     "title": "Biblioteca",
@@ -352,6 +353,23 @@
         "title": "Avançado",
         "description": "Runtime JS, diagnóstico e backup chegam em breve."
       }
+    },
+    "postprocess": {
+      "autoOrganize": "Organizar downloads em pastas",
+      "fetchMetadata": "Identificar músicas",
+      "preferOfficialAudio": "Preferir áudio oficial",
+      "offlineMode": "Modo offline",
+      "fetchArtwork": "Buscar capas",
+      "writeFolderCover": "Gravar cover.jpg na pasta do álbum",
+      "fetchLyrics": "Buscar letras no LRCLIB",
+      "writeLrcFile": "Gravar letras sincronizadas como .lrc",
+      "normalizeVolume": "Analisar ReplayGain",
+      "replayGainHint": "Grava tags de ajuste de volume sem alterar o áudio.",
+      "template": "Modelo de nomes de arquivos",
+      "variables": "Variáveis: {artist}, {albumartist}, {album}, {title}, {track:02}, {disc}, {year}, {genre}, {channel}, {source_id}, {playlist}, {playlist_index}.",
+      "invalidTemplate": "Confira as variáveis e as chaves do modelo.",
+      "preview": "Exemplo de caminho",
+      "previewPending": "Atualizando prévia…"
     }
   },
   "onboarding": {
@@ -403,5 +421,11 @@
   },
   "toasts": {
     "queued": "Adicionado à fila"
+  },
+  "warnings": {
+    "artwork": "Não foi possível buscar a capa.",
+    "lyrics": "Não foi possível buscar a letra.",
+    "loudness": "Não foi possível analisar o ReplayGain.",
+    "other": "Não foi possível salvar algumas informações adicionais."
   }
 }

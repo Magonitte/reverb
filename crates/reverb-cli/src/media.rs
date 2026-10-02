@@ -106,6 +106,11 @@ impl ProgressPrinter {
             PipelineEvent::Convert(percent) => ("convertendo", i64::from(percent), String::new()),
             PipelineEvent::Analyzing => ("analisando", -1, String::new()),
             PipelineEvent::Identifying => ("identificando", -1, String::new()),
+            PipelineEvent::Stage(stage) => (stage.as_str(), -1, String::new()),
+            PipelineEvent::Warning(warning) => {
+                eprintln!("{warning}");
+                return;
+            }
             PipelineEvent::SourceSwitched { .. } | PipelineEvent::Identified(_) => return,
         };
         let bucket = if percent < 0 { -1 } else { percent / 10 };
@@ -201,6 +206,9 @@ pub async fn download(
         sponsorblock: None,
         metadata_override: None,
         fetch_metadata: None,
+        settings: None,
+        options: Default::default(),
+        playlist_ctx: None,
     };
     let printer = ProgressPrinter::new();
     let output = pipeline

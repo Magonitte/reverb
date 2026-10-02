@@ -15,6 +15,7 @@ import {
   mockUrlClassify,
 } from "./media";
 import { mockFindOfficialVersion, mockMetadataPreview, mockMetadataSearch } from "./metadata";
+import { mockTemplatePreview, mockLibraryCover, mockLibraryOpenFile } from "./postprocess";
 import {
   mockCheckDuplicates,
   mockEnqueue,
@@ -64,6 +65,9 @@ const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
   open_output_dir: () => mockOpenOutputDir(),
   clipboard_read_text: () => mockClipboardReadText(),
   library_reveal: (args) => mockLibraryReveal(args?.path as string),
+  library_open_file: (args) => mockLibraryOpenFile(args?.path as string),
+  library_cover: (args) => mockLibraryCover(args?.id as number),
+  template_preview: (args) => mockTemplatePreview(args?.template as string),
   find_official_version: (args) =>
     mockFindOfficialVersion(args?.video as VideoInfo, args?.isrc as string | null | undefined),
   metadata_preview: (args) => mockMetadataPreview(args?.request as PreviewRequest),

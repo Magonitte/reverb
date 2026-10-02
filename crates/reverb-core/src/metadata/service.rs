@@ -450,16 +450,7 @@ impl MetadataService {
         };
         let auto = best_score >= settings.confidence_auto_apply;
 
-        if base.official {
-            // Base oficial: o candidato só completa o que falta, e só se for confiável.
-            if auto {
-                let detailed = self.details(best).await;
-                result.fields.fill_missing(&detailed);
-                result.isrc = detailed.isrc;
-            }
-            return;
-        }
-
+        // F09 reutiliza estas capas, inclusive quando a base já é oficial.
         result.candidates = ranked
             .iter()
             .map(|(value, candidate)| ScoredCandidate {
@@ -467,6 +458,17 @@ impl MetadataService {
                 candidate: candidate.clone(),
             })
             .collect();
+        if base.official {
+            // Base oficial: o candidato só completa o que falta, e só se for confiável.
+            if auto {
+                let detailed = self.details(best).await;
+                result.fields.fill_missing(&detailed);
+                result.isrc = detailed.isrc.clone();
+                result.candidates[0].candidate = detailed;
+            }
+            return;
+        }
+
         if auto {
             let detailed = self.details(best).await;
             result.fields.apply_candidate(&detailed);
@@ -474,6 +476,7 @@ impl MetadataService {
             result.confidence = best_score;
             result.source = detailed.provider.clone();
             result.bucket = Bucket::Auto;
+            result.candidates[0].candidate = detailed;
         } else if best_score >= settings.confidence_review {
             result.confidence = best_score;
             result.bucket = Bucket::Review;

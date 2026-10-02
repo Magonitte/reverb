@@ -275,7 +275,7 @@ function identify(job: Job): void {
 }
 
 /** Estágios simulados, na ordem do pipeline (arquitetura §10). */
-const SIM_STAGES: Job["stage"][] = ["analyzing", "downloading", "converting", "metadata", "moving"];
+const SIM_STAGES: Job["stage"][] = ["analyzing", "downloading", "converting", "metadata", "artwork", "lyrics", "loudness", "tagging", "moving"];
 const SIM_STEP = 0.34;
 
 /**
@@ -292,11 +292,14 @@ export function mockSimulationStep(parallelism = 2): void {
         job.status = "running";
         job.stage = SIM_STAGES[0]!;
         job.attempts += 1;
+        job.warnings = [];
         emitJob(job);
       });
   }
   for (const job of jobs.filter((j) => j.status === "running")) {
-    job.progress = Math.min(1, job.progress + SIM_STEP);
+    // Estes passos só emitem início/fim no core; não simulam progresso em porcentagem.
+    const discrete = ["artwork", "lyrics", "loudness", "tagging"].includes(job.stage);
+    job.progress = discrete ? 1 : Math.min(1, job.progress + SIM_STEP);
     const index = SIM_STAGES.indexOf(job.stage);
     if (job.progress >= 1) {
       if (index + 1 >= SIM_STAGES.length) {
@@ -308,6 +311,8 @@ export function mockSimulationStep(parallelism = 2): void {
         job.etaS = null;
         job.finishedAt = job.updatedAt + 1;
         job.outputPath = `C:/Musicas/Reverb/${job.title ?? job.sourceId ?? job.id}.opus`;
+        job.libraryId = Number(job.id.replace("mock-job-", ""));
+        mockBus.emit("library://changed", { ids: [job.libraryId] });
       } else {
         job.stage = SIM_STAGES[index + 1]!;
         job.progress = 0;

@@ -12,11 +12,16 @@ use crate::backend::{DownloadBackend, JobSpec};
 use crate::metadata::{IdentifyInput, MetadataResult, MetadataService, SourcePlan};
 use crate::organize::{sanitize_path, unique_path};
 use crate::profiles::{Profile, ResolvedProfile};
+use crate::queue::{JobOptions, JobStage, PlaylistCtx};
 use crate::tools::ToolsManager;
 use crate::transcode;
 use crate::workspace::JobWorkspace;
 use crate::ytdlp::errors::{DownloadError, ErrorKind};
 use crate::ytdlp::{DoneInfo, ProgressUpdate};
+use crate::Settings;
+
+pub mod postprocess;
+use postprocess::{PostProcessor, Publication};
 
 #[derive(Debug, Clone)]
 pub struct PipelineJob {
@@ -30,6 +35,9 @@ pub struct PipelineJob {
     pub metadata_override: Option<serde_json::Value>,
     /// Sobrescreve `fetchMetadata` só para este job.
     pub fetch_metadata: Option<bool>,
+    pub settings: Option<Settings>,
+    pub options: JobOptions,
+    pub playlist_ctx: Option<PlaylistCtx>,
 }
 
 #[derive(Debug, Clone)]
@@ -47,15 +55,19 @@ pub enum PipelineEvent {
     /// Começou a identificar os metadados (`identify`).
     Identifying,
     Identified(Box<MetadataResult>),
+    Stage(JobStage),
+    Warning(String),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct PipelineOutput {
     pub path: PathBuf,
     pub done: DoneInfo,
     pub profile: ResolvedProfile,
     /// Resultado da identificação (só com `MetadataService`).
     pub metadata: Option<MetadataResult>,
+    pub library_file: Option<crate::library::DownloadedFile>,
+    pub publication: Option<Publication>,
 }
 
 pub struct DownloadPipeline {
@@ -64,6 +76,7 @@ pub struct DownloadPipeline {
     ffmpeg_dir: PathBuf,
     tools: Option<Arc<ToolsManager>>,
     metadata: Option<Arc<MetadataService>>,
+    postprocess: Option<Arc<PostProcessor>>,
 }
 
 fn exe(name: &str) -> String {
@@ -100,12 +113,18 @@ impl DownloadPipeline {
             ffmpeg_dir,
             tools,
             metadata: None,
+            postprocess: None,
         }
     }
 
     /// Liga os passos `resolve_source` e `identify` (F08).
     pub fn with_metadata(mut self, metadata: Option<Arc<MetadataService>>) -> Self {
         self.metadata = metadata;
+        self
+    }
+
+    pub fn with_postprocessing(mut self, processor: Arc<PostProcessor>) -> Self {
+        self.postprocess = Some(processor);
         self
     }
 
@@ -152,6 +171,35 @@ impl DownloadPipeline {
             .identify(job, plan.as_ref(), &ready, &done, cancel, on_event)
             .await?;
 
+        if let Some(processor) = &self.postprocess {
+            // Mantém probe/loudness protegidos contra a troca de versão das ferramentas.
+            let _guard = match &self.tools {
+                Some(tools) => Some(tools.acquire_run().await),
+                None => None,
+            };
+            let (file, publication) = processor
+                .run(
+                    job,
+                    &ready,
+                    &profile.ext,
+                    &done,
+                    metadata.as_ref(),
+                    plan.as_ref(),
+                    &self.ffmpeg_dir,
+                    cancel,
+                    on_event,
+                )
+                .await?;
+            return Ok(PipelineOutput {
+                path: PathBuf::from(&file.file_path),
+                done,
+                profile,
+                metadata,
+                library_file: Some(file),
+                publication: Some(publication),
+            });
+        }
+
         tokio::fs::create_dir_all(&job.out_dir)
             .await
             .map_err(|e| io_error("não foi possível criar a pasta de destino", e))?;
@@ -164,6 +212,8 @@ impl DownloadPipeline {
             done,
             profile,
             metadata,
+            library_file: None,
+            publication: None,
         })
     }
 

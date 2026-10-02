@@ -1,5 +1,7 @@
 import type { ComponentProps, HTMLAttributes, ReactNode, Ref } from "react";
-import { FolderOpen, GripVertical, RotateCcw, Trash2, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { FileAudio, FolderOpen, GripVertical, RotateCcw, Trash2, X } from "lucide-react";
+import { api } from "@/lib/ipc/api";
 import { useTranslation } from "react-i18next";
 import type { Job } from "@/bindings/Job";
 import { toneOf } from "@/components/JobMiniCard";
@@ -17,6 +19,7 @@ export interface JobCardProps {
   onRetry: (job: Job) => void;
   onRemove: (job: Job) => void;
   onReveal: (job: Job) => void;
+  onOpen?: (job: Job) => void;
   /** Alça de arrastar (só pendentes); vem do dnd-kit. */
   handle?: ReactNode;
   rootRef?: Ref<HTMLLIElement>;
@@ -37,11 +40,22 @@ export function JobCard({
   onRetry,
   onRemove,
   onReveal,
+  onOpen,
   handle,
   rootRef,
   rootProps,
 }: JobCardProps) {
   const { t } = useTranslation();
+  const [embedded, setEmbedded] = useState<{ id: number; cover: string | null } | null>(null);
+  useEffect(() => {
+    let active = true;
+    if (job.status === "done" && job.libraryId !== null) {
+      const id = job.libraryId;
+      api.libraryCover(id).then((cover) => { if (active) setEmbedded({ id, cover }); }).catch(() => {});
+    }
+    return () => { active = false; };
+  }, [job.status, job.libraryId]);
+  const cover = embedded?.id === job.libraryId ? embedded?.cover : null;
   const running = job.status === "running";
   const finished = job.status === "done" || job.status === "failed" || job.status === "cancelled";
   const title = job.title ?? job.sourceUrl;
@@ -76,9 +90,10 @@ export function JobCard({
       {...rootProps}
     >
       {handle}
-      {job.thumbnail ? (
+      {cover || job.thumbnail ? (
         <img
-          src={job.thumbnail}
+          src={cover ?? job.thumbnail ?? undefined}
+          data-testid={cover ? "job-cover" : undefined}
           alt=""
           className="size-10 shrink-0 rounded-md bg-field object-cover"
         />
@@ -112,6 +127,9 @@ export function JobCard({
             {jobErrorText(t, job)}
           </p>
         )}
+        {job.warnings.length > 0 && <ul data-testid="job-warnings" className="mt-1 space-y-1 text-xs text-warning">
+          {job.warnings.map((warning) => <li key={warning}>{t(warning, { defaultValue: t("warnings.other") })}</li>)}
+        </ul>}
       </div>
       <div className="flex shrink-0 items-center gap-1">
         {confidence}
@@ -119,6 +137,9 @@ export function JobCard({
           <IconButton size="sm" label={label("activity.retryJob")} onClick={() => onRetry(job)}>
             <RotateCcw />
           </IconButton>
+        )}
+        {job.status === "done" && job.outputPath && (
+          <IconButton size="sm" label={label("activity.openFile")} onClick={() => onOpen?.(job)}><FileAudio /></IconButton>
         )}
         {job.status === "done" && job.outputPath && (
           <IconButton size="sm" label={label("activity.openFolder")} onClick={() => onReveal(job)}>

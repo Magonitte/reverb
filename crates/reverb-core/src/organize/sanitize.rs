@@ -45,6 +45,7 @@ pub fn sanitize_component(input: &str) -> String {
     }
     if is_reserved(&name) {
         name.insert(0, '_');
+        name = truncate_chars(&name, MAX_COMPONENT_CHARS);
     }
     name
 }
@@ -77,7 +78,13 @@ pub fn sanitize_path(base: &Path, parts: &[&str], ext: &str) -> PathBuf {
         format!(".{ext}")
     };
 
-    let mut stem = sanitize_component(file);
+    let mut stem = truncate_chars(
+        &sanitize_component(file),
+        MAX_COMPONENT_CHARS - suffix.chars().count(),
+    );
+    if stem.is_empty() {
+        stem.push('_');
+    }
     loop {
         let candidate = dir.join(format!("{stem}{suffix}"));
         let excess = char_len(&candidate).saturating_sub(MAX_PATH_CHARS);
@@ -91,12 +98,22 @@ pub fn sanitize_path(base: &Path, parts: &[&str], ext: &str) -> PathBuf {
         } else {
             shortened
         };
+        // Cortar pode transformar `CONcert` em `CON`, por exemplo.
+        if is_reserved(&stem) {
+            stem.insert(0, '_');
+        }
     }
 }
 
 /// Se `path` já existe, acrescenta ` (2)`, ` (3)`… antes da extensão até achar um nome livre.
 pub fn unique_path(path: &Path) -> PathBuf {
-    if !path.exists() {
+    unique_path_for(path, |candidate| {
+        std::fs::symlink_metadata(candidate).is_ok()
+    })
+}
+
+pub(crate) fn unique_path_for(path: &Path, occupied: impl Fn(&Path) -> bool) -> PathBuf {
+    if !occupied(path) {
         return path.to_path_buf();
     }
     let stem = path
@@ -106,11 +123,25 @@ pub fn unique_path(path: &Path) -> PathBuf {
     let ext = path.extension().map(|e| e.to_string_lossy().into_owned());
     let parent = path.parent().unwrap_or_else(|| Path::new(""));
     (2u32..)
-        .map(|n| match &ext {
-            Some(ext) => parent.join(format!("{stem} ({n}).{ext}")),
-            None => parent.join(format!("{stem} ({n})")),
+        .map(|n| {
+            let suffix = match &ext {
+                Some(ext) => format!(" ({n}).{ext}"),
+                None => format!(" ({n})"),
+            };
+            let limit =
+                MAX_COMPONENT_CHARS.min(MAX_PATH_CHARS.saturating_sub(char_len(parent) + 1));
+            let shortened =
+                truncate_chars(&stem, limit.saturating_sub(suffix.chars().count()).max(1));
+            parent.join(format!(
+                "{}{suffix}",
+                if shortened.is_empty() {
+                    "_"
+                } else {
+                    &shortened
+                }
+            ))
         })
-        .find(|candidate| !candidate.exists())
+        .find(|candidate| !occupied(candidate))
         .expect("sempre existe um sufixo livre")
 }
 

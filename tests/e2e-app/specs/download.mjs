@@ -94,4 +94,25 @@ describe("fluxo de download no app real", () => {
       await invoke("settings_update", { patch: { speedLimitMbps: 0, preferOfficialAudio: true } });
     }
   });
+
+  it("F09 T13: baixar FX2 ⇒ capa embutida no concluído ⇒ abrir pasta sem erro", async () => {
+    await $('[data-testid="nav-home"]').click();
+    await submitLink("https://music.youtube.com/watch?v=lYBUbBu4W08");
+    await $('[data-testid="preview-title"]').waitForDisplayed({ timeout: 90_000 });
+    await (await byText("button", "Baixar agora")).click();
+    const job = await waitForJob((j) => j.sourceId === "lYBUbBu4W08" && j.status === "done", { timeout: 240_000 });
+    expect(job.libraryId).toBeGreaterThan(0);
+    expect(existsSync(job.outputPath)).toBe(true);
+    await $('[data-testid="nav-activity"]').click();
+    await openTab("Concluídos");
+    const cover = await $('//li[@data-testid="job-card"][.//p[text()="Never Gonna Give You Up"]]//img[@data-testid="job-cover"]');
+    await cover.waitForDisplayed({ timeout: 10_000 });
+    expect(await cover.getAttribute("src")).toMatch(/^data:image\/jpeg;base64,/);
+    const width = await browser.execute((image) => image.naturalWidth, cover);
+    expect(width).toBe(256);
+    const reveal = await $('//button[@aria-label="Mostrar Never Gonna Give You Up na pasta"]');
+    await reveal.click();
+    await browser.pause(500);
+    expect(await $('[role="alert"]').isExisting()).toBe(false);
+  });
 });

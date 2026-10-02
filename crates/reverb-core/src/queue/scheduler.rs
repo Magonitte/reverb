@@ -625,6 +625,18 @@ impl Inner {
                     live.job.apply_metadata(&result);
                     (JobStage::Metadata, 1.0)
                 }
+                PipelineEvent::Stage(stage) => {
+                    live.job.speed_bps = None;
+                    live.job.eta_s = None;
+                    insert_before_moving(&mut live.present, stage);
+                    (stage, 0.0)
+                }
+                PipelineEvent::Warning(warning) => {
+                    if !live.job.warnings.contains(&warning) {
+                        live.job.warnings.push(warning);
+                    }
+                    (previous, live.job.progress)
+                }
             };
             live.job.stage = stage;
             live.job.progress = fraction.clamp(0.0, 1.0);
@@ -665,11 +677,21 @@ impl Inner {
             .and_then(|live| live.reason)
     }
 
-    async fn finish_ok(&self, id: &str, output: PipelineOutput) {
-        let Some(live) = self.take_live(id) else {
+    async fn finish_ok(self: &Arc<Self>, id: &str, mut output: PipelineOutput) {
+        if self.reason_of(id).is_some() {
+            self.finish_err(id, DownloadError::cancelled()).await;
+            return;
+        }
+        let Some(mut job) = self
+            .state
+            .lock()
+            .expect("estado da fila")
+            .running
+            .get(id)
+            .map(|live| live.job.clone())
+        else {
             return;
         };
-        let mut job = live.job;
         let now = repo::now();
         job.status = JobStatus::Done;
         job.stage = JobStage::Done;
@@ -680,6 +702,12 @@ impl Inner {
         job.error_kind = None;
         job.error_message = None;
         job.output_path = Some(output.path.to_string_lossy().into_owned());
+        if let Some(file) = &output.library_file {
+            job.title = Some(file.tags.title.clone());
+            job.artist = file.tags.artist.clone();
+            job.duration_s = file.probe.as_ref().map(|probe| probe.duration_s);
+            job.source_id = Some(output.done.id.clone());
+        }
         if job.title.is_none() {
             job.title = Some(output.done.title.clone());
         }
@@ -688,7 +716,39 @@ impl Inner {
         }
         job.updated_at = now;
         job.finished_at = Some(now);
-        self.persist(&job).await;
+        let mut recorded = job.clone();
+        let file = output.library_file.take();
+        let saved = self
+            .db
+            .call(move |conn| {
+                let tx = conn.transaction()?;
+                if let Some(file) = file {
+                    recorded.library_id =
+                        Some(crate::library::insert_from_job(&tx, &recorded, &file)?);
+                }
+                repo::save(&tx, &recorded)?;
+                tx.commit()?;
+                Ok(recorded)
+            })
+            .await;
+        let job = match saved {
+            Ok(job) => job,
+            Err(error) => {
+                self.finish_err(id, DownloadError::new(ErrorKind::Disk, error.to_string()))
+                    .await;
+                return;
+            }
+        };
+        self.take_live(id);
+        if let Some(publication) = &mut output.publication {
+            publication.commit();
+        }
+        if let Some(library_id) = job.library_id {
+            self.sink.emit(
+                "library://changed",
+                serde_json::json!({ "ids": [library_id] }),
+            );
+        }
         self.emit_job(&job);
         self.after_finish().await;
     }
@@ -905,12 +965,15 @@ async fn run_job(inner: Arc<Inner>, job: Job, cancel: CancellationToken) {
         return;
     };
     let settings = inner.settings.get();
-    let out_dir = job
-        .options
-        .output_dir
-        .as_deref()
-        .filter(|dir| !dir.is_empty())
-        .map_or_else(|| resolve_output_dir(&settings), PathBuf::from);
+    let out_dir = match output_dir(&inner.db, &job, &settings).await {
+        Ok(path) => path,
+        Err(error) => {
+            inner
+                .finish_err(&id, DownloadError::new(ErrorKind::Disk, error.to_string()))
+                .await;
+            return;
+        }
+    };
     let pipeline_job = PipelineJob {
         job_id: id.clone(),
         url: job.source_url.clone(),
@@ -919,6 +982,9 @@ async fn run_job(inner: Arc<Inner>, job: Job, cancel: CancellationToken) {
         sponsorblock: sponsorblock_categories(&job, &inner),
         metadata_override: job.metadata_override.clone(),
         fetch_metadata: job.options.fetch_metadata,
+        settings: Some(settings),
+        options: job.options.clone(),
+        playlist_ctx: job.playlist_ctx.clone(),
     };
     let on_event = |event| inner.on_event(&id, event);
     let result = inner.runner.run(&pipeline_job, &cancel, &on_event).await;
@@ -926,4 +992,37 @@ async fn run_job(inner: Arc<Inner>, job: Job, cancel: CancellationToken) {
         Ok(output) => inner.finish_ok(&id, output).await,
         Err(error) => inner.finish_err(&id, error).await,
     }
+}
+
+pub(crate) async fn output_dir(
+    db: &Db,
+    job: &Job,
+    settings: &crate::Settings,
+) -> CoreResult<PathBuf> {
+    if let Some(dir) = job
+        .options
+        .output_dir
+        .as_deref()
+        .filter(|s| !s.trim().is_empty())
+    {
+        return Ok(PathBuf::from(dir));
+    }
+    if let Some(id) = &job.sync_id {
+        let id = id.clone();
+        let dir = db
+            .call(move |conn| {
+                let mut stmt = conn.prepare_cached("SELECT output_dir FROM syncs WHERE id=?1")?;
+                let mut rows = stmt.query([id])?;
+                Ok(rows
+                    .next()?
+                    .map(|row| row.get::<_, Option<String>>(0))
+                    .transpose()?
+                    .flatten())
+            })
+            .await?;
+        if let Some(dir) = dir.filter(|s| !s.trim().is_empty()) {
+            return Ok(PathBuf::from(dir));
+        }
+    }
+    Ok(resolve_output_dir(settings))
 }

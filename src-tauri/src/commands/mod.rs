@@ -1,5 +1,6 @@
 pub mod media;
 pub mod metadata;
+pub mod postprocess;
 pub mod queue;
 pub mod settings;
 pub mod tools;

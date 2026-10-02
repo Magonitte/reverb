@@ -205,7 +205,7 @@ pub fn claim(conn: &Connection, id: &str) -> CoreResult<Option<Job>> {
     let changed = conn.execute(
         "UPDATE jobs SET status='running', stage='downloading', attempts=attempts+1, progress=0, \
          overall_progress=0, speed_bps=NULL, eta_s=NULL, error_kind=NULL, error_message=NULL, \
-         finished_at=NULL, updated_at=?2 WHERE id=?1 AND status='queued'",
+           finished_at=NULL, warnings_json='[]', updated_at=?2 WHERE id=?1 AND status='queued'",
         params![id, now()],
     )?;
     if changed == 0 {
@@ -343,9 +343,6 @@ pub fn find_duplicates(
         "SELECT id FROM jobs WHERE provider = ?1 AND source_id = ?2 AND profile_id = ?3 \
          AND status NOT IN ('failed','cancelled') LIMIT 1",
     )?;
-    let mut library = conn.prepare_cached(
-        "SELECT 1 FROM library WHERE provider = ?1 AND source_id = ?2 AND profile_id = ?3 LIMIT 1",
-    )?;
     for source_id in source_ids {
         let job_id: Option<String> = jobs
             .query_row(params![provider, source_id, profile_id], |r| r.get(0))
@@ -362,13 +359,8 @@ pub fn find_duplicates(
             });
             continue;
         }
-        let in_library = library
-            .query_row(params![provider, source_id, profile_id], |_| Ok(()))
-            .map(|()| true)
-            .or_else(|e| match e {
-                rusqlite::Error::QueryReturnedNoRows => Ok(false),
-                other => Err(other),
-            })?;
+        let in_library =
+            crate::library::find_by_source(conn, provider, source_id, profile_id)?.is_some();
         if in_library {
             hits.push(DuplicateHit {
                 source_id: source_id.clone(),

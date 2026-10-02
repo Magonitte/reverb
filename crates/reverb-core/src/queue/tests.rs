@@ -864,10 +864,22 @@ async fn t12_duplicatas() {
     // A biblioteca também.
     env.db
         .call(|conn| {
-            conn.execute(
-                "INSERT INTO library (file_path, provider, source_id, title, profile_id, added_at, updated_at) \
-                 VALUES ('/m/a.opus', 'youtube', 'vid9', 'A', 'original', 1, 1)",
-                [],
+            crate::library::insert_from_job(
+                conn,
+                &raw_job("library-job", JobStatus::Done, JobStage::Done, 1, 9),
+                &crate::library::DownloadedFile {
+                    file_path: "/m/a.opus".into(),
+                    tags: crate::tagging::TrackTags {
+                        title: "A".into(),
+                        ..Default::default()
+                    },
+                    probe: None,
+                    source_abr_kbps: None,
+                    content_type: crate::metadata::ContentType::Music,
+                    has_synced_lyrics: false,
+                    cover_source: None,
+                    replaygain_db: None,
+                },
             )?;
             Ok(())
         })
@@ -1052,3 +1064,4 @@ async fn enqueue_valida_a_entrada() {
 }
 
 mod metadata;
+mod postprocess;

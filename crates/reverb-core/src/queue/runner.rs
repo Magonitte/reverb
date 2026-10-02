@@ -9,6 +9,7 @@ use tokio_util::sync::CancellationToken;
 
 use crate::backend::DownloadBackend;
 use crate::metadata::MetadataService;
+use crate::pipeline::postprocess::PostProcessor;
 use crate::pipeline::{DownloadPipeline, PipelineEvent, PipelineJob, PipelineOutput};
 use crate::tools::{Tool, ToolsManager};
 use crate::ytdlp::errors::{DownloadError, ErrorKind};
@@ -43,6 +44,7 @@ pub struct ToolsPipeline {
     tools: Arc<ToolsManager>,
     data_dir: PathBuf,
     metadata: Option<Arc<MetadataService>>,
+    postprocess: Arc<PostProcessor>,
 }
 
 impl ToolsPipeline {
@@ -56,6 +58,7 @@ impl ToolsPipeline {
             tools,
             data_dir,
             metadata: None,
+            postprocess: Arc::new(PostProcessor::default()),
         }
     }
 
@@ -89,6 +92,7 @@ impl PipelineRunner for ToolsPipeline {
             Some(Arc::clone(&self.tools)),
         )
         .with_metadata(self.metadata.clone())
+        .with_postprocessing(Arc::clone(&self.postprocess))
         .run(job, cancel, on_event)
         .await
     }

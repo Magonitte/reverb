@@ -42,6 +42,8 @@ function webview2Version() {
 /** Baixa o msedgedriver da Microsoft para a versão do WebView2 (idempotente). */
 async function ensureEdgeDriver() {
   const version = webview2Version();
+  const cached = join(toolsDir, "msedgedriver", version, "msedgedriver.exe");
+  if (existsSync(cached)) return cached;
   const dir = join(root, ".test-tools", "msedgedriver", version);
   const driver = join(dir, "msedgedriver.exe");
   if (existsSync(driver)) return driver;
@@ -91,7 +93,7 @@ if (!isWindows) {
   process.exit(1);
 }
 
-const toolsDir = join(root, ".test-tools");
+const toolsDir = process.env.REVERB_TEST_TOOLS_DIR ?? join(root, ".test-tools");
 if (!existsSync(join(toolsDir, "manifest.json"))) run("node", ["scripts/test-prepare.mjs"]);
 
 run("npx", ["tauri", "build", "--debug", "--no-bundle"]);

@@ -181,6 +181,11 @@ async fn t8_base_oficial_so_completa_o_que_falta() {
     assert_eq!(result.fields.track_total, Some(10));
     assert_eq!(result.fields.genre.as_deref(), Some("Pop"));
     assert!(result.fields.cover_url.is_some());
+    // F09 pode usar o complemento aplicado e os demais candidatos sem buscar novamente.
+    assert!(!result.candidates.is_empty());
+    let covers = crate::artwork::candidates(&result, Some("thumbnail"), 0.85);
+    assert_eq!(covers[0].url, result.fields.cover_url.as_deref().unwrap());
+    assert_eq!(covers[0].source, "itunes");
     // …mas não troca título, álbum nem ano (que já eram oficiais).
     assert_eq!(
         result.fields.album.as_deref(),

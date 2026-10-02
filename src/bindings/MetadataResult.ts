@@ -18,7 +18,7 @@ confidence: number,
  */
 source: string, bucket: Bucket, 
 /**
- * Até 5, do melhor para o pior (só quando há o que revisar).
+ * Até 5, do melhor para o pior; também reutilizados pelas capas na F09.
  */
 candidates: Array<ScoredCandidate>, contentType: ContentType, isrc: string | null, 
 /**

@@ -60,6 +60,7 @@ impl Script {
 
 #[derive(Default)]
 pub struct FakeBackend {
+    audio: Mutex<Option<(Vec<u8>, bool)>>,
     scripts: Mutex<HashMap<String, Script>>,
     /// `analyze` por id de vídeo (F08).
     analyses: Mutex<HashMap<String, Analysis>>,
@@ -82,6 +83,10 @@ impl Drop for RunningGuard<'_> {
 }
 
 impl FakeBackend {
+    /// Opus válido para os testes de pós-processamento; padrão antigo continua sem FFmpeg.
+    pub fn set_audio(&self, bytes: Vec<u8>, readonly: bool) {
+        *self.audio.lock().unwrap() = Some((bytes, readonly));
+    }
     pub fn new() -> Arc<Self> {
         Arc::new(Self::default())
     }
@@ -176,9 +181,20 @@ impl FakeBackend {
             .filter(char::is_ascii_alphanumeric)
             .collect::<String>();
         let file = job.tmp_dir.join(format!("{id}.opus"));
-        std::fs::write(&file, b"audio de mentira").map_err(|e| {
+        let audio = self.audio.lock().unwrap().clone();
+        let bytes = audio
+            .as_ref()
+            .map_or(b"audio de mentira".as_slice(), |(bytes, _)| {
+                bytes.as_slice()
+            });
+        std::fs::write(&file, bytes).map_err(|e| {
             DownloadError::new(ErrorKind::Disk, format!("não foi possível gravar: {e}"))
         })?;
+        if audio.is_some_and(|(_, readonly)| readonly) {
+            let mut permissions = std::fs::metadata(&file).unwrap().permissions();
+            permissions.set_readonly(true);
+            std::fs::set_permissions(&file, permissions).unwrap();
+        }
         // Vídeo registrado com `set_video`: o título e a duração dele (F08).
         let known =
             video_id(&job.url).and_then(|vid| match self.analyses.lock().unwrap().get(&vid) {

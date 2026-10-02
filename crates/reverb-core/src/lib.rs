@@ -1,12 +1,16 @@
 //! Núcleo do Reverb: Rust puro, sem dependência de Tauri (arquitetura §1).
 
 pub mod app_info;
+pub mod artwork;
 pub mod backend;
 pub mod db;
 pub mod error;
 pub mod events;
 pub mod exec;
+pub mod library;
 pub mod logging;
+pub mod loudness;
+pub mod lyrics;
 pub mod metadata;
 pub mod organize;
 pub mod paths;
@@ -14,6 +18,7 @@ pub mod pipeline;
 pub mod profiles;
 pub mod queue;
 pub mod settings;
+pub mod tagging;
 pub mod tools;
 pub mod transcode;
 pub mod urlkind;
@@ -27,3 +32,5 @@ pub use events::{EventSink, MemorySink};
 pub use paths::DataPaths;
 pub use settings::{Settings, SettingsPatch, SettingsService, SettingsView};
 pub use tools::{Tool, ToolsConfig, ToolsManager};
+#[cfg(test)]
+extern crate self as reverb_core;

@@ -47,6 +47,9 @@ export const COMMANDS = [
   "open_output_dir",
   "clipboard_read_text",
   "library_reveal",
+  "library_open_file",
+  "library_cover",
+  "template_preview",
   "find_official_version",
   "metadata_preview",
   "metadata_search",
@@ -87,6 +90,9 @@ export const api = {
   openOutputDir: () => call<void>("open_output_dir"),
   clipboardReadText: () => call<string>("clipboard_read_text"),
   libraryReveal: (path: string) => call<void>("library_reveal", { path }),
+  libraryOpenFile: (path: string) => call<void>("library_open_file", { path }),
+  libraryCover: (id: number) => call<string | null>("library_cover", { id }),
+  templatePreview: (template: string) => call<string>("template_preview", { template }),
   findOfficialVersion: (video: VideoInfo, isrc?: string) =>
     call<OfficialMatch | null>("find_official_version", { video, isrc: isrc ?? null }),
   metadataPreview: (request: PreviewRequest) =>

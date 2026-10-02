@@ -18,7 +18,7 @@ fn fixtures() -> String {
     format!("{}/../../tests/fixtures", env!("CARGO_MANIFEST_DIR"))
 }
 
-fn read(relative: &str) -> String {
+pub(super) fn read(relative: &str) -> String {
     std::fs::read_to_string(format!("{}/{relative}", fixtures())).unwrap()
 }
 
@@ -101,7 +101,7 @@ fn fx3_request() -> EnqueueRequest {
     }
 }
 
-async fn wait_done(queue: &QueueService, id: &str) -> Job {
+pub(super) async fn wait_done(queue: &QueueService, id: &str) -> Job {
     for _ in 0..600 {
         let job = queue.get(id).await.unwrap().unwrap();
         if job.status.is_finished() {
