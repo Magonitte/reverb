@@ -5,8 +5,8 @@
 
 ## Situação atual
 
-- **Fase atual:** F10 — EM ANDAMENTO (F00–F09 concluídas).
-- **Último ponto de parada:** F10 implementada; verify e navegador verdes; app real e CI Linux em andamento.
+- **Fase atual:** F10 — CONCLUÍDA (F00–F10 concluídas).
+- **Último ponto de parada:** F10 passou o portão completo e CI Windows/Linux; próxima fase F11.
 - **Pendências humanas abertas:** nenhuma
 - **Pendência técnica:** nenhuma (F02/T13 resolvida: job Linux do CI verde).
 
@@ -76,10 +76,10 @@
 - **Commit/tag:** `feat(F09): capas, letras, ReplayGain e organização da biblioteca` · tag `fase-09-ok`.
 ### F10 — Biblioteca, revisão, editor, importação e vigia
 
-- **Status:** EM ANDAMENTO
-- **Início / fim:** 2026-10-02 / —
+- **Status:** CONCLUÍDA
+- **Início / fim:** 2026-10-02 / 2026-10-02
 - **Tarefas:** [x] 1 repo da biblioteca · [x] 2 ações · [x] 3 importação · [x] 4 reexame/vigia · [x] 5 revisão · [x] 6 editor · [x] 7 UI
-- **Portão (última rodada):** 2026-10-02 · `npm run verify` OK em 264,5 s: 532 testes Rust únicos (61 exports reexecutados), 213 Vitest, fmt/clippy/build/IPC/i18n/bindings/segredos verdes. `npm run e2e` OK, 61 testes em 38 s, sem atualização de bases na rodada final. `e2e:app` (T12 + anteriores) e CI Windows/Linux ainda em andamento; sem tag de conclusão.
+- **Portão (última rodada):** 2026-10-02 · `npm run verify` OK em 163,4 s: 534 testes Rust únicos (61 exports reexecutados), 213 Vitest, fmt/clippy/build/IPC/i18n/bindings/segredos verdes. `npm run e2e` OK, 61 testes em 33,6 s, sem atualização de bases. `npm run e2e:app` OK: 4 testes (F07 T10/T11, F09 T13, F10 T12), 2 specs em 43 s, build app 34,8 s + CLI 10,4 s. CI Windows/Linux OK no run 36988176853 (produção bd0c9c0, mesmos fontes finais; 1d2510e só normaliza raiz do harness Windows). T1–T12 verdes; nenhum placeholder no escopo.
 - **Falhas e correções:** normalização de paths curtos do Windows após mover arquivo causava lookup do registro falhar na edição seguinte; publicação agora grava path canônico e reconhece o mesmo destino antes de resolver colisões. T6/T7 repetidos verdes. Testes UI corrigiram seletores assíncronos/rótulos existentes e fixtures de candidato. Logging da rodada inicial requer RUST_LOG=info, como registrado na F09.
 - **Desvios do plano:** usuário redirecionou para F10; a branch local `codex/f09-postprocessing` já tinha F09 concluída e foi integrada por fast-forward antes de continuar. Debounce de 2 s implementado sobre `notify`, seguido de 1 s de tamanho estável. `MovingPaths` mantém reservas até o commit da publicação. Harness do app respeita CARGO_TARGET_DIR para usar o cache existente.
 - **Bases visuais:** inspecionadas `library-dark/light` (filtros/importação/ações/vistas) e oito novas em `review-editor.spec.ts-snapshots`: library-populated, library-albums, review-populated, editor-populated nos dois temas. Só alterações intencionais da F10; datas do cenário big fixadas e formatadas pelo idioma. Browser T9 aguardou a conclusão da ação antes de enviar M e lê o badge existente pelo testid.
@@ -89,7 +89,7 @@
   - Rodada antes do ajuste Linux: verify OK em 67,2 s, 534 Rust únicos / 213 Vitest; browser 61 OK em 35,3 s; app real 4 OK na rodada anterior (importação/edição + F07/F09). Nova rodada final em andamento.
   - App T10 depois da identidade canônica: comparação com outputDir falhou porque o harness criava a pasta sob TEMP em formato 8.3. Harness canonicaliza a raiz temporária com realpathSync.native; asserções originais de contenção, existência e tamanho permanecem intactas (mesma regra de identidade de F10 T4/T7).
 - **Pendências humanas:** nenhuma.
-- **Commit/tag:** branch `codex/f10-library`; sem tag de conclusão.
+- **Commit/tag:** `feat(F10): biblioteca, revisão, editor e importação com vigia` + correções de regressão; branch `codex/f10-library`, tag `fase-10-ok`; PR #1 no GitHub.
 
 ### F08 — Identificação de metadados com nota de confiança
 
