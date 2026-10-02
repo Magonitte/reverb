@@ -155,7 +155,10 @@ impl PostProcessor {
             blocking(move || publish(&ready, &target, lrc.as_deref(), cover.as_deref())).await?;
         check_cancel(cancel)?; // `publication` limpa tudo ao sair por cancelamento.
         let file = DownloadedFile {
-            file_path: publication.paths[0].to_string_lossy().into_owned(),
+            file_path: crate::library::files::canonical(&publication.paths[0])
+                .map_err(disk_error)?
+                .to_string_lossy()
+                .into_owned(),
             tags,
             probe: Some(probe),
             source_abr_kbps: done.abr,

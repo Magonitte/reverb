@@ -34,6 +34,7 @@ it("J/K navigate, 1–5 choose, Enter applies, M dismisses and the badge updates
   await screen.findByRole("heading", { name: "First" });
   await userEvent.keyboard("k");
   await screen.findByRole("heading", { name: "Second" });
+  await userEvent.click(screen.getAllByRole("radio")[0]);
   await userEvent.keyboard("2");
   expect(screen.getAllByRole("radio")[1]).toBeChecked();
   await userEvent.keyboard("{Enter}");

@@ -56,6 +56,29 @@ async fn page(db: &Db) -> library::LibraryPage {
         .await
         .unwrap()
 }
+
+#[tokio::test]
+async fn legacy_aliases_reimport_without_duplicates_or_loss_of_metadata() {
+    let dir = tempfile::tempdir().unwrap();
+    let db = Db::open_in_memory().unwrap();
+    let path = audio(dir.path(), "legacy.opus").await;
+    std::fs::create_dir(dir.path().join("alias")).unwrap();
+    let alias = dir.path().join("alias/../legacy.opus");
+    let saved = alias.to_string_lossy().into_owned();
+    db.call(move|conn|{conn.execute("INSERT INTO library(id,file_path,title,origin,needs_review,added_at,updated_at) VALUES(7,?,'Original metadata','download',1,10,10)",[saved])?;Ok(())}).await.unwrap();
+    let report = import(&db, vec![path.clone()]).await;
+    assert_eq!(report.imported, 0);
+    assert_eq!(report.skipped, 1);
+    let items = page(&db).await.items;
+    assert_eq!(items.len(), 1);
+    assert_eq!(items[0].id, 7);
+    assert_eq!(items[0].title, "Original metadata");
+    assert!(items[0].needs_review);
+    assert_eq!(
+        items[0].file_path,
+        files::canonical(&path).unwrap().to_string_lossy()
+    );
+}
 async fn import(db: &Db, paths: Vec<PathBuf>) -> files::ImportReport {
     files::import(
         db,

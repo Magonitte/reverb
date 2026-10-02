@@ -217,10 +217,8 @@ fn unicode_300_caracteres_extensao_e_colisao_respeitam_limites() {
     };
     let ctx = context(dir.path());
     let first = render("{title}", &tags, &ctx).unwrap();
-    assert_eq!(
-        first.file_name().unwrap().to_string_lossy().chars().count(),
-        MAX_COMPONENT_CHARS
-    );
+    assert_eq!(first.file_name().unwrap().to_string_lossy().len(), 254);
+    assert!(first.file_name().unwrap().to_string_lossy().chars().count() <= MAX_COMPONENT_CHARS);
     std::fs::write(&first, "ocupado").unwrap();
     let second = render("{title}", &tags, &ctx).unwrap();
     assert!(second
@@ -228,14 +226,15 @@ fn unicode_300_caracteres_extensao_e_colisao_respeitam_limites() {
         .unwrap()
         .to_string_lossy()
         .ends_with(" (2).opus"));
-    assert_eq!(
+    assert_eq!(second.file_name().unwrap().to_string_lossy().len(), 255);
+    assert!(
         second
             .file_name()
             .unwrap()
             .to_string_lossy()
             .chars()
-            .count(),
-        MAX_COMPONENT_CHARS
+            .count()
+            <= MAX_COMPONENT_CHARS
     );
     std::fs::write(&second, "ocupado").unwrap();
     assert!(render("{title}", &tags, &ctx)
@@ -255,7 +254,7 @@ fn caminho_total_encurta_titulo_e_colisao_e_rejeita_raiz_impossivel() {
     std::fs::create_dir_all(&root).unwrap();
     let ctx = context(&root);
     let tags = TrackTags {
-        title: "界".repeat(300),
+        title: "a".repeat(300),
         ..Default::default()
     };
     let path = render("{title}", &tags, &ctx).unwrap();

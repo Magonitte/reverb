@@ -65,7 +65,9 @@ export default function Review() {
         event.ctrlKey ||
         event.metaKey ||
         event.altKey ||
-        target.closest("input,textarea,select,[contenteditable=true]")
+        target.closest(
+          "input:not([type=radio]):not([type=checkbox]),textarea,select,[contenteditable=true]",
+        )
       )
         return;
       const key = event.key.toLowerCase();

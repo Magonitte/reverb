@@ -18,6 +18,11 @@ pub async fn run(
     resolve: ProbeResolver,
     cancel: CancellationToken,
 ) {
+    match db.call(|conn| super::files::normalize_paths(conn)).await {
+        Ok(count) if count > 0 => sink.emit("library://changed", serde_json::json!({})),
+        Err(error) => tracing::warn!(%error,"Library path normalization failed"),
+        _ => {}
+    }
     let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel();
     let mut watcher =
         match notify::recommended_watcher(move |event: notify::Result<notify::Event>| {

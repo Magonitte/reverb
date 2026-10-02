@@ -292,10 +292,13 @@ async fn f09_t11_fx2_tags_capa_letra_replaygain_caminho_e_biblioteca() {
     let path = std::path::Path::new(job.output_path.as_ref().unwrap());
     assert!(
         path.starts_with(
-            stack
-                ._temp
-                .path()
-                .join("musicas/Rick Astley/Whenever You Need Somebody")
+            reverb_core::library::files::canonical(
+                &stack
+                    ._temp
+                    .path()
+                    .join("musicas/Rick Astley/Whenever You Need Somebody")
+            )
+            .unwrap()
         ),
         "{}",
         path.display()
@@ -341,8 +344,10 @@ async fn f09_t12_fx1_outros_jawed_sem_letra() {
     let job = run_job(&stack, FX1, "jNQXAC9IVRw").await;
     let path = std::path::Path::new(job.output_path.as_ref().unwrap());
     assert_eq!(
-        path.strip_prefix(stack._temp.path().join("musicas"))
-            .unwrap(),
+        path.strip_prefix(
+            reverb_core::library::files::canonical(&stack._temp.path().join("musicas")).unwrap()
+        )
+        .unwrap(),
         std::path::Path::new("Outros/jawed/Me at the zoo.opus")
     );
     assert!(!path.with_extension("lrc").exists());

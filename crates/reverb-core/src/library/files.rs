@@ -36,6 +36,32 @@ pub fn canonical(path: &Path) -> CoreResult<PathBuf> {
     Ok(path)
 }
 
+/// Upgrade existing F09 paths without deleting records or replacing conflicting entries.
+pub fn normalize_paths(conn: &rusqlite::Connection) -> CoreResult<usize> {
+    let paths = {
+        let mut stmt = conn.prepare("SELECT id,file_path FROM library")?;
+        let rows = stmt
+            .query_map([], |row| {
+                Ok((row.get::<_, i64>(0)?, row.get::<_, String>(1)?))
+            })?
+            .collect::<Result<Vec<_>, _>>()?;
+        rows
+    };
+    let mut changed = 0;
+    for (id, path) in paths {
+        if let Ok(normalized) = canonical(Path::new(&path)) {
+            let normalized = normalized.to_string_lossy();
+            if normalized != path {
+                changed += conn.execute(
+                    "UPDATE OR IGNORE library SET file_path=? WHERE id=?",
+                    params![normalized, id],
+                )?;
+            }
+        }
+    }
+    Ok(changed)
+}
+
 pub(super) fn supported(path: &Path) -> bool {
     path.extension().is_some_and(|ext| {
         ["mp3", "m4a", "opus", "ogg", "flac", "wav"]
@@ -80,6 +106,9 @@ pub async fn import(
     sink: Arc<dyn EventSink>,
     origin: &'static str,
 ) -> CoreResult<ImportReport> {
+    if origin == "import" {
+        db.call(|conn| normalize_paths(conn)).await?;
+    }
     let (files, mut report) = tokio::task::spawn_blocking(move || {
         let mut files = BTreeSet::new();
         let mut report = ImportReport::default();
@@ -161,6 +190,7 @@ pub async fn rescan(
     ffprobe: &Path,
     sink: Arc<dyn EventSink>,
 ) -> CoreResult<ImportReport> {
+    db.call(|conn| normalize_paths(conn)).await?;
     let paths = db
         .call(|conn| {
             let mut stmt = conn.prepare("SELECT id,file_path FROM library")?;
@@ -217,9 +247,11 @@ pub fn write(
     let source = canonical(path)?;
     let text = source.to_string_lossy().into_owned();
     let id = conn
-        .query_row("SELECT id FROM library WHERE file_path=?", [&text], |r| {
-            r.get::<_, i64>(0)
-        })
+        .query_row(
+            "SELECT id FROM library WHERE file_path IN (?,?)",
+            params![text, path.to_string_lossy()],
+            |r| r.get::<_, i64>(0),
+        )
         .optional()?;
     let item = id.map(|id| super::get(conn, id)).transpose()?.flatten();
     let mut target = source.clone();

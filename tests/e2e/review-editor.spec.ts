@@ -9,6 +9,7 @@ test("F10 review keyboard and badge", async ({ page }) => {
   await expect(page.getByText("2 de 500 para revisar")).toBeVisible();
   await page.keyboard.press("k");
   await expect(page.getByText("1 de 500 para revisar")).toBeVisible();
+  await page.getByRole("radio").click();
   await page.keyboard.press("1");
   await expect(page.getByRole("radio")).toBeChecked();
   await page.keyboard.press("Enter");

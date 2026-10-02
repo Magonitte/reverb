@@ -5,6 +5,7 @@ use std::path::{Path, PathBuf};
 use unicode_normalization::UnicodeNormalization;
 
 pub const MAX_COMPONENT_CHARS: usize = 120;
+pub const MAX_COMPONENT_BYTES: usize = 255;
 pub const MAX_PATH_CHARS: usize = 240;
 
 const RESERVED: &[&str] = &[
@@ -18,7 +19,19 @@ fn trim_edges(text: &str) -> &str {
 
 /// Corta em `max` caracteres Unicode (nunca no meio de um) e limpa as pontas de novo.
 fn truncate_chars(text: &str, max: usize) -> String {
-    let cut: String = text.chars().take(max).collect();
+    truncate_name(text, max, MAX_COMPONENT_BYTES)
+}
+
+fn truncate_name(text: &str, max_chars: usize, max_bytes: usize) -> String {
+    let mut bytes = 0;
+    let cut: String = text
+        .chars()
+        .take(max_chars)
+        .take_while(|c| {
+            bytes += c.len_utf8();
+            bytes <= max_bytes
+        })
+        .collect();
     trim_edges(&cut).to_string()
 }
 
@@ -78,9 +91,10 @@ pub fn sanitize_path(base: &Path, parts: &[&str], ext: &str) -> PathBuf {
         format!(".{ext}")
     };
 
-    let mut stem = truncate_chars(
+    let mut stem = truncate_name(
         &sanitize_component(file),
         MAX_COMPONENT_CHARS - suffix.chars().count(),
+        MAX_COMPONENT_BYTES - suffix.len(),
     );
     if stem.is_empty() {
         stem.push('_');
@@ -130,8 +144,11 @@ pub(crate) fn unique_path_for(path: &Path, occupied: impl Fn(&Path) -> bool) -> 
             };
             let limit =
                 MAX_COMPONENT_CHARS.min(MAX_PATH_CHARS.saturating_sub(char_len(parent) + 1));
-            let shortened =
-                truncate_chars(&stem, limit.saturating_sub(suffix.chars().count()).max(1));
+            let shortened = truncate_name(
+                &stem,
+                limit.saturating_sub(suffix.chars().count()).max(1),
+                MAX_COMPONENT_BYTES.saturating_sub(suffix.len()),
+            );
             parent.join(format!(
                 "{}{suffix}",
                 if shortened.is_empty() {

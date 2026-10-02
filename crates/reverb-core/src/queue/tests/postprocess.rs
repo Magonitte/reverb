@@ -142,6 +142,49 @@ async fn finish(queue: &QueueService) -> Job {
     metadata::wait_done(queue, &job.id).await
 }
 
+#[tokio::test]
+async fn f10_watcher_and_real_publication_share_canonical_identity() {
+    let env = Env::without_service(Fix::Never).await;
+    let alias = env.dir.path().join("alias/../watched");
+    env.set(json!({"outputDir":alias.to_string_lossy(),"watchLibrary":true}))
+        .await;
+    let cancel = tokio_util::sync::CancellationToken::new();
+    let watcher = tokio::spawn(library::watch::run(
+        env.db.clone(),
+        env.settings.clone(),
+        env.sink.clone(),
+        Arc::new(|| Ok(common::ffprobe())),
+        cancel.clone(),
+    ));
+    tokio::time::sleep(Duration::from_millis(350)).await;
+    let server = server(true).await;
+    let queue = start(&env, &server, false).await;
+    let job = finish(&queue).await;
+    assert_eq!(job.status, JobStatus::Done, "{job:?}");
+    tokio::time::sleep(Duration::from_millis(4200)).await;
+    let page = env
+        .db
+        .call(|conn| library::list(conn, &library::LibraryQuery::default()))
+        .await
+        .unwrap();
+    assert_eq!(
+        page.total, 1,
+        "own publication must not be imported again: {:?}",
+        page.items
+    );
+    let item = &page.items[0];
+    assert_eq!(item.origin, "download");
+    assert_eq!(
+        item.file_path,
+        library::files::canonical(std::path::Path::new(job.output_path.as_ref().unwrap()))
+            .unwrap()
+            .to_string_lossy()
+    );
+    cancel.cancel();
+    watcher.await.unwrap();
+    queue.shutdown().await;
+}
+
 fn clean_tmp(env: &Env) {
     assert_eq!(
         std::fs::read_dir(env.dir.path().join("tmp"))
@@ -162,7 +205,8 @@ async fn t7_pipeline_completo_tags_sidecars_biblioteca_fts_e_tmp_limpo() {
     let path = PathBuf::from(job.output_path.as_ref().unwrap());
     assert!(
         path.starts_with(
-            env.out_dir()
+            library::files::canonical(&env.out_dir())
+                .unwrap()
                 .join("Rick Astley")
                 .join("Whenever You Need Somebody")
         ),
@@ -298,7 +342,10 @@ async fn offline_e_opcoes_do_job_pulam_consultas_e_sidecars() {
     assert_eq!(job.status, JobStatus::Done, "{job:?}");
     assert!(job.warnings.is_empty());
     let path = PathBuf::from(job.output_path.unwrap());
-    assert_eq!(path.parent(), Some(env.out_dir().as_path()));
+    assert_eq!(
+        path.parent(),
+        Some(library::files::canonical(&env.out_dir()).unwrap().as_path())
+    );
     let tags = tagging::read_tags(&path).unwrap();
     assert!(tags.lyrics.is_none() && tags.cover.is_none() && tags.replay_gain_track_gain.is_none());
     assert!(server.received_requests().await.unwrap().is_empty());
@@ -336,7 +383,8 @@ async fn other_nao_consulta_lrclib_e_opcoes_do_job_vencem_settings() {
     );
     let path = PathBuf::from(job.output_path.unwrap());
     assert_eq!(
-        path.strip_prefix(env.out_dir()).unwrap(),
+        path.strip_prefix(library::files::canonical(&env.out_dir()).unwrap())
+            .unwrap(),
         std::path::Path::new("Outros/jawed/Me at the zoo.opus")
     );
     assert!(!path.with_extension("lrc").exists());
