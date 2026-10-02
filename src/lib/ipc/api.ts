@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { Analysis } from "@/bindings/Analysis";
+import type { DiagnosticReport } from "@/bindings/DiagnosticReport";
 import type { JsRuntime } from "@/bindings/JsRuntime";
 import type { AppInfo } from "@/bindings/AppInfo";
 import type { Candidate } from "@/bindings/Candidate";
@@ -43,6 +44,8 @@ export async function call<T>(cmd: string, args?: Record<string, unknown>): Prom
 }
 
 export const COMMANDS = [
+  "diagnostics_run",
+  "diagnostics_last",
   "runtime_choices",
   "bookmarklet_code",
   "bookmarklet_copy",
@@ -112,6 +115,8 @@ export const COMMANDS = [
 export type SearchSource = "ytmusic" | "youtube";
 
 export const api = {
+  diagnosticsRun: () => call<DiagnosticReport>("diagnostics_run"),
+  diagnosticsLast: () => call<DiagnosticReport | null>("diagnostics_last"),
   runtimeChoices: () => call<JsRuntime[]>("runtime_choices"),
   bookmarkletCode: () => call<string>("bookmarklet_code"),
   bookmarkletCopy: () => call<void>("bookmarklet_copy"),

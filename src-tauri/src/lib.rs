@@ -1,4 +1,5 @@
 mod commands;
+mod diagnostics;
 mod headless;
 mod integration;
 mod notifications;
@@ -197,6 +198,7 @@ pub fn run() {
             tray::initialize(app.handle())?;
             window::initialize(app.handle());
             notifications::initialize(app.handle())?;
+            diagnostics::initialize(app.handle());
             integration::initialize(app.handle())?;
             let accelerator = app.state::<AppState>().settings.get().global_shortcut;
             if let Err(error) = shortcut::apply(app.handle(), "", &accelerator) {
@@ -214,6 +216,8 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             commands::app_info,
+            commands::diagnostics::diagnostics_run,
+            commands::diagnostics::diagnostics_last,
             commands::integration::bookmarklet_code,
             commands::integration::bookmarklet_copy,
             commands::integration::deeplink_test,

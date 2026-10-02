@@ -1,3 +1,4 @@
+import { mockDiagnosticsLast, mockDiagnosticsRun } from "./diagnostics";
 import type { AppInfo } from "@/bindings/AppInfo";
 import { mockRuntimeChoices } from "./tools";
 import { BOOKMARKLET, mockBookmarkletCopy, mockDeepLinkTest } from "./integration";
@@ -85,6 +86,8 @@ export { resetMockTools, seedMockTool, seedMockToolVersions } from "./tools";
 export { resetMockUpdater, setMockUpdaterMode } from "./updater";
 
 const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
+  diagnostics_last: () => mockDiagnosticsLast(),
+  diagnostics_run: () => mockDiagnosticsRun(),
   syncs_list: () => mockSyncsList(),
   sync_create: (args) => mockSyncCreate(args?.request as SyncCreate),
   sync_update: (args) => mockSyncUpdate(args?.id as string, args?.request as SyncUpdate),

@@ -15,6 +15,7 @@ pub async fn settings_update(
     patch: SettingsPatch,
 ) -> Result<SettingsView, CoreError> {
     let _guard = crate::startup::SETTINGS_EFFECTS.lock().await;
+    let manual_channel = patch.ytdlp_channel.is_some();
     let previous = state.settings.get();
     let mut next = previous.clone();
     next.apply(patch.clone());
@@ -47,6 +48,15 @@ pub async fn settings_update(
     };
     // `parallelism` vale em tempo real: a fila reavalia quantos jobs pode rodar.
     state.queue.wake();
+    if manual_channel {
+        state
+            .db
+            .call(|conn| {
+                conn.execute("DELETE FROM kv WHERE key='heal_switched_to_nightly'", [])?;
+                Ok(())
+            })
+            .await?;
+    }
     Ok(view)
 }
 

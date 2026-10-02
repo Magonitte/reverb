@@ -18,6 +18,45 @@ async fn harness() -> Harness {
     Harness::new(ENV).await
 }
 
+#[test]
+fn stable_date_can_equal_a_nightly_with_a_build_time() {
+    assert!(stable_caught_up("2026.10.02", "2026.10.02.232945"));
+    assert!(!stable_caught_up("2026.10.01", "2026.10.02.232945"));
+    assert!(!stable_caught_up("invalid", "2026.10.02"));
+}
+
+#[tokio::test]
+async fn healed_nightly_returns_only_when_stable_catches_up() {
+    let h = harness().await;
+    h.settings
+        .update(serde_json::from_value(json!({"ytdlpChannel":"nightly"})).unwrap())
+        .await
+        .unwrap();
+    publish_ytdlp(&h.github, "yt-dlp/yt-dlp-nightly-builds", "2026.10.02").await;
+    h.manager.update(Tool::Ytdlp).await.unwrap();
+    h.manager
+        .db
+        .kv_set("heal_switched_to_nightly", "1")
+        .await
+        .unwrap();
+    publish_ytdlp(&h.github, "yt-dlp/yt-dlp", "2026.10.01").await;
+    h.manager.return_to_stable(86400).await.unwrap();
+    assert_eq!(h.settings.get().ytdlp_channel, YtdlpChannel::Nightly);
+    publish_ytdlp(&h.github, "yt-dlp/yt-dlp", "2026.10.03").await;
+    h.manager.return_to_stable(2 * 86400 - 1).await.unwrap();
+    assert_eq!(h.settings.get().ytdlp_channel, YtdlpChannel::Nightly);
+    h.manager.return_to_stable(2 * 86400).await.unwrap();
+    assert_eq!(h.settings.get().ytdlp_channel, YtdlpChannel::Stable);
+    assert_eq!(current_version(&h, "ytdlp").as_deref(), Some("2026.10.03"));
+    assert!(h
+        .manager
+        .db
+        .kv_get("heal_switched_to_nightly")
+        .await
+        .unwrap()
+        .is_none());
+}
+
 async fn publish_ytdlp(gh: &FakeGithub, repo: &str, tag: &str) {
     let exe = fake_tool_bytes();
     let sums = format!(

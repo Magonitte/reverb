@@ -1,3 +1,4 @@
+pub mod diagnostics;
 pub mod integration;
 pub mod library;
 pub mod media;

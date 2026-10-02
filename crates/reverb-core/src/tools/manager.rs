@@ -848,6 +848,9 @@ impl ToolsManager {
             return;
         }
         let now = now_secs();
+        if let Err(error) = self.return_to_stable(now).await {
+            tracing::warn!(%error, "automatic stable channel check failed");
+        }
         for tool in Tool::ALL {
             if self.installed(tool).is_none() {
                 continue;
@@ -886,6 +889,67 @@ impl ToolsManager {
     }
 
     // ------------------------------------------------------------------ runtime JS e PO token
+
+    /// Only undo a channel change made by healing once stable catches up to that build.
+    async fn return_to_stable(&self, now: u64) -> CoreResult<()> {
+        use crate::settings::YtdlpChannel;
+        if self.settings.get().ytdlp_channel != YtdlpChannel::Nightly
+            || self.db.kv_get("heal_switched_to_nightly").await?.is_none()
+        {
+            return Ok(());
+        }
+        let last = self
+            .db
+            .kv_get("heal_stable_check")
+            .await?
+            .and_then(|v| v.parse().ok());
+        if !check_due(last, now, DAY_SECS) {
+            return Ok(());
+        }
+        self.db
+            .kv_set("heal_stable_check", &now.to_string())
+            .await?;
+        let spec = spec_for(Tool::Ytdlp, YtdlpChannel::Stable, self.cfg.platform)
+            .ok_or_else(|| CoreError::Internal("Unsupported platform".into()))?;
+        let release = self.github.latest(spec.repo, true).await?;
+        let Some(current) = self.installed(Tool::Ytdlp) else {
+            return Ok(());
+        };
+        if !stable_caught_up(&release.tag_name, &current.version) {
+            return Ok(());
+        }
+        self.settings
+            .update(serde_json::from_value(
+                serde_json::json!({"ytdlpChannel":"stable"}),
+            )?)
+            .await?;
+        if let Err(error) = self.update(Tool::Ytdlp).await {
+            self.settings
+                .update(serde_json::from_value(
+                    serde_json::json!({"ytdlpChannel":"nightly"}),
+                )?)
+                .await?;
+            return Err(error);
+        }
+        self.db
+            .call(|conn| {
+                conn.execute(
+                    "DELETE FROM kv WHERE key IN ('heal_switched_to_nightly', 'heal_level')",
+                    [],
+                )?;
+                Ok(())
+            })
+            .await?;
+        Ok(())
+    }
+
+    pub async fn pot_server_running(&self) -> bool {
+        let server = self.pot_server.lock().await.clone();
+        match server {
+            Some(server) => server.is_running().await,
+            None => false,
+        }
+    }
 
     /// Escolhe o runtime JS (instalando o Deno gerenciado se for preciso).
     /// `path_var` é o valor de `PATH` a usar (o app passa `std::env::var_os("PATH")`).
@@ -980,6 +1044,22 @@ pub fn bgutil_server_config(deno: PathBuf, server_dir: &Path) -> PotServerConfig
 /// Verificação periódica devida? (nunca verificada ⇒ sim).
 pub fn check_due(last_check_secs: Option<u64>, now_secs: u64, interval_secs: u64) -> bool {
     last_check_secs.is_none_or(|last| now_secs.saturating_sub(last) >= interval_secs)
+}
+
+fn stable_caught_up(stable: &str, nightly: &str) -> bool {
+    let date = |value: &str| -> Option<Vec<u32>> {
+        let parts: Vec<u32> = value
+            .split('.')
+            .take(3)
+            .map(str::parse)
+            .collect::<Result<_, _>>()
+            .ok()?;
+        (parts.len() == 3).then_some(parts)
+    };
+    match (date(stable), date(nightly)) {
+        (Some(stable), Some(nightly)) => stable >= nightly,
+        _ => false,
+    }
 }
 
 fn unique_suffix() -> String {
