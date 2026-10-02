@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import { renderApp, resetFlowTests } from "@/testing/flow";
@@ -29,7 +29,9 @@ describe("F12 bookmarklet", () => {
     await userEvent.click(button);
     expect(await api.clipboardReadText()).toBe(BOOKMARKLET);
     expect(screen.getByRole("textbox", { name: "Código do bookmarklet" })).toHaveValue(BOOKMARKLET);
-    expect(screen.getByText(/salve como endereço de um favorito/)).toBeVisible();
+    await waitFor(() =>
+      expect(screen.getByText(/salve como endereço de um favorito/)).toBeVisible(),
+    );
   });
   it("test command enqueues a validated URL using the specified profile", async () => {
     await api.deeplinkTest("reverb://add?url=https%3A%2F%2Fyoutu.be%2FjNQXAC9IVRw&profile=opus_96");
