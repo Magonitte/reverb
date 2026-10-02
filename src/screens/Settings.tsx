@@ -1,3 +1,5 @@
+import { ProviderSettings } from "./ProviderSettings";
+import { QualitySettings } from "./QualitySettings";
 import { useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { Language } from "@/bindings/Language";
@@ -108,6 +110,8 @@ export default function Settings() {
         {tab === "updates" && <UpdatesTab />}
         {tab === "integration" && <IntegrationTab />}
         {(tab === "downloads" || tab === "metadata") && <PostprocessSettings key={tab} tab={tab} />}
+        {tab === "downloads" && <QualitySettings />}
+        {tab === "metadata" && <ProviderSettings />}
         {tab === "advanced" && <AdvancedTab />}
       </Tabs>
     </section>

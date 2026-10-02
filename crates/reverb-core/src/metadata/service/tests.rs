@@ -658,3 +658,22 @@ async fn busca_manual_junta_os_provedores_com_o_melhor_primeiro() {
     assert_eq!(found[0].title, "Never Gonna Give You Up");
     assert!(env.service.search("   ").await.is_empty());
 }
+
+#[tokio::test]
+async fn full_album_with_chapters_keeps_its_source_and_timeline() {
+    let env = Env::new().await;
+    let mut raw: serde_json::Value = serde_json::from_str(&ytdlp_fixture("fx3-clip.json")).unwrap();
+    raw["duration"] = json!(601);
+    raw["chapters"] = json!([{"title":"One","start_time":0,"end_time":300},{"title":"Two","start_time":300,"end_time":601}]);
+    env.backend
+        .set_video(VideoInfo::from_json(&raw.to_string()).unwrap());
+    let plan = env
+        .service
+        .resolve_source(FX3_URL, false, &CancellationToken::new())
+        .await
+        .unwrap();
+    assert_eq!(plan.url, FX3_URL);
+    assert!(!plan.switched());
+    assert_eq!(plan.video.unwrap().chapters.len(), 2);
+    assert!(env.backend.search_log().is_empty());
+}

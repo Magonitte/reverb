@@ -15,14 +15,40 @@ pub async fn library_import(
     state: State<'_, AppState>,
     paths: Vec<String>,
 ) -> Result<ImportReport, CoreError> {
-    files::import(
+    let roots = paths
+        .iter()
+        .filter_map(|p| files::canonical(std::path::Path::new(p)).ok())
+        .collect::<Vec<_>>();
+    let mut report = files::import(
         &state.db,
         paths.into_iter().map(PathBuf::from).collect(),
         &state.tools.resolve_ffprobe()?,
         state.sink.clone(),
         "import",
     )
-    .await
+    .await?;
+    let settings = state.settings.get();
+    if !settings.acoustid_key.is_empty() && !settings.offline_mode {
+        if state
+            .tools
+            .resolve(reverb_core::tools::Tool::Fpcalc)
+            .is_err()
+        {
+            state.tools.update(reverb_core::tools::Tool::Fpcalc).await?;
+        }
+        let _guard = state.tools.acquire_run().await;
+        report.failures.extend(
+            reverb_core::quality::import::identify(
+                &state.db,
+                roots,
+                &state.tools.resolve(reverb_core::tools::Tool::Fpcalc)?,
+                &settings.acoustid_key,
+            )
+            .await?,
+        );
+        state.sink.emit("library://changed", serde_json::json!({}));
+    }
+    Ok(report)
 }
 
 #[tauri::command]

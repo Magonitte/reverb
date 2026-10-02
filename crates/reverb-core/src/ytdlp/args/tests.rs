@@ -146,3 +146,31 @@ fn a_url_vem_depois_do_separador() {
     assert_eq!(args[n - 2], "--");
     assert_eq!(args[n - 1], URL);
 }
+
+#[test]
+fn cookies_are_present_in_every_operation() {
+    for cookies in [
+        CookiesArg::Browser("firefox".into()),
+        CookiesArg::Browser("chrome".into()),
+        CookiesArg::Browser("edge".into()),
+        CookiesArg::Browser("brave".into()),
+        CookiesArg::File(PathBuf::from("C:/Private cookie path/cookies.txt")),
+    ] {
+        let mut context = ctx();
+        context.cookies = Some(cookies.clone());
+        let (flag, value) = match cookies {
+            CookiesArg::Browser(v) => ("--cookies-from-browser", v),
+            CookiesArg::File(v) => ("--cookies", v.to_string_lossy().into_owned()),
+        };
+        for args in [
+            analyze_video_args(&context, URL),
+            analyze_collection_args(&context, URL),
+            search_args(&context, SearchSource::YtMusic, "query", 5),
+            download_args(&context, &options("/tmp", None)),
+        ] {
+            assert!(args
+                .windows(2)
+                .any(|pair| pair[0] == flag && pair[1] == value));
+        }
+    }
+}

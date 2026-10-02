@@ -79,6 +79,7 @@ pub struct IdentifyInput<'a> {
 }
 
 pub struct MetadataService {
+    pub keyed: crate::quality::providers::KeyedProviders,
     backend: Arc<dyn DownloadBackend>,
     settings: Arc<SettingsService>,
     providers: Vec<Arc<dyn MetadataProvider>>,
@@ -136,6 +137,7 @@ impl MetadataService {
         providers: Vec<Arc<dyn MetadataProvider>>,
     ) -> Self {
         Self {
+            keyed: crate::quality::providers::KeyedProviders::new(settings.clone()),
             backend,
             settings,
             providers,
@@ -168,7 +170,10 @@ impl MetadataService {
         let Analysis::Video { info } = analysis else {
             return Ok(SourcePlan::unknown(url));
         };
-        let prefer = self.settings.get().prefer_official_audio && !has_user_override;
+        // Preserve the timeline of full albums before dividing their chapters.
+        let chapter_album = info.chapters.len() >= 2 && info.duration.is_some_and(|d| d > 600.0);
+        let prefer =
+            self.settings.get().prefer_official_audio && !has_user_override && !chapter_album;
         self.plan_source(url, *info, prefer, prefer, cancel).await
     }
 
@@ -419,7 +424,19 @@ impl MetadataService {
         } else {
             DurationTolerance::Clip
         };
-        let lists = join_all(self.providers.iter().map(|p| p.search(&query))).await;
+        let mut lists = join_all(self.providers.iter().map(|p| p.search(&query))).await;
+        if settings.secrets_status().spotify {
+            match self.keyed.spotify_search(&query).await {
+                Ok(candidates) => lists.push(candidates),
+                Err(error) => tracing::warn!(kind = error.kind(), "Spotify metadata unavailable"),
+            }
+        }
+        if settings.secrets_status().discogs {
+            match self.keyed.discogs_search(&query).await {
+                Ok(candidates) => lists.push(candidates),
+                Err(error) => tracing::warn!(kind = error.kind(), "Discogs metadata unavailable"),
+            }
+        }
         let mut ranked: Vec<(f64, Candidate)> = lists
             .into_iter()
             .flatten()

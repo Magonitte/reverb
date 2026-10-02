@@ -70,11 +70,13 @@ fn build(
         system_clock(),
     ));
     QueueDeps {
-        db,
+        db: db.clone(),
         settings,
         sink,
         runner: Arc::new(
-            ToolsPipeline::new(backend, manager, data_dir.clone()).with_metadata(metadata),
+            ToolsPipeline::new(backend, manager, data_dir.clone())
+                .with_metadata(metadata)
+                .with_database(db.clone()),
         ),
         heal,
         data_dir,

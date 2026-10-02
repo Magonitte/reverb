@@ -61,6 +61,7 @@ impl Script {
 #[derive(Default)]
 pub struct FakeBackend {
     audio: Mutex<Option<(Vec<u8>, bool)>>,
+    source_abr: Mutex<Option<f64>>,
     scripts: Mutex<HashMap<String, Script>>,
     /// `analyze` por id de vídeo (F08).
     analyses: Mutex<HashMap<String, Analysis>>,
@@ -90,6 +91,9 @@ impl FakeBackend {
             .insert(url.to_owned(), Analysis::Collection { info });
     }
     /// Opus válido para os testes de pós-processamento; padrão antigo continua sem FFmpeg.
+    pub fn set_source_abr(&self, abr: f64) {
+        *self.source_abr.lock().unwrap() = Some(abr);
+    }
     pub fn set_audio(&self, bytes: Vec<u8>, readonly: bool) {
         *self.audio.lock().unwrap() = Some((bytes, readonly));
     }
@@ -213,7 +217,7 @@ impl FakeBackend {
             title,
             filepath: file.to_string_lossy().into_owned(),
             ext: "opus".to_string(),
-            abr: Some(128.0),
+            abr: Some(self.source_abr.lock().unwrap().unwrap_or(128.0)),
             acodec: Some("opus".to_string()),
             format_id: Some("251".to_string()),
             duration,

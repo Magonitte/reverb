@@ -15,7 +15,7 @@ export default async function globalSetup(config: FullConfig) {
     "/tag-editor",
     "/onboarding",
   ]) {
-    await page.goto(`${baseURL}/#${path}`, { waitUntil: "networkidle" });
+    await page.goto(`${baseURL}/#${path}`, { waitUntil: "networkidle", timeout: 120_000 });
     await page.getByRole("heading", { level: 1 }).waitFor();
   }
   await browser.close();

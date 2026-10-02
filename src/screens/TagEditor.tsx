@@ -1,3 +1,4 @@
+import { TrimDialog } from "@/components/TrimDialog";
 import { useEffect, useState } from "react";
 import { Tags } from "lucide-react";
 import { useSearchParams } from "react-router";
@@ -32,6 +33,7 @@ export default function TagEditor() {
   const path = params.get("path") ?? "";
   const [loaded, setLoaded] = useState<{ path: string; tags: TrackTags } | null>(null);
   const [error, setError] = useState<unknown>(null);
+  const [trimDuration, setTrimDuration] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [url, setUrl] = useState("");
   const [reorganize, setReorganize] = useState(false);
@@ -108,11 +110,27 @@ export default function TagEditor() {
         title={t("tagEditor.title")}
         subtitle={t("tagEditor.subtitle")}
         actions={
-          <Button disabled={busy} onClick={() => void run(open)}>
-            {t("tagEditor.open")}
-          </Button>
+          <>
+            <Button
+              disabled={busy || !path}
+              onClick={() => void run(async () => setTrimDuration(await api.audioDuration(path)))}
+            >
+              {t("quality.trim")}
+            </Button>
+            <Button disabled={busy} onClick={() => void run(open)}>
+              {t("tagEditor.open")}
+            </Button>
+          </>
         }
       />
+      {trimDuration !== null && (
+        <TrimDialog
+          path={path}
+          duration={trimDuration}
+          onClose={() => setTrimDuration(null)}
+          onDone={() => void api.tagsRead(path).then((tags) => setLoaded({ path, tags }))}
+        />
+      )}
       {error != null && (
         <p role="alert" className="mb-4 text-error">
           {errorText(t, error)}

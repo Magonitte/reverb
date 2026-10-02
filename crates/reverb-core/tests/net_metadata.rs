@@ -371,3 +371,6 @@ async fn f09_t12_fx1_outros_jawed_sem_letra() {
         .await
         .unwrap();
 }
+
+#[path = "net_metadata/quality.rs"]
+mod quality;

@@ -85,17 +85,31 @@ function PreviewBody({ info, onClose }: { info: VideoInfo; onClose: () => void }
 
   useEffect(() => {
     let alive = true;
-    api
-      .checkDuplicates([sourceId], profileId)
+    const identity = {
+      mbRecordingId: meta.result?.fields.mbRecordingId ?? undefined,
+      acoustidId: meta.result?.candidates.find((c) => c.candidate.provider === "acoustid")
+        ?.candidate.providerId,
+    };
+    const check =
+      identity.mbRecordingId || identity.acoustidId
+        ? api.checkDuplicates([sourceId], profileId, identity)
+        : api.checkDuplicates([sourceId], profileId);
+    check
       .then((hits) => alive && setDuplicate(hits.length > 0))
       .catch(() => alive && setDuplicate(false));
     return () => {
       alive = false;
     };
-  }, [sourceId, profileId]);
+  }, [sourceId, profileId, meta.result]);
 
   useEffect(() => {
-    if (!isMusic(info) || info.isOfficialTrack || offline) return;
+    if (
+      !isMusic(info) ||
+      info.isOfficialTrack ||
+      offline ||
+      (info.chapters.length >= 2 && (info.duration ?? 0) > 600)
+    )
+      return;
     let alive = true;
     api
       .findOfficialVersion(info)
@@ -235,6 +249,16 @@ function PreviewBody({ info, onClose }: { info: VideoInfo; onClose: () => void }
             />
           )}
 
+          {info.audioFormats.some(
+            (f) => ["141", "774"].includes(f.formatId) || (f.abr ?? 0) >= 200,
+          ) && <Badge tone="accent">{t("quality.premium")}</Badge>}
+          {info.chapters.length >= 2 && (info.duration ?? 0) > 600 && (
+            <Toggle
+              label={t("quality.split")}
+              checked={overrides.splitChapters ?? settings?.splitChapters === "always"}
+              onChange={(checked) => setOverrides((old) => ({ ...old, splitChapters: checked }))}
+            />
+          )}
           <MetadataSection
             result={meta.result}
             loading={meta.loading}

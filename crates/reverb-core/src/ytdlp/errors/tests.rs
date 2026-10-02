@@ -208,3 +208,24 @@ fn serializa_em_snake_case() {
     );
     assert_eq!(ErrorKind::BotCheck.as_str(), "bot_check");
 }
+
+#[test]
+fn cookie_failures_are_actionable_and_not_retried() {
+    for (stderr, expected) in [
+        (
+            "ERROR: could not find firefox cookies database",
+            ErrorKind::BrowserNotFound,
+        ),
+        (
+            "ERROR: Could not copy Chrome cookie database. Permission denied",
+            ErrorKind::CookiesLocked,
+        ),
+        (
+            "ERROR: Failed to decrypt cookies with DPAPI",
+            ErrorKind::CookiesDecrypt,
+        ),
+    ] {
+        assert_eq!(kind(stderr), expected);
+        assert!(!expected.is_retryable());
+    }
+}

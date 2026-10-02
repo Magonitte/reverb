@@ -11,6 +11,9 @@ use ts_rs::TS;
 #[ts(export)]
 pub enum ErrorKind {
     Cancelled,
+    BrowserNotFound,
+    CookiesLocked,
+    CookiesDecrypt,
     Unavailable,
     AgeRestricted,
     BotCheck,
@@ -25,6 +28,9 @@ pub enum ErrorKind {
 impl ErrorKind {
     pub fn as_str(self) -> &'static str {
         match self {
+            Self::BrowserNotFound => "browser_not_found",
+            Self::CookiesLocked => "cookies_locked",
+            Self::CookiesDecrypt => "cookies_decrypt",
             Self::Cancelled => "cancelled",
             Self::Unavailable => "unavailable",
             Self::AgeRestricted => "age_restricted",
@@ -56,6 +62,18 @@ static RULES: LazyLock<Vec<(ErrorKind, Regex)>> = LazyLock::new(|| {
         )
     };
     vec![
+        rule(
+            ErrorKind::CookiesDecrypt,
+            r"Failed to decrypt|could not decrypt|DPAPI|decrypt.*cookie",
+        ),
+        rule(
+            ErrorKind::CookiesLocked,
+            r"Could not copy.*cookie|database is locked|cookie.*Permission denied",
+        ),
+        rule(
+            ErrorKind::BrowserNotFound,
+            r"could not find.*cookies database|could not find.*profile|browser.*not (found|installed)",
+        ),
         // Antes de `Unavailable`: "This video is not available in your country" é bloqueio regional.
         rule(
             ErrorKind::GeoBlocked,

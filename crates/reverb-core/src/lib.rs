@@ -37,3 +37,9 @@ pub use settings::{Settings, SettingsPatch, SettingsService, SettingsView};
 pub use tools::{Tool, ToolsConfig, ToolsManager};
 #[cfg(test)]
 extern crate self as reverb_core;
+
+pub mod quality;
+
+#[cfg(test)]
+#[path = "../tests/common/mod.rs"]
+mod test_tools;

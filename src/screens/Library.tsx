@@ -1,5 +1,14 @@
+import { TrimDialog } from "@/components/TrimDialog";
+import { UpgradePanel } from "@/components/UpgradePanel";
 import { useEffect, useState } from "react";
-import { FileAudio, FolderOpen, Tags, Library as LibraryIcon } from "lucide-react";
+import {
+  FileAudio,
+  FolderOpen,
+  Tags,
+  ArrowUp,
+  Scissors,
+  Library as LibraryIcon,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import type { ImportReport } from "@/bindings/ImportReport";
@@ -29,6 +38,7 @@ export default function Library() {
   const { items, total, artists, albums, query, loading, error, load, setQuery } =
     useLibraryStore();
   const pushToast = useUiStore((s) => s.pushToast);
+  const [trim, setTrim] = useState<{ path: string; duration: number } | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
   const [pending, setPending] = useState(false);
@@ -151,7 +161,7 @@ export default function Library() {
           })}
           {report.failures.map((failure) => (
             <p key={failure.path}>
-              {failure.path}: {failure.message}
+              {failure.path}: {t(failure.message, { defaultValue: failure.message })}
             </p>
           ))}
         </div>
@@ -352,6 +362,12 @@ export default function Library() {
               render: (i) => (
                 <span title={i.title}>
                   <span>{i.title}</span>
+                  {i.sourceAbrKbps !== null && (
+                    <span className="ml-2 text-xs text-fg-muted">
+                      {i.sourceAbrKbps >= 200 ? t("quality.premium") : t("quality.sourceQuality")}{" "}
+                      {Math.round(i.sourceAbrKbps)} kbps
+                    </span>
+                  )}
                   {i.missing && <span className="ml-2 text-warning">{t("library.missing")}</span>}
                 </span>
               ),
@@ -385,7 +401,7 @@ export default function Library() {
             {
               key: "actions",
               header: t("library.actions"),
-              width: "116px",
+              width: "180px",
               render: (i) => (
                 <div className="flex gap-1">
                   <IconButton
@@ -401,6 +417,32 @@ export default function Library() {
                     onClick={() => void run(() => api.libraryReveal(i.filePath))}
                   >
                     <FolderOpen />
+                  </IconButton>
+                  <IconButton
+                    label={`${t("quality.trim")} ${i.title}`}
+                    disabled={i.missing || !i.durationS}
+                    onClick={() => setTrim({ path: i.filePath, duration: i.durationS ?? 0 })}
+                  >
+                    <Scissors />
+                  </IconButton>
+                  <IconButton
+                    label={`${t("quality.upgrade")} ${i.title}`}
+                    disabled={
+                      i.missing || i.provider !== "youtube" || (i.sourceAbrKbps ?? 200) >= 200
+                    }
+                    onClick={() =>
+                      void run(async () => {
+                        const available = await api.upgradeScan([i.id]);
+                        if (available.length) {
+                          await api.upgradeEnqueue([i.id]);
+                          pushToast({ message: t("quality.queued"), tone: "success" });
+                        } else {
+                          pushToast({ message: t("quality.found", { count: 0 }), tone: "info" });
+                        }
+                      })
+                    }
+                  >
+                    <ArrowUp />
                   </IconButton>
                   <IconButton
                     label={t("library.editTrack", { title: i.title })}
@@ -448,6 +490,17 @@ export default function Library() {
           </Button>
         </div>
       </div>
+      {visibleSelected.length > 0 && (
+        <UpgradePanel key={visibleSelected.join(",")} ids={visibleSelected} />
+      )}
+      {trim && (
+        <TrimDialog
+          path={trim.path}
+          duration={trim.duration}
+          onClose={() => setTrim(null)}
+          onDone={() => void load()}
+        />
+      )}
       <ConfirmDialog
         open={confirmation != null}
         title={t(`library.confirm.${confirmation?.kind ?? "clear"}.title`)}

@@ -468,7 +468,8 @@
       "invalidTemplate": "Check the variables and braces in your template.",
       "preview": "Example path",
       "previewPending": "Updating preview…",
-      "watchLibrary": "Watch library folder"
+      "watchLibrary": "Watch library folder",
+      "trimSilence": "Remove silence at start and end"
     },
     "desktop": {
       "title": "Desktop behavior",
@@ -594,7 +595,12 @@
     "tool_missing": "A required tool is not installed yet.",
     "file_missing": "The file was not found.",
     "duplicate": "This track was already downloaded or is already queued.",
-    "queue_full": "The queue is full."
+    "queue_full": "The queue is full.",
+    "browser_not_found": "Browser or cookie profile not found. Install Firefox or select a cookies file.",
+    "cookies_locked": "The cookie database is locked. Close the browser and try again, or use Firefox.",
+    "cookies_decrypt": "Could not decrypt Chrome/Edge cookies. Use Firefox or a cookies file.",
+    "provider_api": "The provider rejected the request. Check credentials and API access restrictions.",
+    "provider_key": "Configure the provider key first."
   },
   "notices": {
     "potEnabled": "YouTube asked for verification: Reverb enabled the PO token provider.",
@@ -607,7 +613,9 @@
     "artwork": "Artwork could not be fetched.",
     "lyrics": "Lyrics could not be fetched.",
     "loudness": "ReplayGain could not be analyzed.",
-    "other": "Some additional information could not be saved."
+    "other": "Some additional information could not be saved.",
+    "trimReencode": "Silence trimming reencodes original audio.",
+    "fingerprint": "Audio fingerprint lookup failed."
   },
   "sync": {
     "thisCollection": "Synchronize this playlist",
@@ -695,5 +703,59 @@
     "test": "Test link",
     "testSuccess": "Link received",
     "testFailed": "Invalid or unsupported deep link"
+  },
+  "quality": {
+    "cookies": "Cookies and YouTube Premium",
+    "source": "Cookie source",
+    "file": "Cookies file (full path)",
+    "useFile": "Use file",
+    "hint": "Use Firefox to avoid Chrome/Edge locks and decryption failures. Cookies are excluded from logs and backups.",
+    "test": "Test cookies",
+    "testing": "Testing…",
+    "premium": "Premium available",
+    "standard": "Standard quality",
+    "sources": {
+      "none": "No cookies",
+      "firefox": "Firefox",
+      "chrome": "Chrome",
+      "edge": "Edge",
+      "brave": "Brave",
+      "file": "File"
+    },
+    "split": "Split into tracks",
+    "splitMode": "Videos with chapters",
+    "splitModes": {
+      "ask": "Ask in preview",
+      "always": "Always split",
+      "never": "Never split"
+    },
+    "trim": "Trim audio",
+    "waveform": "Audio waveform",
+    "start": "Start (mm:ss.s)",
+    "end": "End (mm:ss.s)",
+    "trimHint": "Adjust the markers and save. The previous audio is moved to the recycle bin and tags are preserved.",
+    "upgrade": "Improve quality",
+    "scanAll": "Check entire library quality",
+    "enqueue": "Queue improvements",
+    "queued": "Improvements queued",
+    "found": "{{count}} improvements available",
+    "sourceQuality": "Source",
+    "apis": "Optional providers",
+    "providers": {
+      "spotify": "Spotify",
+      "discogs": "Discogs",
+      "acoustid": "AcoustID"
+    },
+    "fields": {
+      "spotifyClientId": "Spotify Client ID",
+      "spotifyClientSecret": "Spotify Client Secret",
+      "discogsToken": "Discogs token",
+      "acoustidKey": "AcoustID key"
+    },
+    "configured": "Configured",
+    "notConfigured": "Not configured",
+    "apiOk": "Connection valid",
+    "testApi": "Test connection",
+    "clearKey": "Remove key"
   }
 }

@@ -141,6 +141,8 @@ pub struct JobOptions {
     pub auto_organize: Option<bool>,
     pub output_dir: Option<String>,
     pub split_chapters: Option<bool>,
+    #[ts(optional, type = "number")]
+    pub upgrade_library_id: Option<i64>,
 }
 
 /// De onde o job veio, quando é item de uma playlist/álbum.

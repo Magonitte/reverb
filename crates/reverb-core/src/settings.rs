@@ -465,6 +465,7 @@ fn load(conn: &rusqlite::Connection) -> CoreResult<Settings> {
 }
 
 fn register_secrets(settings: &Settings) {
+    logging::register_secret(&settings.cookies_file);
     for secret in settings.secret_values() {
         logging::register_secret(secret);
     }

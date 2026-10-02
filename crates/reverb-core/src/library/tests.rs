@@ -390,3 +390,22 @@ fn t9_fila_detecta_registro_criado_pelo_repositorio_sem_job_na_fila() {
     })
     .unwrap();
 }
+
+#[tokio::test]
+async fn acoustic_candidates_persist_both_recording_ids() {
+    let db = Db::open_in_memory().unwrap();
+    db.call(|conn| {
+        let mut job = job();
+        let metadata = job.metadata_result.as_mut().unwrap();
+        metadata.source = "acoustid".into();
+        metadata.candidates[0].candidate = Candidate::new("acoustid", "sound-id", "Song");
+        let id = insert_from_job(conn, &job, &file())?;
+        let item = get(conn, id)?.unwrap();
+        assert_eq!(item.acoustid_id.as_deref(), Some("sound-id"));
+        assert_eq!(item.mb_recording_id.as_deref(), Some("mb-id"));
+        assert_eq!(find_by_fingerprint(conn, None, Some("mb-id"))?.len(), 1);
+        Ok(())
+    })
+    .await
+    .unwrap();
+}

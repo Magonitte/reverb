@@ -72,7 +72,13 @@ export function mockEnqueue(request: EnqueueRequest): Job {
   const position = request.priority ? Math.min(0, ...positions) - 1 : Math.max(0, ...positions) + 1;
   const job: Job = {
     id: `mock-job-${counter}`,
-    kind: request.playlistCtx ? "playlist_item" : "single",
+    kind: request.options?.upgradeLibraryId
+      ? "upgrade"
+      : request.options?.splitChapters
+        ? "chapters"
+        : request.playlistCtx
+          ? "playlist_item"
+          : "single",
     provider: "youtube",
     sourceUrl: url,
     sourceId,
@@ -252,7 +258,7 @@ export function seedMockJobs(seeds: Array<Partial<Job> & { sourceUrl: string }>)
       ...seed,
     };
     jobs.push(job);
-    if(job.status==="done")job.libraryId=mockPublishJob(job);
+    if (job.status === "done") job.libraryId = mockPublishJob(job);
     return job;
   });
   created.forEach(emitJob);
@@ -279,7 +285,17 @@ function identify(job: Job): void {
 }
 
 /** Estágios simulados, na ordem do pipeline (arquitetura §10). */
-const SIM_STAGES: Job["stage"][] = ["analyzing", "downloading", "converting", "metadata", "artwork", "lyrics", "loudness", "tagging", "moving"];
+const SIM_STAGES: Job["stage"][] = [
+  "analyzing",
+  "downloading",
+  "converting",
+  "metadata",
+  "artwork",
+  "lyrics",
+  "loudness",
+  "tagging",
+  "moving",
+];
 const SIM_STEP = 0.34;
 
 /**

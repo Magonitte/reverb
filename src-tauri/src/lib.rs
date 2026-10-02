@@ -135,7 +135,8 @@ pub fn run() {
                         Arc::clone(&tools),
                         paths.data_dir.clone(),
                     )
-                    .with_metadata(Arc::clone(&metadata)),
+                    .with_metadata(Arc::clone(&metadata))
+                    .with_database(db.clone()),
                 ),
                 heal,
                 data_dir: paths.data_dir.clone(),
@@ -218,6 +219,12 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             commands::app_info,
+            commands::quality::upgrade_scan,
+            commands::quality::upgrade_enqueue,
+            commands::quality::provider_test,
+            commands::quality::waveform,
+            commands::quality::audio_duration,
+            commands::quality::trim_audio,
             commands::diagnostics::diagnostics_run,
             commands::diagnostics::diagnostics_last,
             commands::backup::logs_export,
@@ -240,6 +247,7 @@ pub fn run() {
             commands::tools::tools_rollback,
             commands::media::url_classify,
             commands::media::analyze,
+            commands::media::cookies_test,
             commands::media::search,
             commands::media::pick_folder,
             commands::media::open_output_dir,

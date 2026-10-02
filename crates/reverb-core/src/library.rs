@@ -211,7 +211,18 @@ pub fn insert_from_job(conn: &Connection, job: &Job, file: &DownloadedFile) -> C
             confidence, needs_review, candidates, has_lyrics, file.has_synced_lyrics, file.cover_source,
             metadata.and_then(|m| m.fields.mb_recording_id.as_deref()), file.replaygain_db, now],
     )?;
-    Ok(conn.last_insert_rowid())
+    let id = conn.last_insert_rowid();
+    if let Some(sound) = metadata.and_then(|m| {
+        m.candidates
+            .iter()
+            .find(|c| c.candidate.provider == "acoustid")
+    }) {
+        conn.execute(
+            "UPDATE library SET acoustid_id=? WHERE id=?",
+            params![sound.candidate.provider_id, id],
+        )?;
+    }
+    Ok(id)
 }
 
 pub fn get(conn: &Connection, id: i64) -> CoreResult<Option<LibraryItem>> {
@@ -239,6 +250,23 @@ pub fn find_by_isrc(conn: &Connection, isrc: &str) -> CoreResult<Vec<LibraryItem
     };
     let mut stmt = conn.prepare_cached("SELECT * FROM library WHERE isrc=?1 ORDER BY id")?;
     let mut rows = stmt.query([isrc])?;
+    let mut items = Vec::new();
+    while let Some(row) = rows.next()? {
+        items.push(from_row(row)?);
+    }
+    Ok(items)
+}
+
+/// Recording identity is independent of the source URL and output profile.
+pub fn find_by_fingerprint(
+    conn: &Connection,
+    acoustid: Option<&str>,
+    recording: Option<&str>,
+) -> CoreResult<Vec<LibraryItem>> {
+    let acoustid = acoustid.filter(|s| !s.trim().is_empty());
+    let recording = recording.filter(|s| !s.trim().is_empty());
+    let mut stmt=conn.prepare("SELECT * FROM library WHERE (?1 IS NOT NULL AND acoustid_id=?1) OR (?2 IS NOT NULL AND mb_recording_id=?2) ORDER BY id")?;
+    let mut rows = stmt.query(params![acoustid, recording])?;
     let mut items = Vec::new();
     while let Some(row) = rows.next()? {
         items.push(from_row(row)?);
