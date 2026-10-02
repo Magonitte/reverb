@@ -283,6 +283,7 @@ export function mockSimulationStep(parallelism = 2): void {
         job.speedBps = null;
         job.etaS = null;
         job.finishedAt = job.updatedAt + 1;
+        job.outputPath = `C:/Musicas/Reverb/${job.title ?? job.sourceId ?? job.id}.opus`;
       } else {
         job.stage = SIM_STAGES[index + 1]!;
         job.progress = 0;

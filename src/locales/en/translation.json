@@ -30,7 +30,25 @@
   "commandBar": {
     "placeholder": "Paste a link or search for a song…",
     "label": "Command bar",
-    "hint": "Paste a YouTube link or type a song name. Esc closes."
+    "hint": "Paste a YouTube link or type a song name. Esc closes.",
+    "unsupported": "That link is not from YouTube or YouTube Music.",
+    "hint_video": "Video — Enter opens the preview",
+    "hint_collection": "Playlist, album or channel — Enter opens the collection",
+    "hint_search": "Search — Enter searches",
+    "hint_unsupported": "Unsupported link",
+    "sourcesLabel": "Where to search",
+    "sources": {
+      "ytmusic": "YouTube Music",
+      "youtube": "YouTube"
+    },
+    "noResults": {
+      "title": "Nothing found",
+      "description": "Try other words or paste the track link."
+    },
+    "resultsLabel": "Search results",
+    "openPreview": "Open the preview of {{title}}",
+    "downloadItem": "Download {{title}}",
+    "download": "Download"
   },
   "shortcuts": {
     "commandBar": "Open the command bar",
@@ -77,15 +95,73 @@
     "empty": {
       "title": "Nothing downloading right now",
       "description": "Paste a link in the bar above or search for a song to get started."
-    }
+    },
+    "quickActions": "Quick actions",
+    "actions": {
+      "pasteAndDownload": "Paste and download",
+      "analyzePlaylist": "Analyze playlist",
+      "editTags": "Edit a file's tags",
+      "openMusicFolder": "Open music folder"
+    },
+    "analyzePlaylistHint": "Paste the playlist link in the bar and press Enter.",
+    "clipboardEmpty": "The clipboard is empty.",
+    "recent": "Recent",
+    "revealRecent": "Show {{title}} in folder"
   },
   "preview": {
     "title": "Preview",
-    "subtitle": "Check the track before downloading."
+    "subtitle": "Check the track before downloading.",
+    "addToQueue": "Add to queue",
+    "downloadNow": "Download now",
+    "kindMusic": "Music",
+    "kindOther": "Other",
+    "sourceQuality": "Source: {{codec}} {{abr}} kbps",
+    "alreadyDownloaded": "Already downloaded",
+    "profile": "Output format",
+    "options": "Options",
+    "option": {
+      "fetchMetadata": "Fetch metadata",
+      "fetchLyrics": "Fetch lyrics",
+      "fetchArtwork": "Download cover art",
+      "sponsorblock": "Remove non-music segments (SponsorBlock)",
+      "autoOrganize": "Organize into folders"
+    },
+    "folder": "Destination folder",
+    "defaultFolder": "Default folder (Music/Reverb)",
+    "chooseFolder": "Choose…",
+    "duplicate": {
+      "title": "Download again?",
+      "message": "This track was already downloaded or is already in the queue with this format. Download it again?",
+      "confirm": "Download again"
+    }
   },
   "collection": {
     "title": "Collection",
-    "subtitle": "Choose which tracks of the playlist or album to download."
+    "subtitle": "Choose which tracks of the playlist or album to download.",
+    "empty": {
+      "title": "No collection open",
+      "description": "Paste a playlist, album or channel link in the Home bar.",
+      "action": "Go to Home"
+    },
+    "summary": "{{channel}} · {{count}} tracks · {{duration}}",
+    "filter": "Filter tracks",
+    "selectAll": "Select all",
+    "selectNone": "Clear selection",
+    "selectNew": "Select only new",
+    "downloadSelected": "Download selected ({{count}})",
+    "selectTrack": "Select {{title}}",
+    "columns": {
+      "title": "Track",
+      "duration": "Duration",
+      "state": "Status"
+    },
+    "alreadyDownloaded": "Downloaded",
+    "tableLabel": "Collection tracks",
+    "queueNearLimit": "The queue is almost full ({{count}}/{{limit}}).",
+    "queued_one": "{{count}} track added to the queue",
+    "queued_other": "{{count}} tracks added to the queue",
+    "queuedWithExisting_one": "{{count}} track added; {{existing}} was already queued",
+    "queuedWithExisting_other": "{{count}} tracks added; {{existing}} were already queued"
   },
   "activity": {
     "title": "Activity",
@@ -110,6 +186,28 @@
         "title": "No failures",
         "description": "If something goes wrong, you can retry it from here."
       }
+    },
+    "eta": "{{eta}} left",
+    "attempt": "Attempt {{attempt}}/{{max}}",
+    "status": {
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    },
+    "retryJob": "Retry {{title}}",
+    "openFolder": "Show {{title}} in folder",
+    "cancelJob": "Cancel {{title}}",
+    "removeJob": "Remove {{title}} from the list",
+    "dragJob": "Reorder {{title}}",
+    "resumeQueue": "Resume queue",
+    "pauseQueue": "Pause queue",
+    "cancelAll": "Cancel all",
+    "clearFinished": "Clear finished",
+    "queueNearLimit": "The queue is almost full ({{count}}/{{limit}}).",
+    "paused": "The queue is paused. Running downloads will finish, but no new ones will start.",
+    "cancelAllConfirm": {
+      "title": "Cancel all downloads?",
+      "message": "Running and pending downloads will be cancelled.",
+      "confirm": "Cancel all"
     }
   },
   "library": {
@@ -247,10 +345,27 @@
     "missing": "Not installed"
   },
   "errors": {
-    "extractorPersistent": "YouTube changed and even the latest yt-dlp could not keep up. Try again later."
+    "extractorPersistent": "YouTube changed and even the latest yt-dlp could not keep up. Try again later.",
+    "cancelled": "Cancelled.",
+    "unavailable": "This video is unavailable.",
+    "age_restricted": "This video is age-restricted and requires a login.",
+    "bot_check": "YouTube asked for verification. Try again in a moment.",
+    "geo_blocked": "This video is not available in your region.",
+    "disk": "Could not write to disk. Check the free space and the destination folder.",
+    "ffmpeg": "Failed to convert the audio.",
+    "extractor": "YouTube changed and yt-dlp could not keep up.",
+    "network": "Network failure. Check your connection.",
+    "unknown": "Something went wrong.",
+    "tool_missing": "A required tool is not installed yet.",
+    "file_missing": "The file was not found.",
+    "duplicate": "This track was already downloaded or is already queued.",
+    "queue_full": "The queue is full."
   },
   "notices": {
     "potEnabled": "YouTube asked for verification: Reverb enabled the PO token provider.",
     "ytdlpNightly": "We switched yt-dlp to the nightly channel to keep downloads working."
+  },
+  "toasts": {
+    "queued": "Added to the queue"
   }
 }

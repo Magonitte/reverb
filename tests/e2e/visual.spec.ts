@@ -1,9 +1,13 @@
 import { expect, test } from "@playwright/test";
-import { ROUTES, goHash, open, setTheme, type Scenario } from "./helpers";
+import { ROUTES, goHash, open, setTheme, stubThumbnails, type Scenario } from "./helpers";
 
 // T10 — screenshots de base (1366×768, dois temas). Fonte/SO mudam o pixel: só no Windows.
 test.skip(process.platform !== "win32", "screenshots de base são geradas e conferidas no Windows");
 test.use({ viewport: { width: 1366, height: 768 } });
+
+test.beforeEach(async ({ page }) => {
+  await stubThumbnails(page);
+});
 
 const SHOT = { animations: "disabled", caret: "hide", maxDiffPixelRatio: 0.002 } as const;
 

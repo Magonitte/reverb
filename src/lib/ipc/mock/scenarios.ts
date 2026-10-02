@@ -38,7 +38,7 @@ export function applyScenario(name: Scenario): void {
     case "empty":
       return;
     case "busy": {
-      const album = FX4_ALBUM.entries.map((e) => ({
+      const album = FX4_ALBUM.entries.slice(0, 3).map((e) => ({
         sourceUrl: `https://www.youtube.com/watch?v=${e.id}`,
         sourceId: e.id,
         title: e.title,

@@ -16,11 +16,14 @@ interface UiState {
   commandBarText: string;
   /** Sobe a cada pedido de foco na barra de comando. */
   commandBarFocusTick: number;
+  /** Sobe a cada pedido de envio (ex.: "Colar e baixar"); a barra envia o texto atual. */
+  commandBarSubmitTick: number;
   toasts: Toast[];
   openCommandBar: (seed?: string) => void;
   closeCommandBar: () => void;
   setCommandBarText: (text: string) => void;
   requestCommandBarFocus: () => void;
+  requestCommandBarSubmit: () => void;
   pushToast: (toast: Omit<Toast, "id" | "tone"> & { tone?: ToastTone }) => number;
   dismissToast: (id: number) => void;
 }
@@ -31,6 +34,7 @@ export const useUiStore = create<UiState>((set) => ({
   commandBarOpen: false,
   commandBarText: "",
   commandBarFocusTick: 0,
+  commandBarSubmitTick: 0,
   toasts: [],
   openCommandBar: (seed) =>
     set((s) => ({
@@ -41,6 +45,7 @@ export const useUiStore = create<UiState>((set) => ({
   closeCommandBar: () => set({ commandBarOpen: false, commandBarText: "" }),
   setCommandBarText: (commandBarText) => set({ commandBarText }),
   requestCommandBarFocus: () => set((s) => ({ commandBarFocusTick: s.commandBarFocusTick + 1 })),
+  requestCommandBarSubmit: () => set((s) => ({ commandBarSubmitTick: s.commandBarSubmitTick + 1 })),
   pushToast: (toast) => {
     const id = nextToastId++;
     set((s) => ({ toasts: [...s.toasts, { tone: "info", ...toast, id }] }));

@@ -4,6 +4,15 @@ import type { MoveTarget } from "@/bindings/MoveTarget";
 import type { SettingsPatch } from "@/bindings/SettingsPatch";
 import type { Tool } from "@/bindings/Tool";
 import {
+  mockAnalyze,
+  mockClipboardReadText,
+  mockLibraryReveal,
+  mockOpenOutputDir,
+  mockPickFolder,
+  mockSearch,
+  mockUrlClassify,
+} from "./media";
+import {
   mockCheckDuplicates,
   mockEnqueue,
   mockJobCancel,
@@ -28,6 +37,7 @@ import {
 import { mockAppRestart, mockUpdaterCheck, mockUpdaterInstall } from "./updater";
 
 export { mockBus } from "./bus";
+export { mockCalls, resetMockMedia, setMockClipboard } from "./media";
 export { resetMockQueue } from "./queue";
 export { applyScenario, scenarioFromLocation, startMock } from "./scenarios";
 export { resetMockSettings } from "./settings";
@@ -44,6 +54,13 @@ const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
   tools_check_updates: (args) => mockToolsCheckUpdates(Boolean(args?.force)),
   tools_update: (args) => mockToolsUpdate(args?.tool as Tool),
   tools_rollback: (args) => mockToolsRollback(args?.tool as Tool),
+  url_classify: (args) => mockUrlClassify(args?.input as string),
+  analyze: (args) => mockAnalyze(args?.url as string),
+  search: (args) => mockSearch(args?.source as string, args?.query as string),
+  pick_folder: () => mockPickFolder(),
+  open_output_dir: () => mockOpenOutputDir(),
+  clipboard_read_text: () => mockClipboardReadText(),
+  library_reveal: (args) => mockLibraryReveal(args?.path as string),
   enqueue: (args) => mockEnqueue(args?.request as EnqueueRequest),
   check_duplicates: (args) =>
     mockCheckDuplicates(args?.sourceIds as string[], args?.profileId as string | undefined),

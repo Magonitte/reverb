@@ -30,7 +30,25 @@
   "commandBar": {
     "placeholder": "Cole um link ou pesquise uma música…",
     "label": "Barra de comando",
-    "hint": "Cole um link do YouTube ou digite o nome de uma música. Esc fecha."
+    "hint": "Cole um link do YouTube ou digite o nome de uma música. Esc fecha.",
+    "unsupported": "Esse link não é do YouTube nem do YouTube Music.",
+    "hint_video": "Vídeo — Enter abre a pré-visualização",
+    "hint_collection": "Playlist, álbum ou canal — Enter abre a coleção",
+    "hint_search": "Busca — Enter pesquisa",
+    "hint_unsupported": "Link não suportado",
+    "sourcesLabel": "Onde pesquisar",
+    "sources": {
+      "ytmusic": "YouTube Music",
+      "youtube": "YouTube"
+    },
+    "noResults": {
+      "title": "Nada encontrado",
+      "description": "Tente outras palavras ou cole o link da faixa."
+    },
+    "resultsLabel": "Resultados da busca",
+    "openPreview": "Abrir a pré-visualização de {{title}}",
+    "downloadItem": "Baixar {{title}}",
+    "download": "Baixar"
   },
   "shortcuts": {
     "commandBar": "Abrir a barra de comando",
@@ -77,15 +95,73 @@
     "empty": {
       "title": "Nada baixando agora",
       "description": "Cole um link na barra acima ou pesquise uma música para começar."
-    }
+    },
+    "quickActions": "Ações rápidas",
+    "actions": {
+      "pasteAndDownload": "Colar e baixar",
+      "analyzePlaylist": "Analisar playlist",
+      "editTags": "Editar tags de um arquivo",
+      "openMusicFolder": "Abrir pasta de músicas"
+    },
+    "analyzePlaylistHint": "Cole o link da playlist na barra e aperte Enter.",
+    "clipboardEmpty": "A área de transferência está vazia.",
+    "recent": "Recentes",
+    "revealRecent": "Mostrar {{title}} na pasta"
   },
   "preview": {
     "title": "Pré-visualização",
-    "subtitle": "Confira a faixa antes de baixar."
+    "subtitle": "Confira a faixa antes de baixar.",
+    "addToQueue": "Adicionar à fila",
+    "downloadNow": "Baixar agora",
+    "kindMusic": "Música",
+    "kindOther": "Outro",
+    "sourceQuality": "Fonte: {{codec}} {{abr}} kbps",
+    "alreadyDownloaded": "Já baixada",
+    "profile": "Formato de saída",
+    "options": "Opções",
+    "option": {
+      "fetchMetadata": "Buscar metadados",
+      "fetchLyrics": "Buscar letra",
+      "fetchArtwork": "Baixar capa",
+      "sponsorblock": "Remover trechos não musicais (SponsorBlock)",
+      "autoOrganize": "Organizar em pastas"
+    },
+    "folder": "Pasta de destino",
+    "defaultFolder": "Pasta padrão (Músicas/Reverb)",
+    "chooseFolder": "Escolher…",
+    "duplicate": {
+      "title": "Baixar novamente?",
+      "message": "Essa faixa já foi baixada ou já está na fila com esse formato. Deseja baixá-la de novo?",
+      "confirm": "Baixar novamente"
+    }
   },
   "collection": {
     "title": "Coleção",
-    "subtitle": "Escolha quais faixas da playlist ou do álbum baixar."
+    "subtitle": "Escolha quais faixas da playlist ou do álbum baixar.",
+    "empty": {
+      "title": "Nenhuma coleção aberta",
+      "description": "Cole o link de uma playlist, álbum ou canal na barra do Início.",
+      "action": "Ir para o Início"
+    },
+    "summary": "{{channel}} · {{count}} faixas · {{duration}}",
+    "filter": "Filtrar faixas",
+    "selectAll": "Selecionar tudo",
+    "selectNone": "Limpar seleção",
+    "selectNew": "Selecionar só as novas",
+    "downloadSelected": "Baixar selecionadas ({{count}})",
+    "selectTrack": "Selecionar {{title}}",
+    "columns": {
+      "title": "Faixa",
+      "duration": "Duração",
+      "state": "Estado"
+    },
+    "alreadyDownloaded": "Já baixada",
+    "tableLabel": "Faixas da coleção",
+    "queueNearLimit": "A fila está quase cheia ({{count}}/{{limit}}).",
+    "queued_one": "{{count}} faixa adicionada à fila",
+    "queued_other": "{{count}} faixas adicionadas à fila",
+    "queuedWithExisting_one": "{{count}} faixa adicionada; {{existing}} já estava na fila",
+    "queuedWithExisting_other": "{{count}} faixas adicionadas; {{existing}} já estavam na fila"
   },
   "activity": {
     "title": "Atividade",
@@ -110,6 +186,28 @@
         "title": "Nenhuma falha",
         "description": "Se algo der errado, você poderá tentar de novo daqui."
       }
+    },
+    "eta": "faltam {{eta}}",
+    "attempt": "Tentativa {{attempt}}/{{max}}",
+    "status": {
+      "failed": "Falhou",
+      "cancelled": "Cancelado"
+    },
+    "retryJob": "Tentar novamente {{title}}",
+    "openFolder": "Mostrar {{title}} na pasta",
+    "cancelJob": "Cancelar {{title}}",
+    "removeJob": "Remover {{title}} da lista",
+    "dragJob": "Reordenar {{title}}",
+    "resumeQueue": "Retomar fila",
+    "pauseQueue": "Pausar fila",
+    "cancelAll": "Cancelar todos",
+    "clearFinished": "Limpar concluídos",
+    "queueNearLimit": "A fila está quase cheia ({{count}}/{{limit}}).",
+    "paused": "A fila está pausada. Os downloads em andamento terminam, mas nenhum novo começa.",
+    "cancelAllConfirm": {
+      "title": "Cancelar todos os downloads?",
+      "message": "Os downloads em andamento e os pendentes serão cancelados.",
+      "confirm": "Cancelar todos"
     }
   },
   "library": {
@@ -247,10 +345,27 @@
     "missing": "Não instalado"
   },
   "errors": {
-    "extractorPersistent": "O YouTube mudou e nem o yt-dlp mais recente conseguiu acompanhar. Tente de novo mais tarde."
+    "extractorPersistent": "O YouTube mudou e nem o yt-dlp mais recente conseguiu acompanhar. Tente de novo mais tarde.",
+    "cancelled": "Cancelado.",
+    "unavailable": "Este vídeo está indisponível.",
+    "age_restricted": "Este vídeo tem restrição de idade e exige login.",
+    "bot_check": "O YouTube pediu verificação. Tente de novo em instantes.",
+    "geo_blocked": "Este vídeo não está disponível na sua região.",
+    "disk": "Não foi possível gravar no disco. Verifique o espaço e a pasta de destino.",
+    "ffmpeg": "Falha ao converter o áudio.",
+    "extractor": "O YouTube mudou e o yt-dlp não conseguiu acompanhar.",
+    "network": "Falha de rede. Verifique a conexão.",
+    "unknown": "Algo deu errado.",
+    "tool_missing": "Uma ferramenta necessária ainda não foi instalada.",
+    "file_missing": "O arquivo não foi encontrado.",
+    "duplicate": "Esta faixa já foi baixada ou já está na fila.",
+    "queue_full": "A fila está cheia."
   },
   "notices": {
     "potEnabled": "O YouTube pediu verificação: o Reverb ligou o provedor de PO token.",
     "ytdlpNightly": "Mudamos o yt-dlp para o canal nightly para os downloads continuarem funcionando."
+  },
+  "toasts": {
+    "queued": "Adicionado à fila"
   }
 }

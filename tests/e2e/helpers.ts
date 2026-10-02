@@ -23,13 +23,7 @@ export function collectErrors(page: Page): string[] {
 }
 
 export type Scenario =
-  | "empty"
-  | "busy"
-  | "errors"
-  | "heal"
-  | "update-available"
-  | "update-downloading"
-  | "update-error";
+  "empty" | "busy" | "errors" | "heal" | "update-available" | "update-downloading" | "update-error";
 
 /** Abre a rota (HashRouter) com um cenário do backend falso e espera o título. */
 export async function open(page: Page, path = "/", scenario: Scenario = "empty") {
@@ -82,4 +76,17 @@ export async function setTheme(page: Page, theme: "dark" | "light") {
   await goHash(page, "/settings");
   await page.getByLabel("Tema").selectOption(theme);
   await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+}
+
+// PNG 1×1 (marrom escuro): as miniaturas reais vêm da rede e não podem mudar o pixel das bases.
+const THUMBNAIL_PNG = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGPwsjcFAAGVAL+msWapAAAAAElFTkSuQmCC",
+  "base64",
+);
+
+/** Troca as miniaturas do YouTube por uma imagem fixa (testes visuais determinísticos e offline). */
+export async function stubThumbnails(page: Page) {
+  await page.route(/\/\/i\.ytimg\.com\//, (route) =>
+    route.fulfill({ status: 200, contentType: "image/png", body: THUMBNAIL_PNG }),
+  );
 }

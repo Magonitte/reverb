@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use reverb_core::backend::DownloadBackend;
 use reverb_core::queue::QueueService;
 use reverb_core::{DataPaths, Db, EventSink, SettingsService, ToolsManager};
 use tauri::{AppHandle, Emitter};
@@ -13,6 +14,8 @@ pub struct AppState {
     pub settings: Arc<SettingsService>,
     pub tools: Arc<ToolsManager>,
     pub queue: QueueService,
+    /// Análise e busca (F07) usam o mesmo backend dos downloads.
+    pub backend: Arc<dyn DownloadBackend>,
     #[allow(dead_code)] // F02+: ferramentas e fila emitem eventos pelo sink.
     pub sink: Arc<dyn EventSink>,
 }

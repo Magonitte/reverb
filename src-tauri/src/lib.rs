@@ -5,7 +5,7 @@ mod updater;
 
 use std::sync::Arc;
 
-use reverb_core::backend::{ToolsContext, YtDlpProcessBackend};
+use reverb_core::backend::{DownloadBackend, ToolsContext, YtDlpProcessBackend};
 use reverb_core::queue::{HealCoordinator, QueueDeps, QueueService, ToolsHeal, ToolsPipeline};
 use reverb_core::ytdlp::YtDlpRunner;
 use reverb_core::{logging, Db, EventSink, SettingsService, ToolsConfig, ToolsManager};
@@ -23,6 +23,9 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_clipboard_manager::init())
         .setup(move |app| {
             if let Some(mode) = &headless_update {
                 let code =
@@ -61,7 +64,7 @@ pub fn run() {
             )?);
             // Ferramentas faltantes e atualizações automáticas, em segundo plano (§16).
             tauri::async_runtime::spawn(Arc::clone(&tools).background_startup());
-            let backend = Arc::new(YtDlpProcessBackend::new(
+            let backend: Arc<dyn DownloadBackend> = Arc::new(YtDlpProcessBackend::new(
                 YtDlpRunner::new(Some(Arc::clone(&tools))),
                 Arc::new(ToolsContext::new(Arc::clone(&tools), Arc::clone(&settings))),
             ));
@@ -76,7 +79,7 @@ pub fn run() {
                 settings: Arc::clone(&settings),
                 sink: Arc::clone(&sink),
                 runner: Arc::new(ToolsPipeline::new(
-                    backend,
+                    Arc::clone(&backend),
                     Arc::clone(&tools),
                     paths.data_dir.clone(),
                 )),
@@ -90,6 +93,7 @@ pub fn run() {
                 settings,
                 tools,
                 queue,
+                backend,
                 sink,
             });
             updater::spawn_auto_check(app.handle().clone());
@@ -122,6 +126,13 @@ pub fn run() {
             commands::tools::tools_check_updates,
             commands::tools::tools_update,
             commands::tools::tools_rollback,
+            commands::media::url_classify,
+            commands::media::analyze,
+            commands::media::search,
+            commands::media::pick_folder,
+            commands::media::open_output_dir,
+            commands::media::clipboard_read_text,
+            commands::media::library_reveal,
             commands::queue::enqueue,
             commands::queue::check_duplicates,
             commands::queue::jobs_list,

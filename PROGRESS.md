@@ -5,8 +5,8 @@
 
 ## Situação atual
 
-- **Fase atual:** F06 — CONCLUÍDA; próxima: F07 (F00–F06 concluídas)
-- **Último ponto de parada:** F06 T1–T9 verdes (CI nos dois SOs, releases v0.1.0/v0.1.1, atualização real 0.1.0→0.1.1). Falta só o T10 manual.
+- **Fase atual:** F07 — CONCLUÍDA; próxima: F08 (F00–F07 concluídas)
+- **Último ponto de parada:** F07 completa (T1–T11 verdes; portão numa só rodada). Próximo passo: ler `plano/fases/F08-metadados.md`.
 - **Pendências humanas abertas:** nenhuma
 - **Pendência técnica:** nenhuma (F02/T13 resolvida: job Linux do CI verde).
 
@@ -45,6 +45,30 @@
 ---
 
 ## Registro das fases
+
+### F07 — Fluxo de download na UI
+
+- **Status:** CONCLUÍDA
+- **Início / fim:** 2026-10-01 / 2026-10-01
+- **Tarefas:** [x] 1 comandos Tauri (`url_classify`, `analyze`, `search`, `pick_folder`, `open_output_dir`, `clipboard_read_text`, `library_reveal`) · [x] 2 barra de comando (`components/command-bar/`) · [x] 3 Preview (Sheet) · [x] 4 Coleção (`/collection`) · [x] 5 Atividade · [x] 6 Início · [x] 7 mock estendido · [x] 8 E2E no app real (WebdriverIO + `tauri-driver`)
+- **Portão (última rodada):** 2026-10-01 · Rust 378 testes · Vitest 166 · Playwright 46 · rede 11 (`verify:net`, com `GITHUB_TOKEN` do `gh auth token`) · app real 2 (T10, T11) · `npm run verify` OK em 71 s · `npm run e2e` OK em 49 s · `npm run e2e:app` OK (spec em 15 s, build à parte)
+- **Falhas e correções:**
+  - axe `list` (serious) na Atividade — o `DndContext` do dnd-kit injeta elementos de acessibilidade ao lado dos filhos, e o `<ul>` ficava com filhos que não são `<li>` — `DndContext`/`SortableContext` passaram para fora do `<ul>` — 1 ciclo
+  - T10 no app real: o selo de qualidade do FX1 real é "AAC 130 kbps" (o mock mostra "Opus 129 kbps", como pede o T3); a asserção do spec do app real passou a exigir só o formato `Fonte: <codec> <n> kbps` — a expectativa do teste estava errada, não o produto — 1 ciclo
+  - `e2e:app`: o `tar` do Git Bash é o GNU tar (não lê `.zip` e trata `D:` como host); a extração do msedgedriver passou a usar `Expand-Archive` — 1 ciclo
+  - lint `react-hooks/set-state-in-effect` na barra de comando — o reset ao esvaziar o texto virou "ajuste de estado na renderização" + invalidação do ticket num efeito — 1 ciclo
+- **Bases visuais (Playwright) alteradas de propósito:** `home-{dark,light}`, `home-busy-{dark,light}`, `home-heal-{dark,light}`, `home-mobile-dark` (ações rápidas e "Recentes" no Início), `activity-{dark,light}` e `activity-busy-{dark,light}` (botões de controle, miniaturas e alças de arrastar). Conferidas a olho contra o desenho (§3.1 e §3.4). Bases novas em `flow-ui.spec.ts-snapshots/`: `flow-{search,preview,collection}-{dark,light}`. As miniaturas do YouTube são trocadas por uma imagem fixa (`stubThumbnails`) para as bases não dependerem da rede; as capturas só rodam no Windows (como `visual.spec.ts`). Obs.: `activity-{dark,light}` ficou dentro da tolerância (0,2 %) mesmo sem os botões novos; foi regerada à mão para refletir a tela atual.
+- **Desvios do plano:**
+  - `AppState` ganhou `backend` (o mesmo `DownloadBackend` dos downloads) para `analyze`/`search`. Erros do motor viram `CoreError::Coded` com o `kind` do `ErrorKind` (`errors.<kind>` traduz na UI); `search` recebe `source` (`ytmusic`|`youtube`) e `query` e pede 15 resultados. "Buscar detalhes dos 3 primeiros" continua na F08.
+  - A Coleção é uma rota (`/collection`) alimentada por `stores/flow.ts`; o Preview é um painel montado no `ShellLayout`. `playlistCtx.index` é a posição **1-based** original da faixa na coleção (vira o número da faixa).
+  - Opções por job (`JobOptions`) só viajam quando diferem das configurações globais.
+  - A lista de perfis da UI é uma constante TS (`lib/profiles.ts`), espelho de `reverb-core::profiles` (sem comando novo).
+  - Ação rápida "Analisar playlist" foca a barra e mostra uma dica; "Editar tags de um arquivo" leva a `/tag-editor` (o conteúdo é da F10). "Colar e baixar" lê a área de transferência por `clipboard_read_text` e envia a barra.
+  - Mock: FX4 passou a ter as 10 faixas (as 3 primeiras reais; as demais com ids sintéticos); o cenário `busy` continua com 3. A simulação grava `outputPath` ao concluir, para o "abrir pasta" funcionar no navegador. `mockCalls` registra `library_reveal`/`pick_folder` para os testes.
+  - `e2e:app` (`scripts/e2e-app.mjs`): baixa o `msedgedriver` direto de `msedgedriver.microsoft.com` pela versão do WebView2 (em `.test-tools/msedgedriver/<versão>/`) em vez de usar o `msedgedriver-tool`; `tauri-driver 2.1.0` instalado com `cargo install --locked`. A pasta de dados e a de saída são temporárias (`REVERB_DATA_DIR`; `outputDir` via `reverb-cli settings set`) e apagadas no fim. O T11 liga o limite de velocidade (0,1 MB/s) pelo `invoke` da própria página e o desliga no `finally`. Só roda no Windows; o Linux fica com o CI.
+  - Dependências novas: `@dnd-kit/{core,sortable,utilities}`; dev: `webdriverio` + `@wdio/{cli,local-runner,mocha-framework,spec-reporter}`; Rust (`src-tauri`): `tauri-plugin-{dialog,opener,clipboard-manager}` e `tokio-util`. Os plugins só são usados em Rust, então as *capabilities* não mudaram.
+- **Pendências humanas:** nenhuma.
+- **Commit/tag:** `feat(F07): fluxo de download na UI` · tag `fase-07-ok`
 
 ### F06 — Atualização automática do app e pipeline de release
 

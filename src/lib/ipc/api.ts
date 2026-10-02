@@ -1,16 +1,19 @@
 import { invoke } from "@tauri-apps/api/core";
+import type { Analysis } from "@/bindings/Analysis";
 import type { AppInfo } from "@/bindings/AppInfo";
 import type { DuplicateHit } from "@/bindings/DuplicateHit";
 import type { EnqueueRequest } from "@/bindings/EnqueueRequest";
 import type { Job } from "@/bindings/Job";
 import type { MoveTarget } from "@/bindings/MoveTarget";
 import type { QueueState } from "@/bindings/QueueState";
+import type { SearchResult } from "@/bindings/SearchResult";
 import type { SettingsPatch } from "@/bindings/SettingsPatch";
 import type { InstallOutcome } from "@/bindings/InstallOutcome";
 import type { SettingsView } from "@/bindings/SettingsView";
 import type { Tool } from "@/bindings/Tool";
 import type { ToolStatus } from "@/bindings/ToolStatus";
 import type { UpdateInfo } from "@/bindings/UpdateInfo";
+import type { UrlKind } from "@/bindings/UrlKind";
 import type { AppUpdateInfo } from "@/lib/updater";
 import { isTauri } from "./isTauri";
 
@@ -32,6 +35,13 @@ export const COMMANDS = [
   "tools_check_updates",
   "tools_update",
   "tools_rollback",
+  "url_classify",
+  "analyze",
+  "search",
+  "pick_folder",
+  "open_output_dir",
+  "clipboard_read_text",
+  "library_reveal",
   "enqueue",
   "check_duplicates",
   "jobs_list",
@@ -49,6 +59,8 @@ export const COMMANDS = [
   "app_restart",
 ] as const;
 
+export type SearchSource = "ytmusic" | "youtube";
+
 export const api = {
   appInfo: () => call<AppInfo>("app_info"),
   settingsGet: () => call<SettingsView>("settings_get"),
@@ -59,6 +71,14 @@ export const api = {
   toolsCheckUpdates: (force = false) => call<UpdateInfo[]>("tools_check_updates", { force }),
   toolsUpdate: (tool: Tool) => call<InstallOutcome>("tools_update", { tool }),
   toolsRollback: (tool: Tool) => call<string>("tools_rollback", { tool }),
+  urlClassify: (input: string) => call<UrlKind>("url_classify", { input }),
+  analyze: (url: string) => call<Analysis>("analyze", { url }),
+  search: (source: SearchSource, query: string) =>
+    call<SearchResult[]>("search", { source, query }),
+  pickFolder: () => call<string | null>("pick_folder"),
+  openOutputDir: () => call<void>("open_output_dir"),
+  clipboardReadText: () => call<string>("clipboard_read_text"),
+  libraryReveal: (path: string) => call<void>("library_reveal", { path }),
   enqueue: (request: Partial<EnqueueRequest> & { url: string }) =>
     call<Job>("enqueue", { request }),
   checkDuplicates: (sourceIds: string[], profileId?: string) =>

@@ -5,6 +5,7 @@ import { BareLayout, ShellLayout } from "@/components/layout/ShellLayout";
 const Home = lazy(() => import("@/screens/Home"));
 const Library = lazy(() => import("@/screens/Library"));
 const Playlists = lazy(() => import("@/screens/Playlists"));
+const Collection = lazy(() => import("@/screens/Collection"));
 const Activity = lazy(() => import("@/screens/Activity"));
 const Review = lazy(() => import("@/screens/Review"));
 const TagEditor = lazy(() => import("@/screens/TagEditor"));
@@ -20,6 +21,7 @@ export function AppRoutes() {
         <Route path="library" element={<Library />} />
         <Route path="playlists" element={<Playlists />} />
         <Route path="playlists/:id" element={<Playlists />} />
+        <Route path="collection" element={<Collection />} />
         <Route path="activity" element={<Activity />} />
         <Route path="review" element={<Review />} />
         <Route path="tag-editor" element={<TagEditor />} />

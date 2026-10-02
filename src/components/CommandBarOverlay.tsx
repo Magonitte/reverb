@@ -2,9 +2,9 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { useUiStore } from "@/stores/ui";
-import { CommandBar } from "./CommandBar";
+import { CommandBar } from "./command-bar/CommandBar";
 
-/** Overlay do Ctrl+K: abre, foca e fecha (Esc ou clique fora). A lógica de análise vem na F07. */
+/** Overlay do Ctrl+K: abre, foca e fecha (Esc ou clique fora) ou quando a barra abre Preview/Coleção. */
 export function CommandBarOverlay() {
   const { t } = useTranslation();
   const open = useUiStore((s) => s.commandBarOpen);
@@ -31,9 +31,9 @@ export function CommandBarOverlay() {
         aria-modal="true"
         aria-label={t("commandBar.label")}
         data-command-bar-overlay
-        className="glass-elevated w-[min(640px,100%)] rounded-xl p-4 shadow-lg"
+        className="glass-elevated max-h-[72vh] w-[min(640px,100%)] overflow-y-auto rounded-xl p-4 shadow-lg"
       >
-        <CommandBar autoFocus />
+        <CommandBar autoFocus overlay onDone={close} />
         <p className="mt-3 px-1 text-xs text-fg-muted">{t("commandBar.hint")}</p>
       </div>
     </div>,

@@ -1,3 +1,4 @@
+import type { SearchResult } from "@/bindings/SearchResult";
 import type { CollectionInfo } from "@/bindings/CollectionInfo";
 import type { VideoInfo } from "@/bindings/VideoInfo";
 
@@ -78,7 +79,7 @@ export const FX3_CLIP: VideoInfo = {
   webpageUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
 };
 
-/** FX4: álbum (10 faixas; as 3 primeiras bastam para a UI de exemplo). */
+/** FX4: álbum (10 faixas; as 3 primeiras são reais, as demais têm ids sintéticos). */
 export const FX4_ALBUM: CollectionInfo = {
   id: "OLAK5uy_nmDUsWOMoEcz0SsVqUwir0oxu-k1oUyXE",
   title: "Album - Whenever You Need Somebody",
@@ -87,7 +88,46 @@ export const FX4_ALBUM: CollectionInfo = {
     { id: "lYBUbBu4W08", title: "Never Gonna Give You Up", duration: 214, url: null },
     { id: "raBobo3GZYA", title: "Whenever You Need Somebody", duration: 234, url: null },
     { id: "i_Q88T1HI_w", title: "Together Forever", duration: 206, url: null },
+    ...[
+      ["It Would Take a Strong Strong Man", 256],
+      ["The Love Has Gone", 213],
+      ["Don't Say Goodbye", 240],
+      ["Slipping Away", 233],
+      ["No More Looking for Love", 270],
+      ["You Move Me", 225],
+      ["When I Fall in Love", 197],
+    ].map(([title, duration], i) => ({
+      id: `fx4-track-${i + 4}`,
+      title: title as string,
+      duration: duration as number,
+      url: null,
+    })),
   ],
 };
 
 export const FX_VIDEOS: VideoInfo[] = [FX1_VIDEO, FX2_MUSIC, FX3_CLIP];
+
+/** FX7: busca "rick astley never gonna give you up" (primeiro resultado `lYBUbBu4W08`). */
+export const FX7_SEARCH: SearchResult[] = [
+  {
+    id: "lYBUbBu4W08",
+    title: "Never Gonna Give You Up",
+    url: "https://music.youtube.com/watch?v=lYBUbBu4W08",
+    duration: 214,
+    channel: "Rick Astley",
+  },
+  {
+    id: "dQw4w9WgXcQ",
+    title: "Rick Astley - Never Gonna Give You Up (Official Video)",
+    url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    duration: 213,
+    channel: "Rick Astley",
+  },
+  {
+    id: "jNQXAC9IVRw",
+    title: "Me at the zoo",
+    url: "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+    duration: 19,
+    channel: "jawed",
+  },
+];

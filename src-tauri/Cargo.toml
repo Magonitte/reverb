@@ -21,9 +21,13 @@ tauri-build = { version = "2", features = [] }
 reverb-core.workspace = true
 semver = "1"
 tokio.workspace = true
+tokio-util = "0.7"
 serde.workspace = true
 serde_json.workspace = true
 tauri = { version = "2", features = ["tray-icon", "image-png"] }
 tauri-plugin-process = "2"
 tauri-plugin-updater = "2"
 tracing.workspace = true
+tauri-plugin-dialog = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-clipboard-manager = "2"
