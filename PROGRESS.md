@@ -87,6 +87,7 @@
   - Publicação real + vigia revelou dois registros para o mesmo arquivo quando a raiz continha alias (`..`/path curto). Pipeline agora grava identidade canônica; importação/reexame/inicialização do vigia normalizam registros antigos preservando IDs e metadados. Teste de regressão e teste de migração de alias verdes. Asserções de pastas F09 comparadas com o mesmo destino canônico.
   - CI Ubuntu run 36985852045 revelou nomes Unicode de 120 caracteres acima de 255 bytes (`ENAMETOOLONG`). Sanitização aplica também 255 bytes UTF-8 por componente, reservando extensão e sufixo de colisão, sem cortar caracteres. Teste Unicode mantém criação real dos arquivos e colisões; teste específico de caminho de 240 caracteres usa título ASCII. Atalhos de revisão funcionam após focar rádio/checkbox; campos de texto continuam protegidos.
   - Rodada antes do ajuste Linux: verify OK em 67,2 s, 534 Rust únicos / 213 Vitest; browser 61 OK em 35,3 s; app real 4 OK na rodada anterior (importação/edição + F07/F09). Nova rodada final em andamento.
+  - App T10 depois da identidade canônica: comparação com outputDir falhou porque o harness criava a pasta sob TEMP em formato 8.3. Harness canonicaliza a raiz temporária com realpathSync.native; asserções originais de contenção, existência e tamanho permanecem intactas (mesma regra de identidade de F10 T4/T7).
 - **Pendências humanas:** nenhuma.
 - **Commit/tag:** branch `codex/f10-library`; sem tag de conclusão.
 

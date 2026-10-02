@@ -6,7 +6,7 @@
 // 3. cria diretórios temporários de dados e de saída (os testes nunca tocam nas pastas do usuário);
 // 4. roda o WebdriverIO, que sobe o tauri-driver.
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
@@ -102,7 +102,8 @@ run("cargo", ["build", "-p", "reverb-cli"]);
 const nativeDriver = await ensureEdgeDriver();
 const tauriDriver = tauriDriverPath();
 
-const scratch = mkdtempSync(join(tmpdir(), "reverb-e2e-app-"));
+// Windows TEMP can use an 8.3 alias; published paths use their canonical identity.
+const scratch = realpathSync.native(mkdtempSync(join(tmpdir(), "reverb-e2e-app-")));
 const dataDir = join(scratch, "data");
 const outputDir = join(scratch, "musicas");
 mkdirSync(dataDir, { recursive: true });
