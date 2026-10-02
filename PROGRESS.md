@@ -6,7 +6,7 @@
 ## Situação atual
 
 - **Fase atual:** F12 — EM ANDAMENTO (F00–F11 concluídas).
-- **Último ponto de parada:** F12 tarefas 1–12 implementadas e publicadas em codex/f12-integration; quatro portões automatizados verdes na mesma rodada final. Aguarda T13 manual para concluir/taguear F12 e avançar.
+- **Último ponto de parada:** F12 tarefas 1–12 implementadas/publicadas e build release NSIS instalado a pedido do usuário; parar após publicação, sem iniciar F13. Quatro portões locais verdes; T13 manual continua pendente para concluir/taguear F12. CI remoto da correção final ainda em andamento.
 - **Pendências humanas abertas:** F12/T13 — bandeja/menu, notificação de conclusão, bookmarklet, atalho global e fechar para a bandeja.
 - **Pendência técnica:** nenhuma (F02/T13 resolvida: job Linux do CI verde).
 
@@ -68,6 +68,7 @@
 - **Pendências humanas:** T13 — pedir e registrar confirmação dos cinco itens do plano; fase permanece EM ANDAMENTO até a resposta.
 - **CI / instalação (2026-10-02):** PR draft #3 publicado sobre F11. Primeiro CI Windows encontrou asserção de visibilidade antes do fade-in de ScreenOutlet terminar; teste agora aguarda a mesma asserção com waitFor (3 testes direcionados verdes). Usuário pediu instalar esta versão, publicar e parar; instalação release NSIS em andamento, sem iniciar F13 nem presumir T13.
 - **Segunda rodada CI Windows:** bookmarklet corrigido passou; mesmo problema de timing apareceu ao remontar o relatório persistido em DesktopSettings. Mesma correção waitFor aplicada sem remover visibilidade; 8 testes direcionados verdes, 228 testes frontend e lint verdes na rodada anterior.
+- **Instalação concluída (2026-10-02):** build release otimizado + NSIS x64 gerado em 19m44s, versão 0.1.1 atualizada em C:/Users/Jean Carlos de Souza/AppData/Local/Reverb pelo instalador /S (exit 0). Registro de desinstalação e protocolo reverb:// conferidos; executável instalado idêntico ao build após normalizar somente os 3 bytes do marcador Tauri NSS/UNK (fonte tauri-utils confirma). SHA256 instalado CDDBDDAAB26AD839C78EC4DCAFDBE02030B6F2D0C9BF01E1A5BDA3FFAD8E82A5. Bundle local sem assinatura de updater (--no-sign), sem publicar release/tag v*. Lint/typecheck e 8 testes direcionados verdes após segunda correção; CI run 37035508798 em andamento. Usuário solicitou parar após instalar/push; T13 não presumido e F13 não iniciada.
 - **Commit/tag:** tarefas 1–12 commitadas/pushadas individualmente; última implementação 102109b. Correções de verificação publicadas na mesma branch. Tag fase-12-ok somente após T13.
 - **Worktree:** a45c/Reverb, limpo ao iniciar; HEAD inicial F08 corrigido para o head publicado da F11, sem modificar os demais worktrees.
 
