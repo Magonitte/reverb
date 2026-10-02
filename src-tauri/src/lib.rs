@@ -101,12 +101,24 @@ pub fn run() {
                 start_paused: false,
             }))?;
             let watch_tools = Arc::clone(&tools);
+            let background_cancel = tokio_util::sync::CancellationToken::new();
+            let syncs = reverb_core::sync::SyncService::new(
+                db.clone(),
+                settings.clone(),
+                backend.clone(),
+                queue.clone(),
+                sink.clone(),
+            );
+            // Core background services require the Tauri Tokio runtime during startup.
+            tauri::async_runtime::block_on(async {
+                syncs.start(background_cancel.clone());
+            });
             tauri::async_runtime::spawn(reverb_core::library::watch::run(
                 db.clone(),
                 Arc::clone(&settings),
                 Arc::clone(&sink),
                 Arc::new(move || watch_tools.resolve_ffprobe()),
-                tokio_util::sync::CancellationToken::new(),
+                background_cancel.clone(),
             ));
             app.manage(AppState {
                 paths,
@@ -114,6 +126,8 @@ pub fn run() {
                 settings,
                 tools,
                 queue,
+                syncs,
+                background_cancel,
                 backend,
                 metadata,
                 sink,
@@ -178,6 +192,12 @@ pub fn run() {
             commands::metadata::find_official_version,
             commands::metadata::metadata_preview,
             commands::metadata::metadata_search,
+            commands::sync::syncs_list,
+            commands::sync::sync_create,
+            commands::sync::sync_update,
+            commands::sync::sync_delete,
+            commands::sync::sync_run,
+            commands::sync::sync_items,
             commands::queue::enqueue,
             commands::queue::check_duplicates,
             commands::queue::jobs_list,
@@ -201,6 +221,8 @@ pub fn run() {
             if let tauri::RunEvent::Exit = event {
                 if let Some(state) = handle.try_state::<AppState>() {
                     tauri::async_runtime::block_on(async {
+                        state.background_cancel.cancel();
+                        state.syncs.stop();
                         // Jobs em execução voltam para a fila; depois o servidor de PO token cai.
                         state.queue.shutdown().await;
                         state.tools.shutdown().await;

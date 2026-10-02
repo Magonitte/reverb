@@ -1065,3 +1065,4 @@ async fn enqueue_valida_a_entrada() {
 
 mod metadata;
 mod postprocess;
+mod sync;

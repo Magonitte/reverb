@@ -6,17 +6,19 @@ import type { VideoInfo } from "@/bindings/VideoInfo";
 interface FlowState {
   preview: VideoInfo | null;
   collection: CollectionInfo | null;
+  collectionUrl: string | null;
   openPreview: (info: VideoInfo) => void;
   closePreview: () => void;
-  openCollection: (info: CollectionInfo) => void;
+  openCollection: (info: CollectionInfo, url?: string) => void;
   clearCollection: () => void;
 }
 
 export const useFlowStore = create<FlowState>((set) => ({
   preview: null,
   collection: null,
+  collectionUrl: null,
   openPreview: (preview) => set({ preview }),
   closePreview: () => set({ preview: null }),
-  openCollection: (collection) => set({ collection }),
-  clearCollection: () => set({ collection: null }),
+  openCollection: (collection, url) => set({ collection, collectionUrl: url ?? null }),
+  clearCollection: () => set({ collection: null, collectionUrl: null }),
 }));

@@ -5,8 +5,8 @@
 
 ## Situação atual
 
-- **Fase atual:** F10 — CONCLUÍDA (F00–F10 concluídas).
-- **Último ponto de parada:** F10 passou o portão completo e CI Windows/Linux; próxima fase F11.
+- **Fase atual:** F11 — EM ANDAMENTO (F00–F10 concluídas).
+- **Último ponto de parada:** F10 concluída e publicada com fase-10-ok; F11 iniciada pelo core de sincronização.
 - **Pendências humanas abertas:** nenhuma
 - **Pendência técnica:** nenhuma (F02/T13 resolvida: job Linux do CI verde).
 
@@ -90,6 +90,18 @@
   - App T10 depois da identidade canônica: comparação com outputDir falhou porque o harness criava a pasta sob TEMP em formato 8.3. Harness canonicaliza a raiz temporária com realpathSync.native; asserções originais de contenção, existência e tamanho permanecem intactas (mesma regra de identidade de F10 T4/T7).
 - **Pendências humanas:** nenhuma.
 - **Commit/tag:** `feat(F10): biblioteca, revisão, editor e importação com vigia` + correções de regressão; branch `codex/f10-library`, tag `fase-10-ok`; PR #1 no GitHub.
+
+### F11 — Playlists sincronizadas
+
+- **Status:** EM ANDAMENTO
+- **Início / fim:** 2026-10-02 / —
+- **Tarefas:** [x] 1 CRUD · [x] 2 diff · [x] 3 execução · [x] 4 pacing · [x] 5 agendador · [x] 6 m3u8 · [x] 7 IPC · [x] 8 UI · [x] 9 mock · [x] 10 bordas E2
+- **Portão:** em execução. Core dirigido: 20 testes verdes; Vitest 216 verdes; browser completo 64 verdes em 35 s. Verify final, rede e app real pendentes.
+- **Falhas/correções:** caminho explícito do módulo de rede; limite da paginação mock substituído por lookup direto; cenário mock mantém estado editável; helpers visuais voltam da tela Settings; cabeçalho da tabela recebeu texto acessível e header/footer do diálogo deixam de criar landmarks duplicados. Inspeção visual revelou labels de checkbox invisíveis (prop acessível em vez de children), corrigidos e capturados novamente.
+- **Bases visuais:** seis PNGs novos em playlists.spec.ts-snapshots, nos dois temas, inspecionados: lista, detalhe e formulário. Rótulos, estados, hierarquia, cores e layout conferidos; mobile sem overflow. Nenhuma base anterior alterada.
+- **Decisões:** manter primeira ocorrência de IDs duplicados e expor aviso; identidade de arquivo canônica da F10; remover apenas quando configurado; falhas continuam presentes e tentadas na execução seguinte.
+- **Pendências humanas:** nenhuma nesta fase.
+- **Commit/tag:** branch codex/f11-playlists; sem tag de conclusão.
 
 ### F08 — Identificação de metadados com nota de confiança
 

@@ -301,6 +301,11 @@ export function mockLibraryList(query: Partial<LibraryQuery> = {}): LibraryPage 
     limit,
   });
 }
+
+export function mockLibraryMatch(provider:string,sourceId:string,profileId:string):LibraryItem|null {
+  const item=items.find((item)=>item.provider===provider && item.sourceId===sourceId && item.profileId===profileId && !item.missing);
+  return item?structuredClone(item):null;
+}
 export function mockLibraryGet(id: number): LibraryItem | null {
   return structuredClone(items.find((i) => i.id === id) ?? null);
 }

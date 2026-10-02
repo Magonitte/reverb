@@ -4,6 +4,7 @@ pub mod metadata;
 pub mod postprocess;
 pub mod queue;
 pub mod settings;
+pub mod sync;
 pub mod tools;
 pub mod updater;
 

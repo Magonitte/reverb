@@ -26,6 +26,11 @@ import type { UpdateInfo } from "@/bindings/UpdateInfo";
 import type { UrlKind } from "@/bindings/UrlKind";
 import type { VideoInfo } from "@/bindings/VideoInfo";
 import type { AppUpdateInfo } from "@/lib/updater";
+import type { Sync } from "@/bindings/Sync";
+import type { SyncCreate } from "@/bindings/SyncCreate";
+import type { SyncUpdate } from "@/bindings/SyncUpdate";
+import type { SyncItem } from "@/bindings/SyncItem";
+import type { SyncResult } from "@/bindings/SyncResult";
 import { isTauri } from "./isTauri";
 
 export async function call<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {
@@ -37,6 +42,7 @@ export async function call<T>(cmd: string, args?: Record<string, unknown>): Prom
 }
 
 export const COMMANDS = [
+  "syncs_list", "sync_create", "sync_update", "sync_delete", "sync_run", "sync_items",
   "app_info",
   "settings_get",
   "settings_update",
@@ -96,6 +102,12 @@ export const COMMANDS = [
 export type SearchSource = "ytmusic" | "youtube";
 
 export const api = {
+  syncsList: () => call<Sync[]>("syncs_list"),
+  syncCreate: (request: SyncCreate) => call<Sync>("sync_create", { request }),
+  syncUpdate: (id: string, request: SyncUpdate) => call<Sync>("sync_update", { id, request }),
+  syncDelete: (id: string, deleteFiles = false) => call<void>("sync_delete", { id, deleteFiles }),
+  syncRun: (id: string) => call<SyncResult>("sync_run", { id }),
+  syncItems: (id: string) => call<SyncItem[]>("sync_items", { id }),
   appInfo: () => call<AppInfo>("app_info"),
   settingsGet: () => call<SettingsView>("settings_get"),
   settingsUpdate: (patch: SettingsPatch) => call<SettingsView>("settings_update", { patch }),

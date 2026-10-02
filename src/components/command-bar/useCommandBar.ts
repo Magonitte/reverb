@@ -99,7 +99,7 @@ export function useCommandBar(onDone?: () => void): CommandBarController {
       if (analysis.type === "video") {
         useFlowStore.getState().openPreview(analysis.info);
       } else {
-        useFlowStore.getState().openCollection(analysis.info);
+        useFlowStore.getState().openCollection(analysis.info, url);
         navigate("/collection");
       }
       setStatus("idle");

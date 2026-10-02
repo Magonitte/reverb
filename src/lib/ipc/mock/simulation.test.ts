@@ -69,6 +69,7 @@ describe("cenários (?scenario=)", () => {
     expect(scenarioFromLocation("?scenario=outro")).toBeNull();
     expect(scenarioFromLocation("")).toBeNull();
     expect([...SCENARIOS]).toEqual([
+      "playlists",
       "empty",
       "big",
       "busy",
