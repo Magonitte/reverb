@@ -88,7 +88,12 @@ fn open(path: &Path) -> CoreResult<TaggedFile> {
         .read()
         .map_err(tag_error)?;
     match file.file_type() {
-        FileType::Mpeg | FileType::Mp4 | FileType::Opus | FileType::Flac => Ok(file),
+        FileType::Mpeg
+        | FileType::Mp4
+        | FileType::Opus
+        | FileType::Vorbis
+        | FileType::Flac
+        | FileType::Wav => Ok(file),
         _ => Err(CoreError::coded("tags", "Formato de áudio não suportado")),
     }
 }

@@ -6,6 +6,7 @@ import type { QueueState } from "@/bindings/QueueState";
 import { mockBus } from "./bus";
 import { mockAnalyze } from "./media";
 import { mockMetadataFor } from "./metadata";
+import { mockPublishJob } from "./library";
 
 let jobs: Job[] = [];
 let paused = false;
@@ -249,6 +250,7 @@ export function seedMockJobs(seeds: Array<Partial<Job> & { sourceUrl: string }>)
       ...seed,
     };
     jobs.push(job);
+    if(job.status==="done")job.libraryId=mockPublishJob(job);
     return job;
   });
   created.forEach(emitJob);
@@ -311,7 +313,7 @@ export function mockSimulationStep(parallelism = 2): void {
         job.etaS = null;
         job.finishedAt = job.updatedAt + 1;
         job.outputPath = `C:/Musicas/Reverb/${job.title ?? job.sourceId ?? job.id}.opus`;
-        job.libraryId = Number(job.id.replace("mock-job-", ""));
+        job.libraryId = mockPublishJob(job);
         mockBus.emit("library://changed", { ids: [job.libraryId] });
       } else {
         job.stage = SIM_STAGES[index + 1]!;

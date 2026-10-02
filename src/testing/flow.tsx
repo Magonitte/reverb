@@ -12,6 +12,8 @@ import { AppRoutes } from "@/routes";
 import { useFlowStore } from "@/stores/flow";
 import { useHealStore } from "@/stores/heal";
 import { useJobsStore } from "@/stores/jobs";
+import { resetLibraryStore } from "@/stores/library";
+import { resetMockLibrary } from "@/lib/ipc/mock/library";
 import { useSettingsStore } from "@/stores/settings";
 import { useToolsStore } from "@/stores/tools";
 import { useUiStore } from "@/stores/ui";
@@ -34,6 +36,8 @@ export function renderApp(path = "/") {
 
 /** Zera o backend falso e todas as stores entre um teste e outro. */
 export function resetFlowTests(): void {
+  resetMockLibrary();
+  resetLibraryStore();
   resetMockQueue();
   resetMockSettings();
   resetMockTools();

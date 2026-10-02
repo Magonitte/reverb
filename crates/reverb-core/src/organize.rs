@@ -1,6 +1,8 @@
 //! Organização de arquivos: nomes portáveis e publicação atômica na biblioteca.
 
+mod in_flight;
 mod moving;
+pub use in_flight::{is_moving, MovingPaths};
 pub mod sanitize;
 pub mod template;
 

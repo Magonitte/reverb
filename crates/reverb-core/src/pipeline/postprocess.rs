@@ -193,6 +193,7 @@ async fn blocking<T: Send + 'static>(
 pub struct Publication {
     paths: Vec<PathBuf>,
     committed: bool,
+    _moving: crate::organize::MovingPaths,
 }
 
 impl Publication {
@@ -235,10 +236,14 @@ fn publish(
         std::fs::symlink_metadata(path).is_ok()
             || (lrc.is_some() && std::fs::symlink_metadata(path.with_extension("lrc")).is_ok())
     });
+    let mut moving = crate::organize::MovingPaths::default();
+    moving.reserve(&target);
     let audio = crate::organize::move_into_library(ready, &target)?;
+    moving.reserve(&audio);
     let mut publication = Publication {
         paths: vec![audio.clone()],
         committed: false,
+        _moving: moving,
     };
     if let Some(lrc) = lrc {
         let path = audio.with_extension("lrc");

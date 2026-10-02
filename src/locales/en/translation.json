@@ -253,7 +253,69 @@
     "empty": {
       "title": "Your library is empty",
       "description": "Tracks you download will show up here."
-    }
+    },
+    "search": "Search the library",
+    "format": "Format",
+    "date": "Added",
+    "all": "All",
+    "artist": "Artist",
+    "album": "Album",
+    "sort": "Sort by",
+    "needsReview": "Needs review",
+    "missing": "Missing file",
+    "clear": "Clear library",
+    "remove": "Remove records",
+    "trash": "Move files to trash",
+    "redownload": "Download again",
+    "selectPage": "Select this page",
+    "selectTrack": "Select {{title}}",
+    "track": "Track",
+    "actions": "Actions",
+    "open": "Open",
+    "folder": "Folder",
+    "openTrack": "Open {{title}}",
+    "revealTrack": "Show {{title}} in folder",
+    "page": "{{start}}–{{end}} of {{total}} tracks",
+    "previous": "Previous",
+    "next": "Next",
+    "dates": {
+      "all": "All dates",
+      "today": "Today",
+      "week": "This week",
+      "month": "This month"
+    },
+    "sorts": {
+      "added_desc": "Newest first",
+      "title": "Title",
+      "artist": "Artist",
+      "album": "Album"
+    },
+    "confirm": {
+      "clear": {
+        "title": "Clear library?",
+        "message": "Remove all library records. Your audio files will remain on disk."
+      },
+      "remove": {
+        "title": "Remove selected records?",
+        "message": "Remove the selected tracks from the library. Your audio files will remain on disk."
+      },
+      "trash": {
+        "title": "Move selected files to trash?",
+        "message": "Move the selected audio files and their lyrics to the system trash and remove their library records."
+      }
+    },
+    "selection": "Select",
+    "cover": "Cover",
+    "importFile": "Import file",
+    "importFolder": "Import folder",
+    "rescan": "Rescan folder",
+    "importResult": "{{imported}} imported · {{skipped}} already registered · {{failed}} failed",
+    "editTrack": "Edit tags of {{title}}",
+    "view": "View",
+    "listView": "List",
+    "albumView": "Albums",
+    "importProgress": "Importing {{processed}} of {{total}} files…",
+    "addedAt": "Date added"
   },
   "review": {
     "title": "Review",
@@ -261,7 +323,18 @@
     "empty": {
       "title": "Nothing to review",
       "description": "When Reverb is unsure about a track, it shows up here."
-    }
+    },
+    "shortcuts": "J/K: navigate · 1–5: choose · Enter: apply · M: keep",
+    "candidates": "Candidates",
+    "choose": "Choose {{number}}: {{title}}",
+    "noCandidates": "No candidates. Edit the metadata manually.",
+    "apply": "Apply candidate",
+    "keep": "Keep current metadata",
+    "manual": "Edit manually",
+    "position": "{{index}} of {{total}} to review",
+    "nextPage": "Next page",
+    "current": "Current metadata",
+    "duration": "{{seconds}} seconds"
   },
   "tagEditor": {
     "title": "Tag editor",
@@ -269,6 +342,30 @@
     "empty": {
       "title": "No file open",
       "description": "Open a file from the Library to edit its tags."
+    },
+    "open": "Open audio file…",
+    "saved": "Tags saved.",
+    "cover": "Album cover",
+    "pickCover": "Choose cover file…",
+    "coverUrl": "Cover URL",
+    "fetchCover": "Load cover URL",
+    "removeCover": "Remove cover",
+    "search": "Search metadata",
+    "apply": "Use metadata",
+    "reorganize": "Reorganize this library file",
+    "synced": "Synchronized lyrics",
+    "plain": "Plain lyrics",
+    "fields": {
+      "title": "Title",
+      "artist": "Artist",
+      "album": "Album",
+      "albumArtist": "Album artist",
+      "genre": "Genre",
+      "year": "Year",
+      "trackNo": "Track number",
+      "trackTotal": "Total tracks",
+      "discNo": "Disc",
+      "lyrics": "Lyrics"
     }
   },
   "playlists": {
@@ -369,7 +466,8 @@
       "variables": "Variables: {artist}, {albumartist}, {album}, {title}, {track:02}, {disc}, {year}, {genre}, {channel}, {source_id}, {playlist}, {playlist_index}.",
       "invalidTemplate": "Check the variables and braces in your template.",
       "preview": "Example path",
-      "previewPending": "Updating preview…"
+      "previewPending": "Updating preview…",
+      "watchLibrary": "Watch library folder"
     }
   },
   "onboarding": {

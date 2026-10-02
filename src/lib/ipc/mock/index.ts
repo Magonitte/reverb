@@ -1,4 +1,27 @@
 import type { AppInfo } from "@/bindings/AppInfo";
+import type { LibraryQuery } from "@/bindings/LibraryQuery";
+import type { TrackTags } from "@/bindings/TrackTags";
+import type { Candidate } from "@/bindings/Candidate";
+import { mockReviewApply } from "./library";
+import {
+  mockLibraryImport,
+  mockLibraryRescan,
+  mockTagsRead,
+  mockTagsWrite,
+  mockPickAudioFile,
+  mockPickImageFile,
+  mockArtworkRead,
+  mockArtworkFetch,
+} from "./library";
+import {
+  mockLibraryList,
+  mockLibraryGet,
+  mockLibraryArtists,
+  mockLibraryAlbums,
+  mockLibraryDelete,
+  mockLibraryClear,
+  mockReviewDismiss,
+} from "./library";
 import type { EnqueueRequest } from "@/bindings/EnqueueRequest";
 import type { MoveTarget } from "@/bindings/MoveTarget";
 import type { PreviewRequest } from "@/bindings/PreviewRequest";
@@ -66,8 +89,26 @@ const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
   clipboard_read_text: () => mockClipboardReadText(),
   library_reveal: (args) => mockLibraryReveal(args?.path as string),
   library_open_file: (args) => mockLibraryOpenFile(args?.path as string),
-  library_cover: (args) => mockLibraryCover(args?.id as number),
+  library_cover: (args) => mockLibraryCover(args?.id as number, args?.size as number | undefined),
   template_preview: (args) => mockTemplatePreview(args?.template as string),
+  library_list: (args) => mockLibraryList(args?.query as Partial<LibraryQuery>),
+  library_import: (args) => mockLibraryImport(args?.paths as string[]),
+  library_rescan: () => mockLibraryRescan(),
+  tags_read: (args) => mockTagsRead(args?.path as string),
+  tags_write: (args) =>
+    mockTagsWrite(args?.path as string, args?.tags as TrackTags, Boolean(args?.reorganize)),
+  pick_audio_file: () => mockPickAudioFile(),
+  pick_image_file: () => mockPickImageFile(),
+  artwork_read: (args) => mockArtworkRead(args?.path as string),
+  artwork_fetch: (args) => mockArtworkFetch(args?.url as string),
+  library_get: (args) => mockLibraryGet(args?.id as number),
+  library_artists: () => mockLibraryArtists(),
+  library_albums: (args) => mockLibraryAlbums(args?.artist as string | null),
+  library_delete: (args) => mockLibraryDelete(args?.ids as number[], Boolean(args?.deleteFiles)),
+  library_clear: () => mockLibraryClear(),
+  review_dismiss: (args) => mockReviewDismiss(args?.id as number),
+  review_list: (args) => mockLibraryList({needsReview:true,offset:args?.offset as number}),
+  review_apply: (args) => mockReviewApply(args?.id as number,args?.candidate as Candidate | null,args?.manual as TrackTags | null),
   find_official_version: (args) =>
     mockFindOfficialVersion(args?.video as VideoInfo, args?.isrc as string | null | undefined),
   metadata_preview: (args) => mockMetadataPreview(args?.request as PreviewRequest),

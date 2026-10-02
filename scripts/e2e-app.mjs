@@ -109,7 +109,8 @@ mkdirSync(dataDir, { recursive: true });
 mkdirSync(outputDir, { recursive: true });
 
 // Configura o app antes de abrir: pasta de saída temporária e onboarding concluído.
-const cli = join(root, "target", "debug", exe("reverb-cli"));
+const targetDir = process.env.CARGO_TARGET_DIR ?? join(root, "target");
+const cli = join(targetDir, "debug", exe("reverb-cli"));
 const setting = (key, json) => run(cli, ["--data-dir", dataDir, "settings", "set", key, json]);
 setting("outputDir", JSON.stringify(outputDir));
 setting("onboardingCompleted", "true");
@@ -118,7 +119,9 @@ const env = {
   ...process.env,
   REVERB_DATA_DIR: dataDir,
   REVERB_TOOLS_DIR: toolsDir,
-  REVERB_E2E_APP: join(root, "target", "debug", exe("reverb")),
+  REVERB_E2E_APP: join(targetDir, "debug", exe("reverb")),
+  REVERB_E2E_CLI: cli,
+  REVERB_TEST_TOOLS_DIR: toolsDir,
   REVERB_E2E_OUTPUT_DIR: outputDir,
   REVERB_E2E_NATIVE_DRIVER: nativeDriver,
   REVERB_E2E_TAURI_DRIVER: tauriDriver,

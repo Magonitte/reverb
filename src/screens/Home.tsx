@@ -2,18 +2,17 @@ import { useMemo, type ReactNode } from "react";
 import { ClipboardPaste, FolderOpen, House, ListMusic, Tags } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import type { Job } from "@/bindings/Job";
+import type { LibraryItem } from "@/bindings/LibraryItem";
+import { LibraryCover } from "@/components/LibraryCover";
+import { useLibraryStore } from "@/stores/library";
 import { CommandBar } from "@/components/command-bar/CommandBar";
 import { JobMiniCard } from "@/components/JobMiniCard";
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { VinylDisc } from "@/components/ui/VinylDisc";
 import { errorText } from "@/lib/errors";
 import { api } from "@/lib/ipc/api";
 import { sortedJobs, useJobsStore } from "@/stores/jobs";
 import { useUiStore } from "@/stores/ui";
-
-const RECENT_COUNT = 8;
 
 function QuickAction({
   icon,
@@ -36,9 +35,9 @@ function QuickAction({
   );
 }
 
-function RecentCard({ job, onOpen }: { job: Job; onOpen: (job: Job) => void }) {
+function RecentCard({ job, onOpen }: { job: LibraryItem; onOpen: (job: LibraryItem) => void }) {
   const { t } = useTranslation();
-  const title = job.title ?? job.sourceUrl;
+  const title = job.title;
   return (
     <li data-testid="recent-item">
       <button
@@ -47,15 +46,7 @@ function RecentCard({ job, onOpen }: { job: Job; onOpen: (job: Job) => void }) {
         aria-label={t("home.revealRecent", { title })}
         className="glass flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors duration-[140ms] hover:bg-glass-hover"
       >
-        {job.thumbnail ? (
-          <img
-            src={job.thumbnail}
-            alt=""
-            className="size-12 shrink-0 rounded-md bg-field object-cover"
-          />
-        ) : (
-          <VinylDisc size={48} />
-        )}
+        <LibraryCover id={job.id} updatedAt={job.updatedAt} missing={job.missing} />
         <span className="min-w-0">
           <span className="block truncate text-[13px] font-medium text-fg">{title}</span>
           {job.artist && <span className="block truncate text-xs text-fg-muted">{job.artist}</span>}
@@ -75,15 +66,7 @@ export default function Home() {
     () => all.filter((j) => j.status === "running" || j.status === "queued"),
     [all],
   );
-  // Provisório: os últimos concluídos; na F10 vêm da biblioteca.
-  const recent = useMemo(
-    () =>
-      all
-        .filter((j) => j.status === "done")
-        .sort((a, b) => (b.finishedAt ?? 0) - (a.finishedAt ?? 0))
-        .slice(0, RECENT_COUNT),
-    [all],
-  );
+  const recent = useLibraryStore((s) => s.recent);
 
   const guard = async (action: () => Promise<unknown>) => {
     try {
@@ -173,7 +156,7 @@ export default function Home() {
                 key={job.id}
                 job={job}
                 onOpen={(j) => {
-                  const path = j.outputPath;
+                  const path = j.filePath;
                   if (path) void guard(() => api.libraryReveal(path));
                 }}
               />

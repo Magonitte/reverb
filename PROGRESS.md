@@ -5,8 +5,8 @@
 
 ## Situação atual
 
-- **Fase atual:** F09 — CONCLUÍDA (F00–F09 concluídas)
-- **Último ponto de parada:** F09 tarefas 1–9 e portão completo concluídos. Parada antes da F10, que não foi iniciada.
+- **Fase atual:** F10 — EM ANDAMENTO (F00–F09 concluídas).
+- **Último ponto de parada:** F10 implementada; verify e navegador verdes; app real e CI Linux em andamento.
 - **Pendências humanas abertas:** nenhuma
 - **Pendência técnica:** nenhuma (F02/T13 resolvida: job Linux do CI verde).
 
@@ -74,6 +74,18 @@
 - **Desvios do plano:** paradas anteriores solicitadas após as tarefas 2, 3, 5 e 6; fase retomada e concluída pelo pedido de continuar a F09. F08 agora retém os candidatos de faixas oficiais e os detalhes do aplicado para cumprir a cadeia de capas do §12 sem novas buscas; binding TS regenerado (só documentação). Capa informada pelo usuário tem prioridade, seguindo o override já existente da F08. Loudness usa `-nostdin`, `-loglevel info`, `-map 0:a:0` e `-vn` além do comando base do §12, para emitir o resumo e analisar só áudio sem criar intermediários. Peak `-inf` vira amplitude zero; NaN/+inf e R128 fora da faixa são erros (para aviso na tarefa 7). `render` retorna `CoreResult<PathBuf>` para modelos inválidos e raízes que impedem cumprir 240 caracteres; não altera a raiz configurada. Em T4, ffprobe usa `-show_format -show_streams`: para Opus os metadados ficam no stream de áudio. lofty e base64 (0.23.1, para a miniatura data URL) são dependências novas; tempfile passou de dev para produção. A fila CLI também liga MetadataService, mantendo paridade com a fila do app. Whitespace emitido pelo ts-rs em TrackTags.ts e no stderr integral da fixture FFmpeg foi preservado como saída das ferramentas; não há whitespace novo em código escrito à mão.
 - **Pendências humanas:** nenhuma.
 - **Commit/tag:** `feat(F09): capas, letras, ReplayGain e organização da biblioteca` · tag `fase-09-ok`.
+### F10 — Biblioteca, revisão, editor, importação e vigia
+
+- **Status:** EM ANDAMENTO
+- **Início / fim:** 2026-10-02 / —
+- **Tarefas:** [x] 1 repo da biblioteca · [x] 2 ações · [x] 3 importação · [x] 4 reexame/vigia · [x] 5 revisão · [x] 6 editor · [x] 7 UI
+- **Portão (última rodada):** 2026-10-02 · `npm run verify` OK em 264,5 s: 532 testes Rust únicos (61 exports reexecutados), 213 Vitest, fmt/clippy/build/IPC/i18n/bindings/segredos verdes. `npm run e2e` OK, 61 testes em 38 s, sem atualização de bases na rodada final. `e2e:app` (T12 + anteriores) e CI Windows/Linux ainda em andamento; sem tag de conclusão.
+- **Falhas e correções:** normalização de paths curtos do Windows após mover arquivo causava lookup do registro falhar na edição seguinte; publicação agora grava path canônico e reconhece o mesmo destino antes de resolver colisões. T6/T7 repetidos verdes. Testes UI corrigiram seletores assíncronos/rótulos existentes e fixtures de candidato. Logging da rodada inicial requer RUST_LOG=info, como registrado na F09.
+- **Desvios do plano:** usuário redirecionou para F10; a branch local `codex/f09-postprocessing` já tinha F09 concluída e foi integrada por fast-forward antes de continuar. Debounce de 2 s implementado sobre `notify`, seguido de 1 s de tamanho estável. `MovingPaths` mantém reservas até o commit da publicação. Harness do app respeita CARGO_TARGET_DIR para usar o cache existente.
+- **Bases visuais:** inspecionadas `library-dark/light` (filtros/importação/ações/vistas) e oito novas em `review-editor.spec.ts-snapshots`: library-populated, library-albums, review-populated, editor-populated nos dois temas. Só alterações intencionais da F10; datas do cenário big fixadas e formatadas pelo idioma. Browser T9 aguardou a conclusão da ação antes de enviar M e lê o badge existente pelo testid.
+- **Testes adicionais:** rollback de tags/áudio/LRC quando a atualização do banco falha; vigia marca ausência e restauração sem duplicação; edição de arquivo já organizado conserva o nome.
+- **Pendências humanas:** nenhuma.
+- **Commit/tag:** branch `codex/f10-library`; sem tag de conclusão.
 
 ### F08 — Identificação de metadados com nota de confiança
 

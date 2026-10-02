@@ -5,6 +5,12 @@ import type { Candidate } from "@/bindings/Candidate";
 import type { DuplicateHit } from "@/bindings/DuplicateHit";
 import type { EnqueueRequest } from "@/bindings/EnqueueRequest";
 import type { Job } from "@/bindings/Job";
+import type { ImportReport } from "@/bindings/ImportReport";
+import type { TrackTags } from "@/bindings/TrackTags";
+import type { TagCover } from "@/bindings/TagCover";
+import type { LibraryItem } from "@/bindings/LibraryItem";
+import type { LibraryPage } from "@/bindings/LibraryPage";
+import type { LibraryQuery } from "@/bindings/LibraryQuery";
 import type { MetadataResult } from "@/bindings/MetadataResult";
 import type { MoveTarget } from "@/bindings/MoveTarget";
 import type { OfficialMatch } from "@/bindings/OfficialMatch";
@@ -50,6 +56,23 @@ export const COMMANDS = [
   "library_open_file",
   "library_cover",
   "template_preview",
+  "library_list",
+  "library_import",
+  "library_rescan",
+  "tags_read",
+  "tags_write",
+  "pick_audio_file",
+  "pick_image_file",
+  "artwork_read",
+  "artwork_fetch",
+  "library_get",
+  "library_artists",
+  "library_albums",
+  "library_delete",
+  "library_clear",
+  "review_dismiss",
+  "review_list",
+  "review_apply",
   "find_official_version",
   "metadata_preview",
   "metadata_search",
@@ -91,8 +114,28 @@ export const api = {
   clipboardReadText: () => call<string>("clipboard_read_text"),
   libraryReveal: (path: string) => call<void>("library_reveal", { path }),
   libraryOpenFile: (path: string) => call<void>("library_open_file", { path }),
-  libraryCover: (id: number) => call<string | null>("library_cover", { id }),
+  libraryCover: (id: number, size = 256) => call<string | null>("library_cover", { id, size }),
   templatePreview: (template: string) => call<string>("template_preview", { template }),
+  libraryList: (query: Partial<LibraryQuery> = {}) => call<LibraryPage>("library_list", { query }),
+  libraryImport: (paths: string[]) => call<ImportReport>("library_import", { paths }),
+  libraryRescan: () => call<ImportReport>("library_rescan"),
+  tagsRead: (path: string) => call<TrackTags>("tags_read", { path }),
+  tagsWrite: (path: string, tags: TrackTags, reorganize = false) =>
+    call<string>("tags_write", { path, tags, reorganize }),
+  pickAudioFile: () => call<string | null>("pick_audio_file"),
+  pickImageFile: () => call<string | null>("pick_image_file"),
+  artworkRead: (path: string) => call<TagCover>("artwork_read", { path }),
+  artworkFetch: (url: string) => call<TagCover>("artwork_fetch", { url }),
+  libraryGet: (id: number) => call<LibraryItem | null>("library_get", { id }),
+  libraryArtists: () => call<string[]>("library_artists"),
+  libraryAlbums: (artist?: string) => call<string[]>("library_albums", { artist: artist ?? null }),
+  libraryDelete: (ids: number[], deleteFiles = false) =>
+    call<number>("library_delete", { ids, deleteFiles }),
+  libraryClear: () => call<number>("library_clear"),
+  reviewDismiss: (id: number) => call<void>("review_dismiss", { id }),
+  reviewList: (offset = 0) => call<LibraryPage>("review_list", { offset }),
+  reviewApply: (id: number, candidate: Candidate | null, manual: TrackTags | null = null) =>
+    call<LibraryItem>("review_apply", { id, candidate, manual }),
   findOfficialVersion: (video: VideoInfo, isrc?: string) =>
     call<OfficialMatch | null>("find_official_version", { video, isrc: isrc ?? null }),
   metadataPreview: (request: PreviewRequest) =>

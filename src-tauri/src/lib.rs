@@ -100,6 +100,14 @@ pub fn run() {
                 data_dir: paths.data_dir.clone(),
                 start_paused: false,
             }))?;
+            let watch_tools = Arc::clone(&tools);
+            tauri::async_runtime::spawn(reverb_core::library::watch::run(
+                db.clone(),
+                Arc::clone(&settings),
+                Arc::clone(&sink),
+                Arc::new(move || watch_tools.resolve_ffprobe()),
+                tokio_util::sync::CancellationToken::new(),
+            ));
             app.manage(AppState {
                 paths,
                 db,
@@ -150,6 +158,23 @@ pub fn run() {
             commands::media::library_open_file,
             commands::postprocess::library_cover,
             commands::postprocess::template_preview,
+            commands::library::library_list,
+            commands::library::library_import,
+            commands::library::library_rescan,
+            commands::library::tags_read,
+            commands::library::tags_write,
+            commands::library::pick_audio_file,
+            commands::library::pick_image_file,
+            commands::library::artwork_read,
+            commands::library::artwork_fetch,
+            commands::library::library_get,
+            commands::library::library_artists,
+            commands::library::library_albums,
+            commands::library::library_delete,
+            commands::library::library_clear,
+            commands::library::review_dismiss,
+            commands::library::review_list,
+            commands::library::review_apply,
             commands::metadata::find_official_version,
             commands::metadata::metadata_preview,
             commands::metadata::metadata_search,

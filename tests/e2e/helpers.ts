@@ -23,7 +23,14 @@ export function collectErrors(page: Page): string[] {
 }
 
 export type Scenario =
-  "empty" | "busy" | "errors" | "heal" | "update-available" | "update-downloading" | "update-error";
+  | "empty"
+  | "big"
+  | "busy"
+  | "errors"
+  | "heal"
+  | "update-available"
+  | "update-downloading"
+  | "update-error";
 
 /** Abre a rota (HashRouter) com um cenário do backend falso e espera o título. */
 export async function open(page: Page, path = "/", scenario: Scenario = "empty") {

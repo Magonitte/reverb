@@ -105,6 +105,17 @@ pub(crate) fn check_path(path: &Path) -> CoreResult<()> {
 
 /// Retorna erro se a raiz e os diretórios já excederem 240 caracteres, mesmo com título mínimo.
 pub fn render(template: &str, tags: &TrackTags, ctx: &TemplateContext) -> CoreResult<PathBuf> {
+    let path = unique_path(&render_destination(template, tags, ctx)?);
+    check_path(&path)?;
+    Ok(path)
+}
+
+/// Destination before collisions, for editing a file already at its correct path.
+pub fn render_destination(
+    template: &str,
+    tags: &TrackTags,
+    ctx: &TemplateContext,
+) -> CoreResult<PathBuf> {
     let model = if ctx.content_type == ContentType::Other {
         match ctx.language {
             Language::PtBr => "Outros/{channel}/{title}",
@@ -125,7 +136,7 @@ pub fn render(template: &str, tags: &TrackTags, ctx: &TemplateContext) -> CoreRe
         parts.push("_".to_owned());
     }
     let refs: Vec<&str> = parts.iter().map(String::as_str).collect();
-    let path = unique_path(&sanitize_path(&ctx.output_dir, &refs, &ctx.extension));
+    let path = sanitize_path(&ctx.output_dir, &refs, &ctx.extension);
     check_path(&path)?;
     Ok(path)
 }

@@ -70,6 +70,7 @@ describe("cenários (?scenario=)", () => {
     expect(scenarioFromLocation("")).toBeNull();
     expect([...SCENARIOS]).toEqual([
       "empty",
+      "big",
       "busy",
       "errors",
       "heal",

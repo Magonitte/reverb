@@ -253,7 +253,69 @@
     "empty": {
       "title": "Sua biblioteca está vazia",
       "description": "As faixas que você baixar vão aparecer aqui."
-    }
+    },
+    "search": "Buscar na biblioteca",
+    "format": "Formato",
+    "date": "Adicionado",
+    "all": "Tudo",
+    "artist": "Artista",
+    "album": "Álbum",
+    "sort": "Ordenar por",
+    "needsReview": "Precisa revisão",
+    "missing": "Arquivo ausente",
+    "clear": "Limpar biblioteca",
+    "remove": "Remover registros",
+    "trash": "Mover arquivos para a lixeira",
+    "redownload": "Baixar novamente",
+    "selectPage": "Selecionar esta página",
+    "selectTrack": "Selecionar {{title}}",
+    "track": "Faixa",
+    "actions": "Ações",
+    "open": "Abrir",
+    "folder": "Pasta",
+    "openTrack": "Abrir {{title}}",
+    "revealTrack": "Mostrar {{title}} na pasta",
+    "page": "{{start}}–{{end}} de {{total}} faixas",
+    "previous": "Anterior",
+    "next": "Próxima",
+    "dates": {
+      "all": "Todas as datas",
+      "today": "Hoje",
+      "week": "Esta semana",
+      "month": "Este mês"
+    },
+    "sorts": {
+      "added_desc": "Mais recentes",
+      "title": "Título",
+      "artist": "Artista",
+      "album": "Álbum"
+    },
+    "confirm": {
+      "clear": {
+        "title": "Limpar biblioteca?",
+        "message": "Remover todos os registros da biblioteca. Seus arquivos de áudio permanecerão no disco."
+      },
+      "remove": {
+        "title": "Remover os registros selecionados?",
+        "message": "Remover as faixas selecionadas da biblioteca. Seus arquivos de áudio permanecerão no disco."
+      },
+      "trash": {
+        "title": "Mover os arquivos selecionados para a lixeira?",
+        "message": "Mover os arquivos de áudio selecionados e suas letras para a lixeira do sistema e remover seus registros da biblioteca."
+      }
+    },
+    "selection": "Selecionar",
+    "cover": "Capa",
+    "importFile": "Importar arquivo",
+    "importFolder": "Importar pasta",
+    "rescan": "Reexaminar pasta",
+    "importResult": "{{imported}} importados · {{skipped}} já registrados · {{failed}} falharam",
+    "editTrack": "Editar tags de {{title}}",
+    "view": "Visualização",
+    "listView": "Lista",
+    "albumView": "Álbuns",
+    "importProgress": "Importando {{processed}} de {{total}} arquivos…",
+    "addedAt": "Data"
   },
   "review": {
     "title": "Revisar",
@@ -261,7 +323,18 @@
     "empty": {
       "title": "Nada para revisar",
       "description": "Quando o Reverb tiver dúvida sobre uma faixa, ela aparece aqui."
-    }
+    },
+    "shortcuts": "J/K: navegar · 1–5: escolher · Enter: aplicar · M: manter",
+    "candidates": "Candidatos",
+    "choose": "Escolher {{number}}: {{title}}",
+    "noCandidates": "Sem candidatos. Edite os metadados manualmente.",
+    "apply": "Aplicar candidato",
+    "keep": "Manter metadados atuais",
+    "manual": "Editar manualmente",
+    "position": "{{index}} de {{total}} para revisar",
+    "nextPage": "Próxima página",
+    "current": "Metadados atuais",
+    "duration": "{{seconds}} segundos"
   },
   "tagEditor": {
     "title": "Editor de tags",
@@ -269,6 +342,30 @@
     "empty": {
       "title": "Nenhum arquivo aberto",
       "description": "Abra um arquivo pela Biblioteca para editar as tags."
+    },
+    "open": "Abrir arquivo de áudio…",
+    "saved": "Tags salvas.",
+    "cover": "Capa do álbum",
+    "pickCover": "Escolher arquivo de capa…",
+    "coverUrl": "URL da capa",
+    "fetchCover": "Carregar capa da URL",
+    "removeCover": "Remover capa",
+    "search": "Buscar metadados",
+    "apply": "Usar metadados",
+    "reorganize": "Reorganizar este arquivo da biblioteca",
+    "synced": "Letra sincronizada",
+    "plain": "Letra simples",
+    "fields": {
+      "title": "Título",
+      "artist": "Artista",
+      "album": "Álbum",
+      "albumArtist": "Artista do álbum",
+      "genre": "Gênero",
+      "year": "Ano",
+      "trackNo": "Número da faixa",
+      "trackTotal": "Total de faixas",
+      "discNo": "Disco",
+      "lyrics": "Letra"
     }
   },
   "playlists": {
@@ -369,7 +466,8 @@
       "variables": "Variáveis: {artist}, {albumartist}, {album}, {title}, {track:02}, {disc}, {year}, {genre}, {channel}, {source_id}, {playlist}, {playlist_index}.",
       "invalidTemplate": "Confira as variáveis e as chaves do modelo.",
       "preview": "Exemplo de caminho",
-      "previewPending": "Atualizando prévia…"
+      "previewPending": "Atualizando prévia…",
+      "watchLibrary": "Monitorar pasta da biblioteca"
     }
   },
   "onboarding": {

@@ -11,6 +11,7 @@ pub fn template_preview(state: State<'_, AppState>, template: String) -> Result<
 pub async fn library_cover(
     state: State<'_, AppState>,
     id: i64,
+    size: Option<u32>,
 ) -> Result<Option<String>, CoreError> {
     let item = state
         .db
@@ -18,7 +19,10 @@ pub async fn library_cover(
         .await?
         .ok_or_else(|| CoreError::coded("file_missing", "Registro da biblioteca não encontrado"))?;
     tokio::task::spawn_blocking(move || {
-        library::cover_thumbnail(std::path::Path::new(&item.file_path))
+        library::cover_thumbnail_with_size(
+            std::path::Path::new(&item.file_path),
+            size.unwrap_or(256),
+        )
     })
     .await
     .map_err(|e| CoreError::Internal(e.to_string()))?

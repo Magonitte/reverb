@@ -1,0 +1,32 @@
+import { screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { beforeEach, expect, it } from "vitest";
+import { mockCalls } from "@/lib/ipc/mock/media";
+import { mockTagsRead, setMockPickedAudio } from "@/lib/ipc/mock/library";
+import { renderApp, resetFlowTests } from "@/testing/flow";
+
+beforeEach(() => resetFlowTests());
+it("opens an external file, edits tags, chooses artwork, fills metadata and saves", async () => {
+  setMockPickedAudio("C:/isolated/external.opus");
+  renderApp("/tag-editor");
+  await userEvent.click(await screen.findByRole("button", { name: /Abrir arquivo de áudio/ }));
+  const title = await screen.findByLabelText("Título");
+  expect(title).toHaveValue("external");
+  await userEvent.clear(title);
+  await userEvent.type(title, "Rick Astley");
+  const lyrics = screen.getByRole("textbox", { name: "Letra" });
+  await userEvent.type(lyrics, "my lyrics");
+  await userEvent.click(screen.getByRole("button", { name: /Escolher arquivo de capa/ }));
+  await screen.findByRole("img", { name: "Capa do álbum" });
+  await userEvent.click(screen.getByRole("button", { name: "Buscar metadados" }));
+  const choices = await screen.findAllByRole("button", { name: "Usar metadados" });
+  await userEvent.click(choices[0]);
+  await waitFor(() => expect(title).not.toHaveValue("Rick Astley"));
+  expect(lyrics).toHaveValue("my lyrics");
+  await userEvent.click(screen.getByRole("button", { name: "Salvar" }));
+  await waitFor(() => expect(mockCalls.some((call) => call.cmd === "tags_write")).toBe(true));
+  const saved = mockTagsRead("C:/isolated/external.opus");
+  expect(saved.title).toBe(title.getAttribute("value"));
+  expect(saved.lyrics).toBe("my lyrics");
+  expect(saved.cover).not.toBeNull();
+});

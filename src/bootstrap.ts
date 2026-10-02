@@ -1,6 +1,7 @@
 import { isTauri } from "@/lib/ipc/isTauri";
 import { initHealStore } from "@/stores/heal";
 import { initJobsStore } from "@/stores/jobs";
+import { initLibraryStore } from "@/stores/library";
 import { initNotices } from "@/stores/notices";
 import { initSettingsStore } from "@/stores/settings";
 import { initToolsStore } from "@/stores/tools";
@@ -14,6 +15,7 @@ export async function bootstrap(): Promise<void> {
     useAppInfoStore.getState().load(),
     initSettingsStore(),
     initJobsStore(),
+    initLibraryStore(),
     initToolsStore(),
     initHealStore(),
     initNotices(),

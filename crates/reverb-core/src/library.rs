@@ -11,6 +11,14 @@ use crate::tagging::TrackTags;
 use crate::transcode::ProbeInfo;
 use crate::{CoreError, CoreResult};
 
+pub mod files;
+pub mod query;
+pub mod watch;
+pub use query::{
+    albums, artists, clear, delete, dismiss, list, LibraryDateRange, LibraryPage, LibraryQuery,
+    LibrarySort,
+};
+
 /// Espelho da tabela `library`; inclui os campos reservados para importação e reexame.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
@@ -240,6 +248,13 @@ pub fn find_by_isrc(conn: &Connection, isrc: &str) -> CoreResult<Vec<LibraryItem
 
 /// JPEG de 256 px no máximo para a Atividade, sempre derivado da capa embutida.
 pub fn cover_thumbnail(path: &std::path::Path) -> CoreResult<Option<String>> {
+    cover_thumbnail_with_size(path, 256)
+}
+
+pub fn cover_thumbnail_with_size(path: &std::path::Path, size: u32) -> CoreResult<Option<String>> {
+    if !(1..=1200).contains(&size) {
+        return Err(CoreError::invalid("cover size must be between 1 and 1200"));
+    }
     use base64::Engine;
     use image::codecs::jpeg::JpegEncoder;
     let Some(cover) = crate::tagging::read_tags(path)?.cover else {
@@ -248,7 +263,7 @@ pub fn cover_thumbnail(path: &std::path::Path) -> CoreResult<Option<String>> {
     let processed = crate::artwork::process(&cover.data)?;
     let image = image::load_from_memory(&processed)
         .map_err(|e| CoreError::coded("artwork_decode", e.to_string()))?
-        .resize(256, 256, image::imageops::FilterType::Lanczos3);
+        .resize(size, size, image::imageops::FilterType::Lanczos3);
     let mut bytes = Vec::new();
     JpegEncoder::new_with_quality(&mut bytes, 85)
         .encode_image(&image)
