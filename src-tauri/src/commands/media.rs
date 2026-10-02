@@ -163,3 +163,10 @@ mod tests {
         ));
     }
 }
+
+#[tauri::command]
+pub async fn cookies_test(
+    state: State<'_, AppState>,
+) -> Result<reverb_core::quality::CookiesTestResult, CoreError> {
+    Ok(reverb_core::quality::test_cookies(state.backend.as_ref(), &CancellationToken::new()).await)
+}

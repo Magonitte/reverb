@@ -17,8 +17,31 @@ pub async fn check_duplicates(
     state: State<'_, AppState>,
     source_ids: Vec<String>,
     profile_id: Option<String>,
+    acoustid_id: Option<String>,
+    mb_recording_id: Option<String>,
 ) -> Result<Vec<DuplicateHit>, CoreError> {
-    state.queue.check_duplicates(source_ids, profile_id).await
+    let mut hits = state
+        .queue
+        .check_duplicates(source_ids.clone(), profile_id)
+        .await?;
+    let found = state
+        .db
+        .call(move |conn| {
+            reverb_core::library::find_by_fingerprint(
+                conn,
+                acoustid_id.as_deref(),
+                mb_recording_id.as_deref(),
+            )
+        })
+        .await?;
+    if !found.is_empty() {
+        hits.push(DuplicateHit {
+            source_id: source_ids.first().cloned().unwrap_or_default(),
+            found_in: "library".into(),
+            job_id: None,
+        });
+    }
+    Ok(hits)
 }
 
 #[tauri::command]

@@ -3,4 +3,4 @@
 /**
  * Sobrescritas por job das configurações globais (todas opcionais).
  */
-export type JobOptions = { fetchMetadata?: boolean, fetchLyrics?: boolean, fetchArtwork?: boolean, sponsorblock?: boolean, autoOrganize?: boolean, outputDir?: string, splitChapters?: boolean, };
+export type JobOptions = { fetchMetadata?: boolean, fetchLyrics?: boolean, fetchArtwork?: boolean, sponsorblock?: boolean, autoOrganize?: boolean, outputDir?: string, splitChapters?: boolean, upgradeLibraryId?: number, };

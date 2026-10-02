@@ -241,6 +241,10 @@ async fn t6_cookies_file_existente_e_aceito() {
         .await
         .unwrap();
     assert_eq!(updated.cookies_source, CookiesSource::File);
+    assert!(
+        !crate::logging::redact(&format!("cookies at {}", file.display()))
+            .contains(&file.to_string_lossy().to_string())
+    );
 }
 
 #[tokio::test]

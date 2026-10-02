@@ -10,8 +10,7 @@ use wiremock::{
     Mock, MockServer, ResponseTemplate,
 };
 
-#[path = "../../../tests/common/mod.rs"]
-mod common;
+use crate::test_tools as common;
 
 const URL: &str = "https://music.youtube.com/watch?v=lYBUbBu4W08";
 const LRC: &str = "[00:00.00]<00:00.00>Never <00:01.00>gonna give you up\n";

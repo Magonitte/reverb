@@ -18,3 +18,5 @@ use tauri::AppHandle;
 pub fn app_info(app: AppHandle) -> AppInfo {
     AppInfo::new(app.package_info().version.to_string())
 }
+
+pub mod quality;

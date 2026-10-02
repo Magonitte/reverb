@@ -468,7 +468,8 @@
       "invalidTemplate": "Confira as variáveis e as chaves do modelo.",
       "preview": "Exemplo de caminho",
       "previewPending": "Atualizando prévia…",
-      "watchLibrary": "Monitorar pasta da biblioteca"
+      "watchLibrary": "Monitorar pasta da biblioteca",
+      "trimSilence": "Remover silêncio do início e do fim"
     },
     "desktop": {
       "title": "Comportamento da janela",
@@ -594,7 +595,12 @@
     "tool_missing": "Uma ferramenta necessária ainda não foi instalada.",
     "file_missing": "O arquivo não foi encontrado.",
     "duplicate": "Esta faixa já foi baixada ou já está na fila.",
-    "queue_full": "A fila está cheia."
+    "queue_full": "A fila está cheia.",
+    "browser_not_found": "Navegador ou perfil de cookies não encontrado. Instale o Firefox ou escolha um arquivo de cookies.",
+    "cookies_locked": "O banco de cookies está bloqueado. Feche o navegador e tente novamente, ou use o Firefox.",
+    "cookies_decrypt": "Não foi possível descriptografar os cookies do Chrome/Edge. Use o Firefox ou um arquivo de cookies.",
+    "provider_api": "O provedor recusou a consulta. Confira as credenciais e restrições de acesso à API.",
+    "provider_key": "Configure a chave do provedor primeiro."
   },
   "notices": {
     "potEnabled": "O YouTube pediu verificação: o Reverb ligou o provedor de PO token.",
@@ -607,7 +613,9 @@
     "artwork": "Não foi possível buscar a capa.",
     "lyrics": "Não foi possível buscar a letra.",
     "loudness": "Não foi possível analisar o ReplayGain.",
-    "other": "Não foi possível salvar algumas informações adicionais."
+    "other": "Não foi possível salvar algumas informações adicionais.",
+    "trimReencode": "A remoção de silêncio recodifica o áudio original.",
+    "fingerprint": "A identificação pelo áudio falhou."
   },
   "sync": {
     "thisCollection": "Sincronizar esta playlist",
@@ -695,5 +703,59 @@
     "test": "Testar link",
     "testSuccess": "Link recebido",
     "testFailed": "Link inválido ou não suportado"
+  },
+  "quality": {
+    "cookies": "Cookies e YouTube Premium",
+    "source": "Origem dos cookies",
+    "file": "Arquivo de cookies (caminho completo)",
+    "useFile": "Usar arquivo",
+    "hint": "Use Firefox para evitar bloqueios e falhas de descriptografia do Chrome/Edge. Os cookies não entram nos logs nem nos backups.",
+    "test": "Testar cookies",
+    "testing": "Testando…",
+    "premium": "Premium disponível",
+    "standard": "Qualidade padrão",
+    "sources": {
+      "none": "Sem cookies",
+      "firefox": "Firefox",
+      "chrome": "Chrome",
+      "edge": "Edge",
+      "brave": "Brave",
+      "file": "Arquivo"
+    },
+    "split": "Dividir em faixas",
+    "splitMode": "Vídeos com capítulos",
+    "splitModes": {
+      "ask": "Perguntar no preview",
+      "always": "Sempre dividir",
+      "never": "Nunca dividir"
+    },
+    "trim": "Cortar áudio",
+    "waveform": "Forma de onda do áudio",
+    "start": "Início (mm:ss.s)",
+    "end": "Fim (mm:ss.s)",
+    "trimHint": "Ajuste os marcadores e salve. O áudio anterior será enviado à lixeira, preservando as tags.",
+    "upgrade": "Melhorar qualidade",
+    "scanAll": "Verificar qualidade da biblioteca inteira",
+    "enqueue": "Adicionar melhorias à fila",
+    "queued": "Melhorias adicionadas à fila",
+    "found": "{{count}} melhorias disponíveis",
+    "sourceQuality": "Fonte",
+    "apis": "Provedores opcionais",
+    "providers": {
+      "spotify": "Spotify",
+      "discogs": "Discogs",
+      "acoustid": "AcoustID"
+    },
+    "fields": {
+      "spotifyClientId": "Spotify Client ID",
+      "spotifyClientSecret": "Spotify Client Secret",
+      "discogsToken": "Token Discogs",
+      "acoustidKey": "Chave AcoustID"
+    },
+    "configured": "Configurado",
+    "notConfigured": "Não configurado",
+    "apiOk": "Conexão válida",
+    "testApi": "Testar conexão",
+    "clearKey": "Remover chave"
   }
 }

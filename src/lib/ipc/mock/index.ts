@@ -1,3 +1,10 @@
+import {
+  mockUpgradeScan,
+  mockUpgradeEnqueue,
+  mockProviderTest,
+  mockWaveform,
+  mockTrim,
+} from "./quality";
 import { mockDiagnosticsLast, mockDiagnosticsRun } from "./diagnostics";
 import { mockCalls } from "./media";
 import type { AppInfo } from "@/bindings/AppInfo";
@@ -87,6 +94,23 @@ export { resetMockTools, seedMockTool, seedMockToolVersions } from "./tools";
 export { resetMockUpdater, setMockUpdaterMode } from "./updater";
 
 const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
+  cookies_test: () => {
+    mockCalls.push({ cmd: "cookies_test" });
+    const s = mockSettingsGet();
+    return {
+      ok: true,
+      premium: s.cookiesSource !== "none",
+      bestAudio: s.cookiesSource !== "none" ? "AAC 256 kbps" : "Opus 129 kbps",
+      errorKind: null,
+    };
+  },
+  upgrade_scan: (args) => mockUpgradeScan(args?.ids as number[] | undefined),
+  upgrade_enqueue: (args) => mockUpgradeEnqueue(args?.ids as number[]),
+  provider_test: (args) => mockProviderTest(args?.provider as string),
+  waveform: (args) => mockWaveform(args?.path as string),
+  trim_audio: (args) =>
+    mockTrim(args?.path as string, args?.startS as number, args?.endS as number),
+  audio_duration: () => 214,
   data_paths: () => ({ dataDir: "C:/Reverb", portable: false }),
   logs_export: () => {
     mockCalls.push({ cmd: "logs_export" });
@@ -165,8 +189,16 @@ const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
   metadata_preview: (args) => mockMetadataPreview(args?.request as PreviewRequest),
   metadata_search: (args) => mockMetadataSearch(args?.query as string),
   enqueue: (args) => mockEnqueue(args?.request as EnqueueRequest),
-  check_duplicates: (args) =>
-    mockCheckDuplicates(args?.sourceIds as string[], args?.profileId as string | undefined),
+  check_duplicates: (args) => [
+    ...mockCheckDuplicates(args?.sourceIds as string[], args?.profileId as string | undefined),
+    ...(mockLibraryList({ limit: 500 }).items.some(
+      (i) =>
+        (args?.mbRecordingId && i.mbRecordingId === args.mbRecordingId) ||
+        (args?.acoustidId && i.acoustidId === args.acoustidId),
+    )
+      ? [{ sourceId: (args?.sourceIds as string[])[0] ?? "", foundIn: "library", jobId: null }]
+      : []),
+  ],
   jobs_list: () => mockJobsList(),
   job_cancel: (args) => mockJobCancel(args?.id as string),
   job_retry: (args) => mockJobRetry(args?.id as string),

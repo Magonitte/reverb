@@ -1,3 +1,4 @@
+import { UpgradePanel } from "@/components/UpgradePanel";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { DiagnosticReport } from "@/bindings/DiagnosticReport";
@@ -212,6 +213,7 @@ export function AdvancedTab() {
           </Button>
         </div>
       </Card>
+      <UpgradePanel />
       <ConfirmDialog
         open={confirmation !== null}
         title={t(

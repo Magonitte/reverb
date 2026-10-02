@@ -68,6 +68,10 @@ pub struct PipelineOutput {
     pub metadata: Option<MetadataResult>,
     pub library_file: Option<crate::library::DownloadedFile>,
     pub publication: Option<Publication>,
+    pub replacement: Option<crate::quality::replace::Replacement>,
+    pub upgrade_id: Option<i64>,
+    pub chapter_files: Vec<crate::library::DownloadedFile>,
+    pub chapter_publications: Vec<Publication>,
 }
 
 pub struct DownloadPipeline {
@@ -167,16 +171,210 @@ impl DownloadPipeline {
             downloaded
         };
 
-        let metadata = self
+        let splitting = plan
+            .as_ref()
+            .and_then(|p| p.video.as_ref())
+            .is_some_and(|v| {
+                crate::quality::chapters::should_split(
+                    v,
+                    job.settings
+                        .as_ref()
+                        .map_or(crate::settings::SplitChapters::Ask, |s| s.split_chapters),
+                    job.options.split_chapters,
+                )
+            });
+        let ready = if !splitting && job.settings.as_ref().is_some_and(|s| s.trim_silence) {
+            let _guard = match &self.tools {
+                Some(tools) => Some(tools.acquire_run().await),
+                None => None,
+            };
+            let output = workspace.path().join(format!("trimmed.{}", profile.ext));
+            crate::quality::audio::silence(
+                &self.ffmpeg_dir.join(exe("ffmpeg")),
+                &ready,
+                &output,
+                &profile,
+                done.abr.unwrap_or(160.0),
+                cancel,
+            )
+            .await?;
+            if job.profile.id == "original" {
+                on_event(PipelineEvent::Warning("warnings.trimReencode".into()));
+            }
+            output
+        } else {
+            ready
+        };
+
+        let mut metadata = self
             .identify(job, plan.as_ref(), &ready, &done, cancel, on_event)
             .await?;
 
+        if let (Some(result), Some(settings), Some(tools)) =
+            (&mut metadata, &job.settings, &self.tools)
+        {
+            if result.confidence < settings.confidence_auto_apply
+                && !settings.acoustid_key.is_empty()
+                && !settings.offline_mode
+                && job.metadata_override.is_none()
+            {
+                let lookup = async {
+                    if tools.resolve(crate::tools::Tool::Fpcalc).is_err() {
+                        tools.update(crate::tools::Tool::Fpcalc).await?;
+                    }
+                    let _guard = tools.acquire_run().await;
+                    let fpcalc = tools.resolve(crate::tools::Tool::Fpcalc)?;
+                    crate::quality::acoustid::lookup(
+                        &fpcalc,
+                        &ready,
+                        &settings.acoustid_key,
+                        "https://api.acoustid.org/v2/lookup",
+                    )
+                    .await
+                };
+                let identified = tokio::select! {
+                    _ = cancel.cancelled() => return Err(DownloadError::cancelled()),
+                    result = lookup => result,
+                };
+                match identified {
+                    Ok(candidates) => {
+                        if let Some(best) =
+                            candidates.first().filter(|c| c.score > result.confidence)
+                        {
+                            result.confidence = best.score;
+                            result.source = "acoustid".into();
+                            result.bucket = if best.score >= settings.confidence_auto_apply {
+                                result.fields.apply_candidate(&best.candidate);
+                                crate::metadata::Bucket::Auto
+                            } else {
+                                crate::metadata::Bucket::Review
+                            };
+                            result.fields.mb_recording_id = best.candidate.mb_recording_id.clone();
+                            result.candidates = candidates;
+                            on_event(PipelineEvent::Identified(Box::new(result.clone())));
+                        }
+                    }
+                    Err(_) => on_event(PipelineEvent::Warning("warnings.fingerprint".into())),
+                }
+            }
+        }
         if let Some(processor) = &self.postprocess {
             // Mantém probe/loudness protegidos contra a troca de versão das ferramentas.
             let _guard = match &self.tools {
                 Some(tools) => Some(tools.acquire_run().await),
                 None => None,
             };
+            if let Some(video) = plan.as_ref().and_then(|p| p.video.as_ref()).filter(|v| {
+                crate::quality::chapters::should_split(
+                    v,
+                    job.settings
+                        .as_ref()
+                        .map_or(crate::settings::SplitChapters::Ask, |s| s.split_chapters),
+                    job.options.split_chapters,
+                )
+            }) {
+                let mut files = Vec::new();
+                let mut publications = Vec::new();
+                for (index, chapter) in video.chapters.iter().enumerate() {
+                    let segment = workspace
+                        .path()
+                        .join(format!("chapter-{index}.{}", profile.ext));
+                    crate::quality::audio::segment(
+                        &self.ffmpeg_dir.join(exe("ffmpeg")),
+                        &ready,
+                        &segment,
+                        chapter.start_time,
+                        chapter.end_time,
+                        &crate::profiles::profile("original")
+                            .expect("original profile")
+                            .resolve(&profile.ext),
+                        cancel,
+                    )
+                    .await?;
+                    let segment = if job.settings.as_ref().is_some_and(|s| s.trim_silence) {
+                        let output = workspace
+                            .path()
+                            .join(format!("chapter-{index}-trimmed.{}", profile.ext));
+                        crate::quality::audio::silence(
+                            &self.ffmpeg_dir.join(exe("ffmpeg")),
+                            &segment,
+                            &output,
+                            &profile,
+                            done.abr.unwrap_or(160.0),
+                            cancel,
+                        )
+                        .await?;
+                        if job.profile.id == "original" {
+                            on_event(PipelineEvent::Warning("warnings.trimReencode".into()));
+                        }
+                        output
+                    } else {
+                        segment
+                    };
+                    let mut part_job = job.clone();
+                    part_job.options.fetch_lyrics = Some(false);
+                    let mut part_meta =
+                        metadata
+                            .clone()
+                            .unwrap_or_else(|| crate::metadata::MetadataResult {
+                                fields: crate::metadata::MetadataFields::default(),
+                                confidence: 1.0,
+                                source: "chapters".into(),
+                                bucket: crate::metadata::Bucket::Auto,
+                                candidates: vec![],
+                                content_type: crate::metadata::ContentType::Music,
+                                isrc: None,
+                                official: None,
+                            });
+                    part_meta.fields.title = crate::quality::chapters::clean_title(&chapter.title);
+                    part_meta.fields.album = Some(
+                        crate::metadata::parse_title::parse_title(
+                            &video.title,
+                            video.channel.as_deref(),
+                        )
+                        .title,
+                    );
+                    part_meta.fields.album_artist = part_meta
+                        .fields
+                        .artist
+                        .clone()
+                        .or_else(|| video.artist.clone())
+                        .or_else(|| video.channel.clone());
+                    part_meta.fields.artist = part_meta.fields.album_artist.clone();
+                    part_meta.fields.track_no = Some(index as u32 + 1);
+                    part_meta.fields.track_total = Some(video.chapters.len() as u32);
+                    part_meta.isrc = None;
+                    let (file, publication) = processor
+                        .run(
+                            &part_job,
+                            &segment,
+                            &profile.ext,
+                            &done,
+                            Some(&part_meta),
+                            plan.as_ref(),
+                            &self.ffmpeg_dir,
+                            cancel,
+                            on_event,
+                        )
+                        .await?;
+                    files.push(file);
+                    publications.push(publication);
+                }
+                let file = files.remove(0);
+                let publication = publications.remove(0);
+                return Ok(PipelineOutput {
+                    path: PathBuf::from(&file.file_path),
+                    done,
+                    profile,
+                    metadata,
+                    library_file: Some(file),
+                    publication: Some(publication),
+                    replacement: None,
+                    upgrade_id: None,
+                    chapter_files: files,
+                    chapter_publications: publications,
+                });
+            }
             let (file, publication) = processor
                 .run(
                     job,
@@ -197,6 +395,10 @@ impl DownloadPipeline {
                 metadata,
                 library_file: Some(file),
                 publication: Some(publication),
+                replacement: None,
+                upgrade_id: None,
+                chapter_files: vec![],
+                chapter_publications: vec![],
             });
         }
 
@@ -214,6 +416,10 @@ impl DownloadPipeline {
             metadata,
             library_file: None,
             publication: None,
+            replacement: None,
+            upgrade_id: None,
+            chapter_files: vec![],
+            chapter_publications: vec![],
         })
     }
 

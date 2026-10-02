@@ -1,3 +1,5 @@
+import type { UpgradeCandidate } from "@/bindings/UpgradeCandidate";
+import type { CookiesTestResult } from "@/bindings/CookiesTestResult";
 import { invoke } from "@tauri-apps/api/core";
 import type { Analysis } from "@/bindings/Analysis";
 import type { DiagnosticReport } from "@/bindings/DiagnosticReport";
@@ -45,6 +47,13 @@ export async function call<T>(cmd: string, args?: Record<string, unknown>): Prom
 }
 
 export const COMMANDS = [
+  "audio_duration",
+  "upgrade_scan",
+  "upgrade_enqueue",
+  "provider_test",
+  "waveform",
+  "trim_audio",
+  "cookies_test",
   "diagnostics_run",
   "diagnostics_last",
   "logs_export",
@@ -122,6 +131,14 @@ export const COMMANDS = [
 export type SearchSource = "ytmusic" | "youtube";
 
 export const api = {
+  audioDuration: (path: string) => call<number>("audio_duration", { path }),
+  upgradeScan: (ids?: number[]) => call<UpgradeCandidate[]>("upgrade_scan", { ids }),
+  upgradeEnqueue: (ids: number[]) => call<Job[]>("upgrade_enqueue", { ids }),
+  providerTest: (provider: string) => call<void>("provider_test", { provider }),
+  waveform: (path: string) => call<string>("waveform", { path }),
+  trimAudio: (path: string, startS: number, endS: number) =>
+    call<void>("trim_audio", { path, startS, endS }),
+  cookiesTest: () => call<CookiesTestResult>("cookies_test"),
   diagnosticsRun: () => call<DiagnosticReport>("diagnostics_run"),
   diagnosticsLast: () => call<DiagnosticReport | null>("diagnostics_last"),
   logsExport: () => call<string | null>("logs_export"),
@@ -187,8 +204,11 @@ export const api = {
   metadataSearch: (query: string) => call<Candidate[]>("metadata_search", { query }),
   enqueue: (request: Partial<EnqueueRequest> & { url: string }) =>
     call<Job>("enqueue", { request }),
-  checkDuplicates: (sourceIds: string[], profileId?: string) =>
-    call<DuplicateHit[]>("check_duplicates", { sourceIds, profileId }),
+  checkDuplicates: (
+    sourceIds: string[],
+    profileId?: string,
+    identity?: { acoustidId?: string; mbRecordingId?: string },
+  ) => call<DuplicateHit[]>("check_duplicates", { sourceIds, profileId, ...identity }),
   jobsList: () => call<Job[]>("jobs_list"),
   jobCancel: (id: string) => call<void>("job_cancel", { id }),
   jobRetry: (id: string) => call<Job>("job_retry", { id }),

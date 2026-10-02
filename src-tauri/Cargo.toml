@@ -18,6 +18,7 @@ path = "src/main.rs"
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
+tempfile.workspace = true
 reverb-core.workspace = true
 semver = "1"
 tokio.workspace = true

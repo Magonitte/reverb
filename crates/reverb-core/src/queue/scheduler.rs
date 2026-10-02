@@ -133,8 +133,24 @@ impl QueueService {
         self.inner.wake.notify_one();
     }
 
-    pub async fn enqueue(&self, request: EnqueueRequest) -> CoreResult<Job> {
+    pub async fn enqueue(&self, mut request: EnqueueRequest) -> CoreResult<Job> {
         let inner = &self.inner;
+        if let Some(id) = request.options.as_ref().and_then(|o| o.upgrade_library_id) {
+            let item = inner
+                .db
+                .call(move |conn| crate::library::get(conn, id))
+                .await?
+                .ok_or_else(|| CoreError::invalid("Upgrade item missing"))?;
+            if item.provider.as_deref() != Some("youtube") || item.missing {
+                return Err(CoreError::invalid("Upgrade item unavailable"));
+            }
+            request.url = item
+                .source_url
+                .ok_or_else(|| CoreError::invalid("Upgrade source missing"))?;
+            request.source_id = item.source_id;
+            request.profile_id = item.profile_id;
+            request.allow_duplicate = true;
+        }
         let url = request.url.trim().to_string();
         if url.is_empty() {
             return Err(CoreError::invalid("a URL é obrigatória"));
@@ -152,7 +168,19 @@ impl QueueService {
         let queue_limit = settings.queue_limit;
         let _ops = inner.ops.lock().await;
         let now = repo::now();
-        let kind = if request.playlist_ctx.is_some() {
+        let kind = if request
+            .options
+            .as_ref()
+            .is_some_and(|o| o.upgrade_library_id.is_some())
+        {
+            "upgrade"
+        } else if request
+            .options
+            .as_ref()
+            .is_some_and(|o| o.split_chapters == Some(true))
+        {
+            "chapters"
+        } else if request.playlist_ctx.is_some() {
             "playlist_item"
         } else {
             "single"
@@ -200,6 +228,10 @@ impl QueueService {
         let job = inner
             .db
             .call(move |conn| {
+                if let Some(id)=job.options.upgrade_library_id {
+                    let exists:bool=conn.query_row("SELECT EXISTS(SELECT 1 FROM jobs WHERE kind='upgrade' AND status IN ('queued','running') AND json_extract(options_json,'$.upgradeLibraryId')=?)",[id],|r|r.get(0))?;
+                    if exists{return Err(CoreError::coded("duplicate","Upgrade already queued"));}
+                }
                 if repo::count_active(conn)? >= queue_limit {
                     return Err(CoreError::coded(
                         "queue_full",
@@ -207,6 +239,10 @@ impl QueueService {
                     ));
                 }
                 if !allow_duplicate {
+                    if let Some(value)=&job.metadata_override {
+                        let ids=crate::library::find_by_fingerprint(conn,value["acoustidId"].as_str(),value["mbRecordingId"].as_str())?;
+                        if !ids.is_empty(){return Err(CoreError::coded("duplicate","Recording already in library"));}
+                    }
                     if let Some(source_id) = &job.source_id {
                         let hits = repo::find_duplicates(
                             conn,
@@ -743,15 +779,25 @@ impl Inner {
         }
         job.updated_at = now;
         job.finished_at = Some(now);
+        if !output.chapter_files.is_empty() {
+            job.kind = "chapters".into();
+        }
         let mut recorded = job.clone();
         let file = output.library_file.take();
+        let chapters = std::mem::take(&mut output.chapter_files);
+        let upgrade_id = output.upgrade_id;
         let saved = self
             .db
             .call(move |conn| {
                 let tx = conn.transaction()?;
                 if let Some(file) = file {
-                    recorded.library_id =
-                        Some(crate::library::insert_from_job(&tx, &recorded, &file)?);
+                    recorded.library_id=if let Some(id)=upgrade_id {
+                        crate::library::files::update_tags(&tx,&file.file_path,&file.tags)?;
+                        tx.execute("UPDATE library SET source_abr_kbps=?,bitrate_kbps=?,duration_s=?,codec=?,replaygain_db=?,updated_at=unixepoch() WHERE id=?",rusqlite::params![file.source_abr_kbps,file.probe.as_ref().and_then(|p|p.bitrate_kbps),file.probe.as_ref().map(|p|p.duration_s),file.probe.as_ref().map(|p|&p.codec),file.replaygain_db,id])?;Some(id)
+                    }else{Some(crate::library::insert_from_job(&tx,&recorded,&file)?)};
+                }
+                for chapter in chapters {
+                    crate::library::insert_from_job(&tx, &recorded, &chapter)?;
                 }
                 repo::save(&tx, &recorded)?;
                 if let Some(library_id) = recorded.library_id {
@@ -774,6 +820,14 @@ impl Inner {
         };
         self.take_live(id);
         if let Some(publication) = &mut output.publication {
+            publication.commit();
+        }
+        if let Some(replacement) = &mut output.replacement {
+            if let Err(error) = replacement.commit() {
+                tracing::warn!(kind = error.kind(), "Original audio retained after upgrade");
+            }
+        }
+        for publication in &mut output.chapter_publications {
             publication.commit();
         }
         if let Some(library_id) = job.library_id {

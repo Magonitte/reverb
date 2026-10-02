@@ -1,3 +1,4 @@
+import { Select } from "@/components/ui/Select";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { SettingsPatch } from "@/bindings/SettingsPatch";
@@ -10,6 +11,7 @@ import { useSettingsStore } from "@/stores/settings";
 import { useUiStore } from "@/stores/ui";
 
 type Flag =
+  | "trimSilence"
   | "watchLibrary"
   | "autoOrganize"
   | "fetchMetadata"
@@ -57,7 +59,7 @@ export function PostprocessSettings({ tab }: { tab: "downloads" | "metadata" }) 
     update(patch).catch(() => toast({ message: t("settings.saveFailed"), tone: "error" }));
   const flags: Flag[] =
     tab === "downloads"
-      ? ["autoOrganize", "watchLibrary"]
+      ? ["autoOrganize", "watchLibrary", "trimSilence"]
       : [
           "fetchMetadata",
           "preferOfficialAudio",
@@ -90,7 +92,30 @@ export function PostprocessSettings({ tab }: { tab: "downloads" | "metadata" }) 
       ))}
       {tab === "downloads" && (
         <>
-          <Input label={t("sync.pacing")} type="number" min={0} max={60} step={1} value={settings.playlistPacingSeconds} onChange={(event)=>{const value=Number(event.target.value);if(Number.isInteger(value) && value>=0 && value<=60)void save({playlistPacingSeconds:value});}}/>
+          <Select
+            label={t("quality.splitMode")}
+            value={settings.splitChapters}
+            options={["ask", "always", "never"].map((value) => ({
+              value,
+              label: t(`quality.splitModes.${value}`),
+            }))}
+            onChange={(e) =>
+              void save({ splitChapters: e.target.value as "ask" | "always" | "never" })
+            }
+          />
+          <Input
+            label={t("sync.pacing")}
+            type="number"
+            min={0}
+            max={60}
+            step={1}
+            value={settings.playlistPacingSeconds}
+            onChange={(event) => {
+              const value = Number(event.target.value);
+              if (Number.isInteger(value) && value >= 0 && value <= 60)
+                void save({ playlistPacingSeconds: value });
+            }}
+          />
           <Input
             label={t("settings.postprocess.template")}
             value={template}
