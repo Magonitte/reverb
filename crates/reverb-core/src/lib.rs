@@ -18,6 +18,7 @@ pub mod pipeline;
 pub mod profiles;
 pub mod queue;
 pub mod settings;
+pub mod sync;
 pub mod tagging;
 pub mod tools;
 pub mod transcode;

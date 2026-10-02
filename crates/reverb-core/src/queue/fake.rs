@@ -83,6 +83,12 @@ impl Drop for RunningGuard<'_> {
 }
 
 impl FakeBackend {
+    pub fn set_collection(&self, url: &str, info: crate::ytdlp::CollectionInfo) {
+        self.analyses
+            .lock()
+            .unwrap()
+            .insert(url.to_owned(), Analysis::Collection { info });
+    }
     /// Opus válido para os testes de pós-processamento; padrão antigo continua sem FFmpeg.
     pub fn set_audio(&self, bytes: Vec<u8>, readonly: bool) {
         *self.audio.lock().unwrap() = Some((bytes, readonly));
@@ -247,6 +253,9 @@ impl DownloadBackend for FakeBackend {
         _cancel: &CancellationToken,
     ) -> Result<Analysis, DownloadError> {
         self.analyze_log.lock().unwrap().push(url.to_string());
+        if let Some(analysis) = self.analyses.lock().unwrap().get(url).cloned() {
+            return Ok(analysis);
+        }
         video_id(url)
             .and_then(|id| self.analyses.lock().unwrap().get(&id).cloned())
             .ok_or_else(|| DownloadError::new(ErrorKind::Unknown, "sem análise no fake"))

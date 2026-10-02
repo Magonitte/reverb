@@ -90,6 +90,7 @@ export function PostprocessSettings({ tab }: { tab: "downloads" | "metadata" }) 
       ))}
       {tab === "downloads" && (
         <>
+          <Input label={t("sync.pacing")} type="number" min={0} max={60} step={1} value={settings.playlistPacingSeconds} onChange={(event)=>{const value=Number(event.target.value);if(Number.isInteger(value) && value>=0 && value<=60)void save({playlistPacingSeconds:value});}}/>
           <Input
             label={t("settings.postprocess.template")}
             value={template}

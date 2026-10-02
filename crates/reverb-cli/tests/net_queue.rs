@@ -108,7 +108,10 @@ fn t15_fila_baixa_tres_perfis_em_paralelo_e_deixa_o_tmp_vazio() {
 
     // F09 organiza a fila em subpastas e escreve sidecars; ainda devem existir exatamente
     // os três áudios, associados à biblioteca e com os mesmos codecs/tamanhos do T15.
-    let mut files = audio_files(&out);
+    let mut files: Vec<_> = audio_files(&out)
+        .iter()
+        .map(|path| reverb_core::library::files::canonical(path).unwrap())
+        .collect();
     files.sort();
     assert_eq!(files.len(), 3, "{files:?}");
     let mut recorded: Vec<PathBuf> = jobs
@@ -123,9 +126,8 @@ fn t15_fila_baixa_tres_perfis_em_paralelo_e_deixa_o_tmp_vazio() {
         .collect();
     recorded.sort();
     assert_eq!(files, recorded);
-    assert!(files
-        .iter()
-        .all(|file| file.starts_with(out.join("Outros/jawed"))));
+    let organized = reverb_core::library::files::canonical(&out.join("Outros/jawed")).unwrap();
+    assert!(files.iter().all(|file| file.starts_with(&organized)));
     let mut codecs: Vec<String> = files
         .iter()
         .map(|f| {

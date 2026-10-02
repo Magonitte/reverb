@@ -2,6 +2,8 @@
 //! `npm run verify:net`; usam diretórios temporários e as ferramentas de `.test-tools/`.
 
 mod common;
+#[path = "net_metadata/sync.rs"]
+mod sync;
 
 use std::sync::Arc;
 use std::time::{Duration, Instant};

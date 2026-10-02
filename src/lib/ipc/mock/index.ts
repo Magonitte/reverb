@@ -1,4 +1,8 @@
 import type { AppInfo } from "@/bindings/AppInfo";
+import type { SyncCreate } from "@/bindings/SyncCreate";
+import type { SyncUpdate } from "@/bindings/SyncUpdate";
+import { mockSyncsList, mockSyncCreate, mockSyncUpdate, mockSyncDelete, mockSyncRun, mockSyncItems } from "./syncs";
+export { resetMockSyncs } from "./syncs";
 import type { LibraryQuery } from "@/bindings/LibraryQuery";
 import type { TrackTags } from "@/bindings/TrackTags";
 import type { Candidate } from "@/bindings/Candidate";
@@ -72,6 +76,12 @@ export { resetMockTools, seedMockTool, seedMockToolVersions } from "./tools";
 export { resetMockUpdater, setMockUpdaterMode } from "./updater";
 
 const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
+  syncs_list: () => mockSyncsList(),
+  sync_create: (args) => mockSyncCreate(args?.request as SyncCreate),
+  sync_update: (args) => mockSyncUpdate(args?.id as string, args?.request as SyncUpdate),
+  sync_delete: (args) => mockSyncDelete(args?.id as string, Boolean(args?.deleteFiles)),
+  sync_run: (args) => mockSyncRun(args?.id as string),
+  sync_items: (args) => mockSyncItems(args?.id as string),
   app_info: (): AppInfo => ({ version: "0.1.0", platform: "windows", arch: "x86_64" }),
   settings_get: () => mockSettingsGet(),
   settings_update: (args) => mockSettingsUpdate((args?.patch ?? {}) as SettingsPatch),

@@ -15,6 +15,8 @@ pub struct AppState {
     pub settings: Arc<SettingsService>,
     pub tools: Arc<ToolsManager>,
     pub queue: QueueService,
+    pub syncs: Arc<reverb_core::sync::SyncService>,
+    pub background_cancel: tokio_util::sync::CancellationToken,
     /// Análise e busca (F07) usam o mesmo backend dos downloads.
     pub backend: Arc<dyn DownloadBackend>,
     /// Versão oficial, pré-visualização e busca de metadados (F08); o mesmo serviço do pipeline.

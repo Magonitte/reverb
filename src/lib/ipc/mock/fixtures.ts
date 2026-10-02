@@ -81,6 +81,7 @@ export const FX3_CLIP: VideoInfo = {
 
 /** FX4: álbum (10 faixas; as 3 primeiras são reais, as demais têm ids sintéticos). */
 export const FX4_ALBUM: CollectionInfo = {
+  thumbnail: null,
   id: "OLAK5uy_nmDUsWOMoEcz0SsVqUwir0oxu-k1oUyXE",
   title: "Album - Whenever You Need Somebody",
   channel: "Rick Astley",

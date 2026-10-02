@@ -7,6 +7,7 @@ import {
   resetMockSettings,
   resetMockTools,
   resetMockUpdater,
+  resetMockSyncs,
 } from "@/lib/ipc/mock";
 import { AppRoutes } from "@/routes";
 import { useFlowStore } from "@/stores/flow";
@@ -18,6 +19,7 @@ import { useSettingsStore } from "@/stores/settings";
 import { useToolsStore } from "@/stores/tools";
 import { useUiStore } from "@/stores/ui";
 import { initialUpdaterState, useUpdaterStore } from "@/stores/updater";
+import { resetSyncsStore } from "@/stores/syncs";
 
 function Where() {
   const { pathname } = useLocation();
@@ -36,6 +38,8 @@ export function renderApp(path = "/") {
 
 /** Zera o backend falso e todas as stores entre um teste e outro. */
 export function resetFlowTests(): void {
+  resetMockSyncs();
+  resetSyncsStore();
   resetMockLibrary();
   resetLibraryStore();
   resetMockQueue();
@@ -51,7 +55,7 @@ export function resetFlowTests(): void {
   useToolsStore.setState({ statuses: [], progress: {} });
   useHealStore.setState({ stage: null });
   useUpdaterStore.setState(initialUpdaterState);
-  useFlowStore.setState({ preview: null, collection: null });
+  useFlowStore.setState({ preview: null, collection: null, collectionUrl: null });
   useUiStore.setState({
     commandBarOpen: false,
     commandBarText: "",

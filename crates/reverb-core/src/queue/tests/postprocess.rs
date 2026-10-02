@@ -16,7 +16,7 @@ mod common;
 const URL: &str = "https://music.youtube.com/watch?v=lYBUbBu4W08";
 const LRC: &str = "[00:00.00]<00:00.00>Never <00:01.00>gonna give you up\n";
 
-async fn server(success: bool) -> MockServer {
+pub(super) async fn server(success: bool) -> MockServer {
     let server = MockServer::start().await;
     for (route, fixture) in [
         ("/deezer/search", "deezer-search-fx3.json"),
@@ -86,7 +86,7 @@ async fn server(success: bool) -> MockServer {
     server
 }
 
-async fn start(env: &Env, server: &MockServer, readonly: bool) -> QueueService {
+pub(super) async fn start(env: &Env, server: &MockServer, readonly: bool) -> QueueService {
     let audio = common::pink_noise_opus(env.dir.path()).await;
     env.backend
         .set_audio(std::fs::read(audio).unwrap(), readonly);

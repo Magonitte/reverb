@@ -7,6 +7,7 @@ import { mockBus } from "./bus";
 import { mockAnalyze } from "./media";
 import { mockMetadataFor } from "./metadata";
 import { mockPublishJob } from "./library";
+import { syncJobUpdated } from "./syncs";
 
 let jobs: Job[] = [];
 let paused = false;
@@ -22,6 +23,7 @@ export function resetMockQueue(): void {
 }
 
 function emitJob(job: Job): void {
+  syncJobUpdated(job);
   mockBus.emit("job://updated", job);
 }
 

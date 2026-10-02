@@ -74,6 +74,7 @@ struct State {
     running: HashMap<String, Live>,
     /// Jobs `queued` esperando o fim do backoff (não podem iniciar ainda).
     waiting: HashSet<String>,
+    last_playlist_start: Option<Instant>,
 }
 
 struct Inner {
@@ -533,7 +534,7 @@ impl Inner {
         loop {
             let _ops = self.ops.lock().await;
             let limit = self.settings.get().parallelism as usize;
-            let skip = {
+            let (mut skip, pacing_delay) = {
                 let state = self.state.lock().expect("estado da fila");
                 if state.paused
                     || state.healing > 0
@@ -542,20 +543,40 @@ impl Inner {
                 {
                     return;
                 }
-                state.waiting.clone()
+                let delay = state.last_playlist_start.and_then(|last| {
+                    (last
+                        + Duration::from_secs(u64::from(
+                            self.settings.get().playlist_pacing_seconds,
+                        )))
+                    .checked_duration_since(Instant::now())
+                    .filter(|delay| !delay.is_zero())
+                });
+                (state.waiting.clone(), delay)
             };
             let claimed = self
                 .db
-                .call(move |conn| {
+                .call(move |conn| loop {
                     let Some(next) = repo::next_queued(conn, &skip)? else {
                         return Ok(None);
                     };
-                    repo::claim(conn, &next.id)
+                    if pacing_delay.is_some() && next.kind == "playlist_item" {
+                        skip.insert(next.id);
+                        continue;
+                    }
+                    return repo::claim(conn, &next.id);
                 })
                 .await;
             let job = match claimed {
                 Ok(Some(job)) => job,
-                Ok(None) => return,
+                Ok(None) => {
+                    if let Some(delay) = pacing_delay {
+                        let inner = Arc::clone(self);
+                        tokio::spawn(async move {
+                            tokio::select! { _=inner.stop.cancelled()=>{}, _=tokio::time::sleep(delay)=>inner.wake.notify_one() }
+                        });
+                    }
+                    return;
+                }
                 Err(error) => {
                     tracing::error!(%error, "falha ao reservar o próximo job");
                     return;
@@ -564,6 +585,12 @@ impl Inner {
             let cancel = CancellationToken::new();
             let started_epoch = self.heal.epoch();
             let present = planned_stages(&job.profile_id);
+            if job.kind == "playlist_item" {
+                self.state
+                    .lock()
+                    .expect("estado da fila")
+                    .last_playlist_start = Some(Instant::now());
+            }
             self.state.lock().expect("estado da fila").running.insert(
                 job.id.clone(),
                 Live {
@@ -727,6 +754,12 @@ impl Inner {
                         Some(crate::library::insert_from_job(&tx, &recorded, &file)?);
                 }
                 repo::save(&tx, &recorded)?;
+                if let Some(library_id) = recorded.library_id {
+                    tx.execute(
+                        "UPDATE sync_items SET library_id=? WHERE job_id=?",
+                        rusqlite::params![library_id, recorded.id],
+                    )?;
+                }
                 tx.commit()?;
                 Ok(recorded)
             })

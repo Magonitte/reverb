@@ -13,6 +13,7 @@ import { errorText } from "@/lib/errors";
 import { api } from "@/lib/ipc/api";
 import { sortedJobs, useJobsStore } from "@/stores/jobs";
 import { useUiStore } from "@/stores/ui";
+import { SyncSummary } from "@/components/playlists/SyncSummary";
 
 function QuickAction({
   icon,
@@ -92,6 +93,7 @@ export default function Home() {
     <section aria-labelledby="screen-title">
       <ScreenHeader title={t("home.title")} subtitle={t("home.subtitle")} />
       <CommandBar autoFocus />
+      <SyncSummary />
 
       <div className="mt-8">
         <h2 className="mb-3 text-sm font-semibold text-fg-secondary">{t("home.quickActions")}</h2>

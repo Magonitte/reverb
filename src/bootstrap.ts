@@ -7,6 +7,7 @@ import { initSettingsStore } from "@/stores/settings";
 import { initToolsStore } from "@/stores/tools";
 import { useAppInfoStore } from "@/stores/appInfo";
 import { initUpdaterStore } from "@/stores/updater";
+import { initSyncsStore } from "@/stores/syncs";
 
 /** Hidrata as stores e assina os eventos do backend (real ou falso). */
 export async function bootstrap(): Promise<void> {
@@ -20,6 +21,7 @@ export async function bootstrap(): Promise<void> {
     initHealStore(),
     initNotices(),
     initUpdaterStore(),
+    initSyncsStore(),
   ]);
   if (useMock) {
     // Cenário da URL (?scenario=) ou simulação contínua; só depois dos assinantes existirem.

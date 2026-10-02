@@ -23,6 +23,7 @@ export function collectErrors(page: Page): string[] {
 }
 
 export type Scenario =
+  | "playlists"
   | "empty"
   | "big"
   | "busy"

@@ -5,8 +5,8 @@
 
 ## Situação atual
 
-- **Fase atual:** F10 — CONCLUÍDA (F00–F10 concluídas).
-- **Último ponto de parada:** F10 passou o portão completo e CI Windows/Linux; próxima fase F11.
+- **Fase atual:** F11 — CONCLUÍDA (F00–F11 concluídas); próxima F12.
+- **Último ponto de parada:** F11 implementada, todos os quatro portões verdes no head final; fase-11-ok publicada. Continuar automaticamente na F12 conforme pedido do usuário.
 - **Pendências humanas abertas:** nenhuma
 - **Pendência técnica:** nenhuma (F02/T13 resolvida: job Linux do CI verde).
 
@@ -90,6 +90,19 @@
   - App T10 depois da identidade canônica: comparação com outputDir falhou porque o harness criava a pasta sob TEMP em formato 8.3. Harness canonicaliza a raiz temporária com realpathSync.native; asserções originais de contenção, existência e tamanho permanecem intactas (mesma regra de identidade de F10 T4/T7).
 - **Pendências humanas:** nenhuma.
 - **Commit/tag:** `feat(F10): biblioteca, revisão, editor e importação com vigia` + correções de regressão; branch `codex/f10-library`, tag `fase-10-ok`; PR #1 no GitHub.
+
+### F11 — Playlists sincronizadas
+
+- **Status:** CONCLUÍDA
+- **Início / fim:** 2026-10-02 / 2026-10-02
+- **Tarefas:** [x] 1 CRUD · [x] 2 diff · [x] 3 execução · [x] 4 pacing · [x] 5 agendador · [x] 6 m3u8 · [x] 7 IPC · [x] 8 UI · [x] 9 mock · [x] 10 bordas E2
+- **Portão:** verify final 67404ae verde em 136,7 s (553 Rust únicos +68 exports reexecutados; 216 Vitest; fmt/clippy/IPC/i18n/build/bindings/segredos). Browser final 64 verdes em 38,8 s, sem alterar bases anteriores. Rede 21 verdes e app real 5 testes/3 specs verdes em 63 s (build 48,1 s + CLI 12,4 s); repetição final de rede 21 verdes e app 5 verdes/3 specs em 59 s no head 67404ae. CI corrigido run 36996204106 em andamento, sem falha no head final até o fechamento.
+- **Falhas/correções:** caminho explícito do módulo de rede; limite da paginação mock substituído por lookup direto; cenário mock mantém estado editável; helpers visuais voltam da tela Settings; cabeçalho da tabela recebeu texto acessível e header/footer do diálogo deixam de criar landmarks duplicados. Inspeção visual revelou labels de checkbox invisíveis (prop acessível em vez de children), corrigidos e capturados novamente.
+- **Bases visuais:** seis PNGs novos em playlists.spec.ts-snapshots, nos dois temas, inspecionados: lista, detalhe e formulário. Rótulos, estados, hierarquia, cores e layout conferidos; mobile sem overflow. Nenhuma base anterior alterada.
+- **Decisões:** manter primeira ocorrência de IDs duplicados e expor aviso; identidade de arquivo canônica da F10; remover apenas quando configurado; falhas continuam presentes e tentadas na execução seguinte.
+- **Correções dos portões completos:** teste CLI de rede compara caminhos canônicos em vez de aliases curtos do Windows; T9 app espera o botão após navegação e usa perfil opus_96 para exigir download real. CI achou espera baseada em 100 yields no T4 (Linux) e timeout de 1 s ao renderizar coleção lazy (Windows); T4 agora espera o contador do backend com limite real de 10 s e avança até o deadline fixo, e assertion da coleção permite 5 s. Produção não mudou nessas correções.
+- **Pendências humanas:** nenhuma nesta fase.
+- **Commit/tag:** feat(F11): playlists sincronizadas verificadas; tag fase-11-ok. PR #2 (base codex/f10-library).
 
 ### F08 — Identificação de metadados com nota de confiança
 
