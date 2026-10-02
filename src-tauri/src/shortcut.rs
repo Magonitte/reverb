@@ -27,16 +27,16 @@ pub fn apply(app: &AppHandle, old: &str, new: &str) -> CoreResult<()> {
         })?;
     }
     if let Some(previous) = previous {
-        if app.global_shortcut().is_registered(previous) {
-            if app.global_shortcut().unregister(previous).is_err() {
-                if let Some(next) = next {
-                    let _ = app.global_shortcut().unregister(next);
-                }
-                return Err(CoreError::invalid_i18n(
-                    "Could not change shortcut",
-                    "integration.shortcutConflict",
-                ));
+        if app.global_shortcut().is_registered(previous)
+            && app.global_shortcut().unregister(previous).is_err()
+        {
+            if let Some(next) = next {
+                let _ = app.global_shortcut().unregister(next);
             }
+            return Err(CoreError::invalid_i18n(
+                "Could not change shortcut",
+                "integration.shortcutConflict",
+            ));
         }
     }
     Ok(())

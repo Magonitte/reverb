@@ -13,7 +13,7 @@ describe("F12 deep links in the real app", () => {
         [
           "-NoProfile",
           "-Command",
-          "$taskValue = Get-ItemPropertyValue -LiteralPath 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name $env:REVERB_TEST_AUTOSTART_NAME -ErrorAction SilentlyContinue; ConvertTo-Json -InputObject $taskValue",
+          "$taskValue = Get-ItemPropertyValue -LiteralPath 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name $env:REVERB_TEST_AUTOSTART_NAME -ErrorAction SilentlyContinue; ConvertTo-Json -InputObject @{ value = $taskValue } -Compress",
         ],
         {
           encoding: "utf8",
@@ -22,7 +22,7 @@ describe("F12 deep links in the real app", () => {
         },
       );
       expect(result.status).toBe(0);
-      return JSON.parse(result.stdout);
+      return JSON.parse(result.stdout).value;
     };
     expect(read()).toBeNull();
     try {
@@ -83,6 +83,17 @@ describe("F12 deep links in the real app", () => {
     expect(added).toHaveLength(1);
     expect(added[0].sourceId).toBe("jNQXAC9IVRw");
     expect(added[0].profileId).toBe("mp3_v0");
+    const persisted = spawnSync(
+      process.env.REVERB_E2E_CLI,
+      ["--data-dir", process.env.REVERB_DATA_DIR, "jobs", "list", "--json"],
+      { encoding: "utf8", windowsHide: true },
+    );
+    expect(persisted.status).toBe(0);
+    expect(JSON.parse(persisted.stdout).find((job) => job.id === added[0].id)).toMatchObject({
+      sourceId: "jNQXAC9IVRw",
+      profileId: "mp3_v0",
+      status: "queued",
+    });
     await invoke("job_cancel", { id: added[0].id });
     await invoke("queue_resume");
   });

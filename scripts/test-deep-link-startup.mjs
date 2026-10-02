@@ -6,6 +6,19 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 export async function testDeepLinkStartup(app, cli, toolsDir) {
+  if (process.platform === "win32") {
+    const running = spawnSync(
+      "powershell.exe",
+      ["-NoProfile", "-Command", "@(Get-Process -Name reverb -ErrorAction SilentlyContinue).Count"],
+      { encoding: "utf8", windowsHide: true },
+    );
+    assert.equal(running.status, 0, "could not check existing Reverb instances");
+    assert.equal(
+      Number(running.stdout.trim()),
+      0,
+      "close existing Reverb instances before running the isolated desktop tests",
+    );
+  }
   const scratch = realpathSync.native(mkdtempSync(join(tmpdir(), "reverb-deeplink-")));
   const data = join(scratch, "data");
   mkdirSync(data);

@@ -1,5 +1,6 @@
 import type { DiagnosticReport } from "@/bindings/DiagnosticReport";
 import { mockRuntimeChoices, mockToolsStatus } from "./tools";
+import { mockSettingsGet } from "./settings";
 let last: DiagnosticReport | null = null;
 export function resetMockDiagnostics() {
   last = null;
@@ -12,7 +13,9 @@ export function mockDiagnosticsRun(): DiagnosticReport {
   const toolsReady = ["ytdlp", "ffmpeg"].every((id) =>
     statuses.some((tool) => tool.tool === id && tool.installed),
   );
-  const runtimeReady = mockRuntimeChoices().length > 0;
+  const mode = mockSettingsGet().jsRuntime;
+  const choices = mockRuntimeChoices();
+  const runtimeReady = mode === "auto" ? choices.length > 0 : choices.includes(mode);
   last = {
     createdAt: Math.floor(Date.now() / 1000),
     items: [
