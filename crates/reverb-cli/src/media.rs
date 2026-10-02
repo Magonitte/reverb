@@ -104,6 +104,9 @@ impl ProgressPrinter {
                 ("baixando", percent, rate)
             }
             PipelineEvent::Convert(percent) => ("convertendo", i64::from(percent), String::new()),
+            PipelineEvent::Analyzing => ("analisando", -1, String::new()),
+            PipelineEvent::Identifying => ("identificando", -1, String::new()),
+            PipelineEvent::SourceSwitched { .. } | PipelineEvent::Identified(_) => return,
         };
         let bucket = if percent < 0 { -1 } else { percent / 10 };
         let mut last = self.last.lock().expect("progresso");
@@ -196,6 +199,8 @@ pub async fn download(
         out_dir: std::path::absolute(out)
             .with_context(|| format!("caminho inválido: {}", out.display()))?,
         sponsorblock: None,
+        metadata_override: None,
+        fetch_metadata: None,
     };
     let printer = ProgressPrinter::new();
     let output = pipeline

@@ -3,6 +3,7 @@ import { FolderOpen, GripVertical, RotateCcw, Trash2, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { Job } from "@/bindings/Job";
 import { toneOf } from "@/components/JobMiniCard";
+import { Badge, type BadgeTone } from "@/components/ui/Badge";
 import { IconButton } from "@/components/ui/IconButton";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { VinylDisc } from "@/components/ui/VinylDisc";
@@ -21,6 +22,12 @@ export interface JobCardProps {
   rootRef?: Ref<HTMLLIElement>;
   rootProps?: HTMLAttributes<HTMLLIElement>;
 }
+
+const CONFIDENCE_TONE: Record<"auto" | "review" | "none", BadgeTone> = {
+  auto: "success",
+  review: "warning",
+  none: "neutral",
+};
 
 /** Item completo da Atividade (design §3.4): estágio, progresso, velocidade/ETA, tentativas, erro e ações. */
 export function JobCard({
@@ -42,6 +49,23 @@ export function JobCard({
   const eta = job.etaS !== null ? formatDuration(job.etaS) : "";
   const stats = [speed, eta && t("activity.eta", { eta })].filter(Boolean).join(" · ");
   const label = (key: string) => t(key, { title });
+  const result = job.metadataResult;
+  // Selo de confiança só nos concluídos em que a identificação decidiu algo (auto/revisão).
+  const confidence =
+    job.status === "done" && job.confidence !== null && result && result.bucket !== "none" ? (
+      <Badge
+        tone={CONFIDENCE_TONE[result.bucket]}
+        title={t("activity.confidenceHint", {
+          source: t(`preview.metadata.source.${result.source}`, { defaultValue: result.source }),
+        })}
+        data-testid="job-confidence"
+        className="mr-1 shrink-0"
+      >
+        {t(result.bucket === "review" ? "activity.confidenceReview" : "activity.confidence", {
+          percent: Math.round(job.confidence * 100),
+        })}
+      </Badge>
+    ) : null;
 
   return (
     <li
@@ -90,6 +114,7 @@ export function JobCard({
         )}
       </div>
       <div className="flex shrink-0 items-center gap-1">
+        {confidence}
         {(job.status === "failed" || job.status === "cancelled") && (
           <IconButton size="sm" label={label("activity.retryJob")} onClick={() => onRetry(job)}>
             <RotateCcw />

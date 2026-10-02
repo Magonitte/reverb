@@ -674,6 +674,8 @@ fn raw_job(id: &str, status: JobStatus, stage: JobStage, position: i64, n: u32) 
         profile_id: "original".to_string(),
         options: JobOptions::default(),
         metadata_override: None,
+        confidence: None,
+        metadata_result: None,
         warnings: Vec::new(),
         playlist_ctx: None,
         sync_id: None,
@@ -1048,3 +1050,5 @@ async fn enqueue_valida_a_entrada() {
         .unwrap_err();
     assert_eq!(bad_profile.kind(), "invalid");
 }
+
+mod metadata;

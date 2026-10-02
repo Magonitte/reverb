@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { FolderOpen } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { JobOptions } from "@/bindings/JobOptions";
+import type { MetadataResult } from "@/bindings/MetadataResult";
+import type { OfficialMatch } from "@/bindings/OfficialMatch";
 import type { SettingsView } from "@/bindings/SettingsView";
 import type { VideoInfo } from "@/bindings/VideoInfo";
 import { Badge } from "@/components/ui/Badge";
@@ -11,9 +13,11 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Sheet } from "@/components/ui/Sheet";
 import { Toggle } from "@/components/ui/Toggle";
 import { VinylDisc } from "@/components/ui/VinylDisc";
+import { MetadataSection, OfficialVersionCard } from "./MetadataSection";
 import { errorText } from "@/lib/errors";
 import { formatDuration, sourceQuality } from "@/lib/format";
 import { api } from "@/lib/ipc/api";
+import { buildOverride, type MetadataEdit } from "@/lib/metadataEdit";
 import { PROFILE_OPTIONS, profileReencodes } from "@/lib/profiles";
 import { useFlowStore } from "@/stores/flow";
 import { useSettingsStore } from "@/stores/settings";
@@ -42,7 +46,7 @@ function isMusic(info: VideoInfo): boolean {
   return info.isOfficialTrack || info.categories.includes("Music");
 }
 
-/** Painel de Preview (design §3.2), no ponto da F07: sem versão oficial/metadados/capítulos (F08/F13). */
+/** Painel de Preview (design §3.2): versão oficial e metadados (F08); capítulos entram na F13. */
 export function PreviewSheet() {
   const info = useFlowStore((s) => s.preview);
   const close = useFlowStore((s) => s.closePreview);
@@ -60,22 +64,68 @@ function PreviewBody({ info, onClose }: { info: VideoInfo; onClose: () => void }
   const [duplicate, setDuplicate] = useState(false);
   const [confirmPriority, setConfirmPriority] = useState<boolean | null>(null);
   const [busy, setBusy] = useState(false);
+  const [official, setOfficial] = useState<OfficialMatch | null>(null);
+  const [useOfficial, setUseOfficial] = useState(settings?.preferOfficialAudio ?? true);
+  const [meta, setMeta] = useState<{
+    loading: boolean;
+    result: MetadataResult | null;
+    error: string | null;
+  }>({ loading: false, result: null, error: null });
+  const [edit, setEdit] = useState<MetadataEdit>({});
 
-  const url = info.webpageUrl ?? `https://www.youtube.com/watch?v=${info.id}`;
+  const pageUrl = info.webpageUrl ?? `https://www.youtube.com/watch?v=${info.id}`;
+  // Com a versão oficial marcada, o job baixa a faixa de estúdio no lugar do clipe.
+  const chosen = official && useOfficial ? official : null;
+  const url = chosen?.url ?? pageUrl;
+  const sourceId = chosen?.videoId ?? info.id;
   const quality = sourceQuality(info);
   const reencodes = profileReencodes(profileId);
   const folder = outputDir ?? settings?.outputDir ?? "";
+  const offline = settings?.offlineMode ?? false;
 
   useEffect(() => {
     let alive = true;
     api
-      .checkDuplicates([info.id], profileId)
+      .checkDuplicates([sourceId], profileId)
       .then((hits) => alive && setDuplicate(hits.length > 0))
       .catch(() => alive && setDuplicate(false));
     return () => {
       alive = false;
     };
-  }, [info.id, profileId]);
+  }, [sourceId, profileId]);
+
+  useEffect(() => {
+    if (!isMusic(info) || info.isOfficialTrack || offline) return;
+    let alive = true;
+    api
+      .findOfficialVersion(info)
+      .then((found) => alive && setOfficial(found))
+      .catch(() => alive && setOfficial(null));
+    return () => {
+      alive = false;
+    };
+  }, [info, offline]);
+
+  const previewMetadata = async (withOfficial: boolean) => {
+    setMeta((current) => ({ ...current, loading: true, error: null }));
+    try {
+      const result = await api.metadataPreview({
+        url: pageUrl,
+        video: info,
+        useOfficial: withOfficial,
+      });
+      setMeta({ loading: false, result, error: null });
+    } catch (e) {
+      setMeta((current) => ({ ...current, loading: false, error: errorText(t, e) }));
+    }
+  };
+
+  const changeOfficial = (value: boolean) => {
+    setUseOfficial(value);
+    // A simulação depende da fonte escolhida; as edições eram sobre o resultado anterior.
+    setEdit({});
+    if (meta.result) void previewMetadata(value);
+  };
 
   const optionValue = (key: ToggleKey): boolean =>
     overrides[key] ?? Boolean(settings?.[OPTION_SETTING[key]] ?? false);
@@ -97,13 +147,13 @@ function PreviewBody({ info, onClose }: { info: VideoInfo; onClose: () => void }
     try {
       await api.enqueue({
         url,
-        sourceId: info.id,
-        title: info.track ?? info.title,
+        sourceId,
+        title: chosen?.title ?? info.track ?? info.title,
         thumbnail: info.thumbnail ?? undefined,
         durationS: info.duration ?? undefined,
         profileId,
         options: { ...overrides, ...(outputDir ? { outputDir } : {}) },
-        metadataOverride: null,
+        metadataOverride: buildOverride(meta.result, edit),
         priority,
         allowDuplicate,
       });
@@ -176,6 +226,23 @@ function PreviewBody({ info, onClose }: { info: VideoInfo; onClose: () => void }
               {duplicate && <Badge tone="warning">{t("preview.alreadyDownloaded")}</Badge>}
             </div>
           </div>
+
+          {official && (
+            <OfficialVersionCard
+              official={official}
+              checked={useOfficial}
+              onChange={changeOfficial}
+            />
+          )}
+
+          <MetadataSection
+            result={meta.result}
+            loading={meta.loading}
+            error={meta.error}
+            edit={edit}
+            onEdit={setEdit}
+            onPreview={() => void previewMetadata(useOfficial)}
+          />
 
           <section aria-labelledby="preview-profile">
             <h4 id="preview-profile" className="mb-2 text-xs font-semibold text-fg-secondary">

@@ -8,6 +8,7 @@ use async_trait::async_trait;
 use tokio_util::sync::CancellationToken;
 
 use crate::backend::DownloadBackend;
+use crate::metadata::MetadataService;
 use crate::pipeline::{DownloadPipeline, PipelineEvent, PipelineJob, PipelineOutput};
 use crate::tools::{Tool, ToolsManager};
 use crate::ytdlp::errors::{DownloadError, ErrorKind};
@@ -41,6 +42,7 @@ pub struct ToolsPipeline {
     backend: Arc<dyn DownloadBackend>,
     tools: Arc<ToolsManager>,
     data_dir: PathBuf,
+    metadata: Option<Arc<MetadataService>>,
 }
 
 impl ToolsPipeline {
@@ -53,7 +55,14 @@ impl ToolsPipeline {
             backend,
             tools,
             data_dir,
+            metadata: None,
         }
+    }
+
+    /// Liga os passos de metadados (F08).
+    pub fn with_metadata(mut self, metadata: Arc<MetadataService>) -> Self {
+        self.metadata = Some(metadata);
+        self
     }
 }
 
@@ -79,6 +88,7 @@ impl PipelineRunner for ToolsPipeline {
             ffmpeg_dir,
             Some(Arc::clone(&self.tools)),
         )
+        .with_metadata(self.metadata.clone())
         .run(job, cancel, on_event)
         .await
     }

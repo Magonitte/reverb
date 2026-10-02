@@ -1,0 +1,52 @@
+{
+ "id": "GBARL9300135 - songs",
+ "title": "GBARL9300135 - songs",
+ "_type": "playlist",
+ "entries": [
+  {
+   "title": "Never Gonna Give You Up",
+   "ie_key": "Youtube",
+   "id": "lYBUbBu4W08",
+   "_type": "url",
+   "url": "https://music.youtube.com/watch?v=lYBUbBu4W08",
+   "__x_forwarded_for_ip": null
+  },
+  {
+   "title": "الغابة ليها بابا ( هو الديب لما يغيب )",
+   "ie_key": "Youtube",
+   "id": "QonqLGRyMLk",
+   "_type": "url",
+   "url": "https://music.youtube.com/watch?v=QonqLGRyMLk",
+   "__x_forwarded_for_ip": null
+  },
+  {
+   "title": "懷抱",
+   "ie_key": "Youtube",
+   "id": "0nrIroJpjgg",
+   "_type": "url",
+   "url": "https://music.youtube.com/watch?v=0nrIroJpjgg",
+   "__x_forwarded_for_ip": null
+  }
+ ],
+ "webpage_url": "https://music.youtube.com/search?q=GBARL9300135#songs",
+ "original_url": "https://music.youtube.com/search?q=GBARL9300135#songs",
+ "webpage_url_basename": "search",
+ "webpage_url_domain": "music.youtube.com",
+ "extractor": "youtube:music:search_url",
+ "extractor_key": "YoutubeMusicSearchURL",
+ "release_year": null,
+ "requested_entries": [
+  1,
+  2,
+  3
+ ],
+ "playlist_count": null,
+ "epoch": 1790905385,
+ "__files_to_move": {},
+ "_version": {
+  "version": "2026.08.19",
+  "current_git_head": null,
+  "release_git_head": "594bd50c2c78ac432f81600d309fdc4e0a92d82c",
+  "repository": "yt-dlp/yt-dlp"
+ }
+}

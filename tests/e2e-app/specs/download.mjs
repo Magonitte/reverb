@@ -55,7 +55,9 @@ describe("fluxo de download no app real", () => {
   });
 
   it("T11: cancelar um download em andamento (limite de velocidade baixo) ⇒ Cancelado", async () => {
-    await invoke("settings_update", { patch: { speedLimitMbps: 0.1 } });
+    // `preferOfficialAudio` desligado: com ele o job de FX3 troca o clipe pela faixa oficial (F08/T15)
+    // e o `sourceId` mudaria; este teste é sobre cancelar um download, não sobre a fonte.
+    await invoke("settings_update", { patch: { speedLimitMbps: 0.1, preferOfficialAudio: false } });
     try {
       // O app reabre no Início a cada sessão; a Atividade (T10) pode estar aberta ainda.
       await $('[data-testid="nav-home"]').click();
@@ -89,7 +91,7 @@ describe("fluxo de download no app real", () => {
       await expect(card).toHaveText(expect.stringContaining("Cancelado"));
       expect(filesWithExtension(outputDir, ".opus")).toHaveLength(1); // só o do T10
     } finally {
-      await invoke("settings_update", { patch: { speedLimitMbps: 0 } });
+      await invoke("settings_update", { patch: { speedLimitMbps: 0, preferOfficialAudio: true } });
     }
   });
 });

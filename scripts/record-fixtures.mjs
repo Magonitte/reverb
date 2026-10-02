@@ -68,6 +68,38 @@ for (const [name, args, isVideo] of jobs) {
   console.log(`gravado ${name}`);
 }
 
+// F08: buscas do YouTube Music (`#songs`, top 3) e a análise de cada resultado, para os testes
+// da versão oficial (E1). A busca por ISRC devolve a faixa oficial em 1º lugar.
+const searchJobs = [
+  ["search-ytmusic-fx3.json", "rick astley never gonna give you up"],
+  ["search-ytmusic-isrc-GBARL9300135.json", "GBARL9300135"],
+  ["search-ytmusic-isrc-GBARL0600786.json", "GBARL0600786"],
+];
+const analyzed = new Set(["lYBUbBu4W08", "dQw4w9WgXcQ", "jNQXAC9IVRw"]);
+for (const [name, query] of searchJobs) {
+  const url = `https://music.youtube.com/search?q=${encodeURIComponent(query)}#songs`;
+  const result = run(["-J", "--flat-playlist", "--playlist-end", "3", "--", url]);
+  if (result.status !== 0) {
+    console.error(`${name}: falhou`, result.stderr);
+    process.exit(1);
+  }
+  const json = JSON.parse(result.stdout);
+  writeFileSync(join(out, name), `${JSON.stringify(json, null, 1)}\n`);
+  console.log(`gravado ${name}`);
+  for (const entry of json.entries ?? []) {
+    if (!entry?.id || analyzed.has(entry.id)) continue;
+    analyzed.add(entry.id);
+    const detail = run(["-J", "--no-playlist", "--", `https://music.youtube.com/watch?v=${entry.id}`]);
+    if (detail.status !== 0) {
+      console.error(`analyze-${entry.id}.json: falhou`, detail.stderr);
+      process.exit(1);
+    }
+    const info = scrub(JSON.parse(detail.stdout));
+    writeFileSync(join(out, `analyze-${entry.id}.json`), `${JSON.stringify(info, null, 1)}\n`);
+    console.log(`gravado analyze-${entry.id}.json`);
+  }
+}
+
 // stderr real de "Video unavailable" (ID inexistente).
 const bad = run(["-J", "--no-playlist", "--", "https://www.youtube.com/watch?v=aaaaaaaaaaa"]);
 if (bad.status === 0) {

@@ -133,6 +133,39 @@
       "title": "Baixar novamente?",
       "message": "Essa faixa já foi baixada ou já está na fila com esse formato. Deseja baixá-la de novo?",
       "confirm": "Baixar novamente"
+    },
+    "official": {
+      "title": "Versão oficial disponível",
+      "reason": "Áudio de estúdio, metadados completos.",
+      "toggle": "Baixar a versão oficial"
+    },
+    "metadata": {
+      "title": "Metadados",
+      "preview": "Pré-visualizar metadados",
+      "confidence": "{{percent}}% de confiança",
+      "notMusic": "Não parece música: serão usados o título do vídeo e o canal.",
+      "edited": "Suas edições serão aplicadas e vencem a identificação automática.",
+      "bucket": {
+        "auto": "Aplicado automaticamente.",
+        "review": "Confiança média: vai para a revisão.",
+        "none": "Sem correspondência confiável: ficam os dados do vídeo."
+      },
+      "source": {
+        "youtube_music": "Faixa oficial do YouTube Music",
+        "youtube": "Dados do vídeo",
+        "deezer": "Deezer",
+        "itunes": "iTunes",
+        "musicbrainz": "MusicBrainz",
+        "user": "Edição sua"
+      },
+      "field": {
+        "title": "Título",
+        "artist": "Artista",
+        "album": "Álbum",
+        "year": "Ano",
+        "genre": "Gênero",
+        "trackNo": "Faixa nº"
+      }
     }
   },
   "collection": {
@@ -208,7 +241,10 @@
       "title": "Cancelar todos os downloads?",
       "message": "Os downloads em andamento e os pendentes serão cancelados.",
       "confirm": "Cancelar todos"
-    }
+    },
+    "confidence": "{{percent}}%",
+    "confidenceReview": "{{percent}}% · revisar",
+    "confidenceHint": "Identificado por: {{source}}"
   },
   "library": {
     "title": "Biblioteca",

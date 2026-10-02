@@ -4,6 +4,8 @@ import type { Job } from "@/bindings/Job";
 import type { MoveTarget } from "@/bindings/MoveTarget";
 import type { QueueState } from "@/bindings/QueueState";
 import { mockBus } from "./bus";
+import { mockAnalyze } from "./media";
+import { mockMetadataFor } from "./metadata";
 
 let jobs: Job[] = [];
 let paused = false;
@@ -78,6 +80,8 @@ export function mockEnqueue(request: EnqueueRequest): Job {
     profileId,
     options: request.options ?? {},
     metadataOverride: request.metadataOverride ?? null,
+    confidence: null,
+    metadataResult: null,
     warnings: [],
     playlistCtx: request.playlistCtx ?? null,
     syncId: request.playlistCtx?.syncId ?? null,
@@ -222,6 +226,8 @@ export function seedMockJobs(seeds: Array<Partial<Job> & { sourceUrl: string }>)
       profileId: "original",
       options: {},
       metadataOverride: null,
+      confidence: null,
+      metadataResult: null,
       warnings: [],
       playlistCtx: null,
       syncId: null,
@@ -248,6 +254,24 @@ export function seedMockJobs(seeds: Array<Partial<Job> & { sourceUrl: string }>)
   created.forEach(emitJob);
   emitState();
   return created;
+}
+
+/** O passo `identify` simulado: grava o resultado, a confiança e o título/artista identificados. */
+function identify(job: Job): void {
+  try {
+    const analysis = mockAnalyze(job.sourceUrl);
+    if (analysis.type !== "video") return;
+    const result = mockMetadataFor(analysis.info, {
+      useOfficial: false,
+      override: job.metadataOverride,
+    });
+    job.title = result.fields.title;
+    job.artist = result.fields.artist;
+    job.confidence = result.contentType === "music" ? result.confidence : null;
+    job.metadataResult = result;
+  } catch {
+    // URL sem análise no mock: o job segue sem resultado de metadados.
+  }
 }
 
 /** Estágios simulados, na ordem do pipeline (arquitetura §10). */
@@ -287,6 +311,7 @@ export function mockSimulationStep(parallelism = 2): void {
       } else {
         job.stage = SIM_STAGES[index + 1]!;
         job.progress = 0;
+        if (job.stage === "metadata") identify(job);
       }
     }
     if (job.status === "running") {

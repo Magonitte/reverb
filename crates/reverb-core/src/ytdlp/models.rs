@@ -21,7 +21,7 @@ pub struct Thumbnail {
     pub height: Option<u32>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, TS)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct Chapter {
@@ -38,7 +38,7 @@ struct RawChapter {
 }
 
 /// Formato só de áudio (sem vídeo e com codec de áudio conhecido).
-#[derive(Debug, Clone, PartialEq, Serialize, TS)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct AudioFormat {
@@ -48,7 +48,7 @@ pub struct AudioFormat {
     pub ext: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, TS)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct VideoInfo {

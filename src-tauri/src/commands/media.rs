@@ -20,7 +20,7 @@ use crate::state::AppState;
 const SEARCH_LIMIT: u32 = 15;
 
 /// Erro do motor ⇒ erro de comando com o `kind` do `ErrorKind` (a UI traduz `errors.<kind>`).
-fn engine_error(error: DownloadError) -> CoreError {
+pub(crate) fn engine_error(error: DownloadError) -> CoreError {
     let kind = error.kind.as_str();
     CoreError::coded(kind, error.message)
 }

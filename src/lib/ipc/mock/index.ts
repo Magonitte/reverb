@@ -1,8 +1,10 @@
 import type { AppInfo } from "@/bindings/AppInfo";
 import type { EnqueueRequest } from "@/bindings/EnqueueRequest";
 import type { MoveTarget } from "@/bindings/MoveTarget";
+import type { PreviewRequest } from "@/bindings/PreviewRequest";
 import type { SettingsPatch } from "@/bindings/SettingsPatch";
 import type { Tool } from "@/bindings/Tool";
+import type { VideoInfo } from "@/bindings/VideoInfo";
 import {
   mockAnalyze,
   mockClipboardReadText,
@@ -12,6 +14,7 @@ import {
   mockSearch,
   mockUrlClassify,
 } from "./media";
+import { mockFindOfficialVersion, mockMetadataPreview, mockMetadataSearch } from "./metadata";
 import {
   mockCheckDuplicates,
   mockEnqueue,
@@ -61,6 +64,10 @@ const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
   open_output_dir: () => mockOpenOutputDir(),
   clipboard_read_text: () => mockClipboardReadText(),
   library_reveal: (args) => mockLibraryReveal(args?.path as string),
+  find_official_version: (args) =>
+    mockFindOfficialVersion(args?.video as VideoInfo, args?.isrc as string | null | undefined),
+  metadata_preview: (args) => mockMetadataPreview(args?.request as PreviewRequest),
+  metadata_search: (args) => mockMetadataSearch(args?.query as string),
   enqueue: (args) => mockEnqueue(args?.request as EnqueueRequest),
   check_duplicates: (args) =>
     mockCheckDuplicates(args?.sourceIds as string[], args?.profileId as string | undefined),

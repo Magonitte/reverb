@@ -12,7 +12,7 @@ use tokio_util::sync::CancellationToken;
 
 use crate::backend::{DownloadBackend, JobSpec, ProgressCallback};
 use crate::ytdlp::errors::{DownloadError, ErrorKind};
-use crate::ytdlp::{Analysis, DoneInfo, ProgressUpdate, SearchResult, SearchSource};
+use crate::ytdlp::{Analysis, DoneInfo, ProgressUpdate, SearchResult, SearchSource, VideoInfo};
 
 #[derive(Clone)]
 pub enum Script {
@@ -61,6 +61,12 @@ impl Script {
 #[derive(Default)]
 pub struct FakeBackend {
     scripts: Mutex<HashMap<String, Script>>,
+    /// `analyze` por id de vídeo (F08).
+    analyses: Mutex<HashMap<String, Analysis>>,
+    /// `search` por `"<fonte>:<consulta>"` (F08).
+    searches: Mutex<HashMap<String, Vec<SearchResult>>>,
+    search_log: Mutex<Vec<String>>,
+    analyze_log: Mutex<Vec<String>>,
     calls: Mutex<HashMap<String, Vec<Instant>>>,
     order: Mutex<Vec<String>>,
     running: AtomicUsize,
@@ -82,6 +88,33 @@ impl FakeBackend {
 
     pub fn script(&self, url: &str, script: Script) {
         self.scripts.lock().unwrap().insert(url.to_string(), script);
+    }
+
+    /// `analyze` de qualquer URL com esse id de vídeo devolve `info`.
+    pub fn set_video(&self, info: VideoInfo) {
+        self.analyses.lock().unwrap().insert(
+            info.id.clone(),
+            Analysis::Video {
+                info: Box::new(info),
+            },
+        );
+    }
+
+    pub fn set_search(&self, source: SearchSource, query: &str, results: Vec<SearchResult>) {
+        self.searches
+            .lock()
+            .unwrap()
+            .insert(search_key(source, query), results);
+    }
+
+    /// Buscas feitas, como `"<fonte>:<consulta>"`.
+    pub fn search_log(&self) -> Vec<String> {
+        self.search_log.lock().unwrap().clone()
+    }
+
+    /// URLs analisadas, na ordem das chamadas.
+    pub fn analyze_log(&self) -> Vec<String> {
+        self.analyze_log.lock().unwrap().clone()
     }
 
     /// Instantes (relógio do Tokio) em que `download(url)` foi chamado.
@@ -146,16 +179,39 @@ impl FakeBackend {
         std::fs::write(&file, b"audio de mentira").map_err(|e| {
             DownloadError::new(ErrorKind::Disk, format!("não foi possível gravar: {e}"))
         })?;
+        // Vídeo registrado com `set_video`: o título e a duração dele (F08).
+        let known =
+            video_id(&job.url).and_then(|vid| match self.analyses.lock().unwrap().get(&vid) {
+                Some(Analysis::Video { info }) => Some((info.title.clone(), info.duration)),
+                _ => None,
+            });
+        let (title, duration) = known.unwrap_or_else(|| (format!("Faixa {id}"), Some(10.0)));
         Ok(DoneInfo {
             id: id.clone(),
-            title: format!("Faixa {id}"),
+            title,
             filepath: file.to_string_lossy().into_owned(),
             ext: "opus".to_string(),
             abr: Some(128.0),
             acodec: Some("opus".to_string()),
             format_id: Some("251".to_string()),
-            duration: Some(10.0),
+            duration,
         })
+    }
+}
+
+fn search_key(source: SearchSource, query: &str) -> String {
+    let source = match source {
+        SearchSource::YtMusic => "ytmusic",
+        SearchSource::Youtube => "youtube",
+    };
+    format!("{source}:{query}")
+}
+
+/// Id do vídeo numa URL do YouTube (`v=ID` ou `youtu.be/ID`).
+fn video_id(url: &str) -> Option<String> {
+    match crate::urlkind::classify(url) {
+        crate::urlkind::UrlKind::Video { source_id, .. } => Some(source_id),
+        _ => None,
     }
 }
 
@@ -171,23 +227,33 @@ fn failure(kind: ErrorKind, stderr: &str) -> DownloadError {
 impl DownloadBackend for FakeBackend {
     async fn analyze(
         &self,
-        _url: &str,
+        url: &str,
         _cancel: &CancellationToken,
     ) -> Result<Analysis, DownloadError> {
-        Err(DownloadError::new(
-            ErrorKind::Unknown,
-            "sem análise no fake",
-        ))
+        self.analyze_log.lock().unwrap().push(url.to_string());
+        video_id(url)
+            .and_then(|id| self.analyses.lock().unwrap().get(&id).cloned())
+            .ok_or_else(|| DownloadError::new(ErrorKind::Unknown, "sem análise no fake"))
     }
 
     async fn search(
         &self,
-        _source: SearchSource,
-        _query: &str,
-        _limit: u32,
+        source: SearchSource,
+        query: &str,
+        limit: u32,
         _cancel: &CancellationToken,
     ) -> Result<Vec<SearchResult>, DownloadError> {
-        Ok(Vec::new())
+        let key = search_key(source, query);
+        self.search_log.lock().unwrap().push(key.clone());
+        let mut found = self
+            .searches
+            .lock()
+            .unwrap()
+            .get(&key)
+            .cloned()
+            .unwrap_or_default();
+        found.truncate(limit as usize);
+        Ok(found)
     }
 
     async fn download(

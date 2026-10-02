@@ -7,6 +7,7 @@ pub mod error;
 pub mod events;
 pub mod exec;
 pub mod logging;
+pub mod metadata;
 pub mod organize;
 pub mod paths;
 pub mod pipeline;

@@ -6,6 +6,8 @@ mod updater;
 use std::sync::Arc;
 
 use reverb_core::backend::{DownloadBackend, ToolsContext, YtDlpProcessBackend};
+use reverb_core::metadata::cache::system_clock;
+use reverb_core::metadata::{Endpoints, MetadataService};
 use reverb_core::queue::{HealCoordinator, QueueDeps, QueueService, ToolsHeal, ToolsPipeline};
 use reverb_core::ytdlp::YtDlpRunner;
 use reverb_core::{logging, Db, EventSink, SettingsService, ToolsConfig, ToolsManager};
@@ -68,6 +70,14 @@ pub fn run() {
                 YtDlpRunner::new(Some(Arc::clone(&tools))),
                 Arc::new(ToolsContext::new(Arc::clone(&tools), Arc::clone(&settings))),
             ));
+            // Um só serviço por processo: os limitadores de taxa dos provedores são dele.
+            let metadata = Arc::new(MetadataService::new(
+                Arc::clone(&backend),
+                Arc::clone(&settings),
+                db.clone(),
+                &Endpoints::default(),
+                system_clock(),
+            ));
             let heal = Arc::new(HealCoordinator::new(
                 Arc::new(ToolsHeal::new(Arc::clone(&tools), Arc::clone(&settings))),
                 db.clone(),
@@ -78,11 +88,14 @@ pub fn run() {
                 db: db.clone(),
                 settings: Arc::clone(&settings),
                 sink: Arc::clone(&sink),
-                runner: Arc::new(ToolsPipeline::new(
-                    Arc::clone(&backend),
-                    Arc::clone(&tools),
-                    paths.data_dir.clone(),
-                )),
+                runner: Arc::new(
+                    ToolsPipeline::new(
+                        Arc::clone(&backend),
+                        Arc::clone(&tools),
+                        paths.data_dir.clone(),
+                    )
+                    .with_metadata(Arc::clone(&metadata)),
+                ),
                 heal,
                 data_dir: paths.data_dir.clone(),
                 start_paused: false,
@@ -94,6 +107,7 @@ pub fn run() {
                 tools,
                 queue,
                 backend,
+                metadata,
                 sink,
             });
             updater::spawn_auto_check(app.handle().clone());
@@ -133,6 +147,9 @@ pub fn run() {
             commands::media::open_output_dir,
             commands::media::clipboard_read_text,
             commands::media::library_reveal,
+            commands::metadata::find_official_version,
+            commands::metadata::metadata_preview,
+            commands::metadata::metadata_search,
             commands::queue::enqueue,
             commands::queue::check_duplicates,
             commands::queue::jobs_list,

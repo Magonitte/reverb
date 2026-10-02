@@ -5,8 +5,8 @@
 
 ## Situação atual
 
-- **Fase atual:** F07 — CONCLUÍDA; próxima: F08 (F00–F07 concluídas)
-- **Último ponto de parada:** F07 completa (T1–T11 verdes; portão numa só rodada). Próximo passo: ler `plano/fases/F08-metadados.md`.
+- **Fase atual:** F08 — CONCLUÍDA; próxima: F09 (F00–F08 concluídas)
+- **Último ponto de parada:** F08 completa (T1–T15 verdes; portão numa só rodada). Próximo passo: ler `plano/fases/F09-pos-processamento.md`.
 - **Pendências humanas abertas:** nenhuma
 - **Pendência técnica:** nenhuma (F02/T13 resolvida: job Linux do CI verde).
 
@@ -45,6 +45,41 @@
 ---
 
 ## Registro das fases
+
+### F08 — Identificação de metadados com nota de confiança
+
+- **Status:** CONCLUÍDA
+- **Início / fim:** 2026-10-01 / 2026-10-02
+- **Tarefas:** [x] 1 `metadata::{normalize,score}` · [x] 2 `parse_title` · [x] 3 `content_type` · [x] 4 provedores Deezer/iTunes/MusicBrainz (`trait MetadataProvider`, `Endpoints`, `RateLimiter`) · [x] 5 cache de 30 dias (`CachedProvider`, relógio injetável) · [x] 6 versão oficial E1 (`official.rs`) · [x] 7 passos `resolve_source`/`identify` no pipeline e na fila · [x] 8 override do usuário · [x] 9 comandos `find_official_version`, `metadata_preview`, `metadata_search` · [x] 10 UI (card da versão oficial, painel de metadados com edição, selo de confiança na Atividade) · [x] 11 fixtures HTTP reais (`tests/fixtures/http/`, `scripts/record-http-fixtures.mjs`) e buscas do YouTube Music (`tests/fixtures/ytdlp/search-*`, `analyze-*`, via `scripts/record-fixtures.mjs`)
+- **Portão (última rodada):** 2026-10-02 · Rust 486 testes (+108; 94 em `metadata`, 4 da fila com metadados) · Vitest 197 · Playwright 51 · rede 17 (`verify:net`, com `GITHUB_TOKEN` do `gh auth token`; 6 novos: T10d ×2, T13, T14, T15 ×2) · app real 2 (T10, T11) · `npm run verify` OK em 67 s · `npm run e2e` OK em 56 s · `npm run verify:net` OK · `npm run e2e:app` OK (spec em 21 s)
+- **Falhas e correções:**
+  - `score` (T2) — três faixas esperadas da **minha** tabela estavam mal calculadas (mesmo artista e duração, título diferente = 0,776; clipe Δ 30 s = 0,875; ambas dentro do que o plano exige: < 0,85 e `dur_score > 0`) — corrigi a tabela, a fórmula do §11.2 não mudou — 2 ciclos
+  - compilação — o `reqwest` 0.13 trouxe `RequestBuilder::query` atrás da feature `query` — feature ligada em `reverb-core` — 1 ciclo
+  - `preview` de FX3 sem a oficial — empate de pontuação entre o iTunes "Never Gonna Give You Up" e "(2022 Remaster)" (a duração do segundo era 0,01 s mais próxima) e o título aplicado saía com "(2022 Remaster)" — desempate em 3 níveis: nota, título idêntico ao buscado, duração mais próxima (código de produção) — 1 ciclo
+  - Playwright T7 (reordenar) — meu selo de confiança aninhou o `<p>` do título e quebrou o seletor `p.truncate:first-of-type` — o selo foi para o grupo de ações à direita e a estrutura título/subtítulo ficou como era — 1 ciclo
+  - `e2e:app` T11 — com F08 o job de FX3 troca o clipe pela faixa oficial (T15), então `sourceId === "dQw4w9WgXcQ"` nunca vinha; o teste é sobre cancelar, não sobre a fonte — **justificativa (§11 passo 3 / T15)**: o spec liga `preferOfficialAudio: false` durante o teste e restaura no `finally`; nenhuma asserção foi afrouxada — 1 ciclo
+  - `scripts/record-fixtures.mjs` regravou FX1–FX4 (mudaram bytes) ao gerar as buscas novas — `git checkout` das quatro fixtures antigas; as novas ficaram. Ver "Pendência": o script regrava tudo, então futuras gravações devem ser conferidas
+- **Bases visuais (Playwright) alteradas de propósito:** `flow-preview-dark` e `flow-preview-light` (linha "Metadados / Pré-visualizar metadados" no Preview de FX2, nova na F08). Conferidas a olho: é a única diferença. As outras bases não mudaram.
+- **Desvios do plano:**
+  - **ISRC inferido só como plano B.** §11 passo 3(a) manda tentar o ISRC primeiro, inclusive o de "um candidato Deezer com score ≥ auto". Mas o 1º resultado do Deezer para FX3 é a gravação da coletânea (`GBARL0600786`, "Reeling In The Decades"), cujo ISRC leva a `-aIiQj79b6Q` e **não** a `lYBUbBu4W08`, que T13/T15 exigem. Por isso o pipeline faz a busca por texto (E1) primeiro e só usa o ISRC inferido pelo Deezer se o texto não achar nada. Um ISRC **informado** ao `find_official_version` (importação, F15) continua indo primeiro, como em E1.
+  - `sim`: "um contém o outro inteiro" usa **palavras inteiras** (`Ice` não está em `Police`); o resto do §11.2 é literal.
+  - E1 item 5 (visualizações) e item 6 (explícito × limpo) **não** foram implementados: `VideoInfo` não traz contagem de visualizações e `Candidate` não traz o flag explícito. O desempate usa só "oficial vence até 0,08".
+  - `Candidate` ganhou `isrc` (o Deezer devolve na busca e em `/track/{id}`); `MetadataResult.candidates` é `Vec<ScoredCandidate { score, candidate }>`; `MetadataResult` também leva `contentType`, `isrc` e `official` (a sugestão/troca de versão oficial).
+  - `confidence` do resultado: oficial = 1,0; aplicado = nota do candidato; revisão = nota do melhor; sem decisão = 0,0 (`bucket = none`). Em `other` o `Job.confidence` fica `None`.
+  - Busca no YouTube Music analisa os 3 primeiros em paralelo; se nenhum passar, tenta a seção de vídeos, mas aí só aceita faixa com `is_official_track`.
+  - `resolve_source` só propaga o **cancelamento**; falha de análise vira "seguir com a URL original" (o download dirá o que houver de errado). Com `metadata_override` o job não troca de fonte (a UI já escolheu a URL no toggle).
+  - Cache só guarda respostas **não vazias** (lista vazia pode ser falha HTTP e não deve ficar 30 dias).
+  - `Job` ganhou `confidence` e `metadataResult` (colunas `confidence` e `metadata_result_json` já existiam); `repo::save` agora também grava `source_url`/`source_id` (a troca de fonte persiste).
+  - `PipelineJob` ganhou `metadata_override` e `fetch_metadata`; `PipelineEvent` ganhou `Analyzing`, `SourceSwitched`, `Identifying`, `Identified`; `DownloadPipeline::with_metadata` e `ToolsPipeline::with_metadata` ligam o serviço. **O CLI continua sem metadados** (usa o pipeline sem serviço); o app usa um único `MetadataService` por processo (limitadores de taxa compartilhados).
+  - O estágio `metadata` entra no progresso geral só quando o evento chega (como `converting`), então o progresso dos jobs sem serviço não mudou.
+  - T6 testa o `RateLimiter` com o relógio do tokio pausado (5 chamadas ≥ 4 s); a parte com `wiremock` não usa tempo pausado porque o socket real faria o relógio avançar sozinho.
+  - `VideoInfo`, `Chapter` e `AudioFormat` ganharam `Deserialize` (o comando `find_official_version` recebe o `VideoInfo` do Preview). `metadata_preview` recebe `PreviewRequest { url, video?, useOfficial? }`.
+  - `FakeBackend` (somente testes) ganhou `set_video`, `set_search`, `search_log` e `analyze_log`; o `DoneInfo` dele usa título/duração do vídeo registrado.
+  - O arquivo continua nomeado pelo título do download (`done.title`); a nomeação por `{artist} - {title}`/template é da F09 (organize), que passa a usar o `MetadataResult` já pronto no `PipelineOutput.metadata`.
+  - Dependência nova: `strsim` (Jaro-Winkler); `reqwest` com a feature `query`.
+- **Pendências humanas:** nenhuma.
+- **Pendência técnica:** `scripts/record-fixtures.mjs` regrava FX1–FX4 junto com as buscas; ao rodar de novo, conferir `git diff` das fixtures antigas.
+- **Commit/tag:** `feat(F08): identificação de metadados com nota de confiança` · tag `fase-08-ok`
 
 ### F07 — Fluxo de download na UI
 

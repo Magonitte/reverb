@@ -13,12 +13,13 @@ futures-util = "0.3.34"
 hex = "0.4.3"
 process-wrap = { version = "10.0.1", features = ["tokio1"] }
 regex.workspace = true
-reqwest = { version = "0.13.5", features = ["json", "stream"] }
+reqwest = { version = "0.13.5", features = ["json", "query", "stream"] }
 rusqlite.workspace = true
 semver = "1.0.28"
 serde.workspace = true
 serde_json.workspace = true
 sha2 = "0.11.0"
+strsim = "0.11.1"
 thiserror.workspace = true
 tokio.workspace = true
 tokio-util = "0.7.19"

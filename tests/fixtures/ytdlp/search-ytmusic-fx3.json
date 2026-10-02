@@ -1,0 +1,52 @@
+{
+ "id": "rick astley never gonna give you up - songs",
+ "title": "rick astley never gonna give you up - songs",
+ "_type": "playlist",
+ "entries": [
+  {
+   "title": "Never Gonna Give You Up",
+   "ie_key": "Youtube",
+   "id": "lYBUbBu4W08",
+   "_type": "url",
+   "url": "https://music.youtube.com/watch?v=lYBUbBu4W08",
+   "__x_forwarded_for_ip": null
+  },
+  {
+   "title": "(When You Gonna) Give It Up to Me [Radio Version]",
+   "ie_key": "Youtube",
+   "id": "aUajNfZwkjY",
+   "_type": "url",
+   "url": "https://music.youtube.com/watch?v=aUajNfZwkjY",
+   "__x_forwarded_for_ip": null
+  },
+  {
+   "title": "La La La (Never Give It Up)",
+   "ie_key": "Youtube",
+   "id": "rmQuHi7a8Q4",
+   "_type": "url",
+   "url": "https://music.youtube.com/watch?v=rmQuHi7a8Q4",
+   "__x_forwarded_for_ip": null
+  }
+ ],
+ "webpage_url": "https://music.youtube.com/search?q=rick%20astley%20never%20gonna%20give%20you%20up#songs",
+ "original_url": "https://music.youtube.com/search?q=rick%20astley%20never%20gonna%20give%20you%20up#songs",
+ "webpage_url_basename": "search",
+ "webpage_url_domain": "music.youtube.com",
+ "extractor": "youtube:music:search_url",
+ "extractor_key": "YoutubeMusicSearchURL",
+ "release_year": null,
+ "requested_entries": [
+  1,
+  2,
+  3
+ ],
+ "playlist_count": null,
+ "epoch": 1790905378,
+ "__files_to_move": {},
+ "_version": {
+  "version": "2026.08.19",
+  "current_git_head": null,
+  "release_git_head": "594bd50c2c78ac432f81600d309fdc4e0a92d82c",
+  "repository": "yt-dlp/yt-dlp"
+ }
+}

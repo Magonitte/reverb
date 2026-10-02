@@ -1,10 +1,14 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { Analysis } from "@/bindings/Analysis";
 import type { AppInfo } from "@/bindings/AppInfo";
+import type { Candidate } from "@/bindings/Candidate";
 import type { DuplicateHit } from "@/bindings/DuplicateHit";
 import type { EnqueueRequest } from "@/bindings/EnqueueRequest";
 import type { Job } from "@/bindings/Job";
+import type { MetadataResult } from "@/bindings/MetadataResult";
 import type { MoveTarget } from "@/bindings/MoveTarget";
+import type { OfficialMatch } from "@/bindings/OfficialMatch";
+import type { PreviewRequest } from "@/bindings/PreviewRequest";
 import type { QueueState } from "@/bindings/QueueState";
 import type { SearchResult } from "@/bindings/SearchResult";
 import type { SettingsPatch } from "@/bindings/SettingsPatch";
@@ -14,6 +18,7 @@ import type { Tool } from "@/bindings/Tool";
 import type { ToolStatus } from "@/bindings/ToolStatus";
 import type { UpdateInfo } from "@/bindings/UpdateInfo";
 import type { UrlKind } from "@/bindings/UrlKind";
+import type { VideoInfo } from "@/bindings/VideoInfo";
 import type { AppUpdateInfo } from "@/lib/updater";
 import { isTauri } from "./isTauri";
 
@@ -42,6 +47,9 @@ export const COMMANDS = [
   "open_output_dir",
   "clipboard_read_text",
   "library_reveal",
+  "find_official_version",
+  "metadata_preview",
+  "metadata_search",
   "enqueue",
   "check_duplicates",
   "jobs_list",
@@ -79,6 +87,11 @@ export const api = {
   openOutputDir: () => call<void>("open_output_dir"),
   clipboardReadText: () => call<string>("clipboard_read_text"),
   libraryReveal: (path: string) => call<void>("library_reveal", { path }),
+  findOfficialVersion: (video: VideoInfo, isrc?: string) =>
+    call<OfficialMatch | null>("find_official_version", { video, isrc: isrc ?? null }),
+  metadataPreview: (request: PreviewRequest) =>
+    call<MetadataResult>("metadata_preview", { request }),
+  metadataSearch: (query: string) => call<Candidate[]>("metadata_search", { query }),
   enqueue: (request: Partial<EnqueueRequest> & { url: string }) =>
     call<Job>("enqueue", { request }),
   checkDuplicates: (sourceIds: string[], profileId?: string) =>

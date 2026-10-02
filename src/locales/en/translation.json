@@ -133,6 +133,39 @@
       "title": "Download again?",
       "message": "This track was already downloaded or is already in the queue with this format. Download it again?",
       "confirm": "Download again"
+    },
+    "official": {
+      "title": "Official version available",
+      "reason": "Studio audio, complete metadata.",
+      "toggle": "Download the official version"
+    },
+    "metadata": {
+      "title": "Metadata",
+      "preview": "Preview metadata",
+      "confidence": "{{percent}}% confidence",
+      "notMusic": "Doesn't look like music: the video title and channel will be used.",
+      "edited": "Your edits will be applied and override the automatic identification.",
+      "bucket": {
+        "auto": "Applied automatically.",
+        "review": "Medium confidence: goes to review.",
+        "none": "No reliable match: the video data is kept."
+      },
+      "source": {
+        "youtube_music": "Official YouTube Music track",
+        "youtube": "Video data",
+        "deezer": "Deezer",
+        "itunes": "iTunes",
+        "musicbrainz": "MusicBrainz",
+        "user": "Your edit"
+      },
+      "field": {
+        "title": "Title",
+        "artist": "Artist",
+        "album": "Album",
+        "year": "Year",
+        "genre": "Genre",
+        "trackNo": "Track no."
+      }
     }
   },
   "collection": {
@@ -208,7 +241,10 @@
       "title": "Cancel all downloads?",
       "message": "Running and pending downloads will be cancelled.",
       "confirm": "Cancel all"
-    }
+    },
+    "confidence": "{{percent}}%",
+    "confidenceReview": "{{percent}}% · review",
+    "confidenceHint": "Identified by: {{source}}"
   },
   "library": {
     "title": "Library",

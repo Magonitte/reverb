@@ -8,8 +8,8 @@ use super::model::{DuplicateHit, Job, JobOptions, JobStage, JobStatus, MoveTarge
 use crate::error::{CoreError, CoreResult};
 
 const COLUMNS: &str = "id, kind, provider, source_url, source_id, title, artist, thumbnail, \
-    duration_s, profile_id, options_json, metadata_override_json, warnings_json, playlist_ctx_json, \
-    sync_id, status, stage, progress, overall_progress, speed_bps, eta_s, error_kind, \
+    duration_s, profile_id, options_json, metadata_override_json, metadata_result_json, confidence, \
+    warnings_json, playlist_ctx_json, sync_id, status, stage, progress, overall_progress, speed_bps, eta_s, error_kind, \
     error_message, attempts, output_path, library_id, position, created_at, updated_at, finished_at";
 
 pub fn now() -> i64 {
@@ -25,6 +25,7 @@ fn bad(column: &str, value: &str) -> CoreError {
 fn from_row(row: &Row<'_>) -> CoreResult<Job> {
     let options_json: String = row.get("options_json")?;
     let override_json: Option<String> = row.get("metadata_override_json")?;
+    let result_json: Option<String> = row.get("metadata_result_json")?;
     let warnings_json: String = row.get("warnings_json")?;
     let ctx_json: Option<String> = row.get("playlist_ctx_json")?;
     let status: String = row.get("status")?;
@@ -42,6 +43,10 @@ fn from_row(row: &Row<'_>) -> CoreResult<Job> {
         profile_id: row.get("profile_id")?,
         options: serde_json::from_str::<JobOptions>(&options_json)?,
         metadata_override: override_json
+            .map(|text| serde_json::from_str(&text))
+            .transpose()?,
+        confidence: row.get("confidence")?,
+        metadata_result: result_json
             .map(|text| serde_json::from_str(&text))
             .transpose()?,
         warnings: serde_json::from_str(&warnings_json)?,
@@ -72,7 +77,7 @@ pub fn insert(conn: &Connection, job: &Job) -> CoreResult<()> {
     conn.execute(
         &format!(
             "INSERT INTO jobs ({COLUMNS}) VALUES \
-             (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20,?21,?22,?23,?24,?25,?26,?27,?28,?29,?30)"
+             (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17,?18,?19,?20,?21,?22,?23,?24,?25,?26,?27,?28,?29,?30,?31,?32)"
         ),
         params![
             job.id,
@@ -90,6 +95,11 @@ pub fn insert(conn: &Connection, job: &Job) -> CoreResult<()> {
                 .as_ref()
                 .map(serde_json::to_string)
                 .transpose()?,
+            job.metadata_result
+                .as_ref()
+                .map(serde_json::to_string)
+                .transpose()?,
+            job.confidence,
             serde_json::to_string(&job.warnings)?,
             job.playlist_ctx
                 .as_ref()
@@ -122,7 +132,8 @@ pub fn save(conn: &Connection, job: &Job) -> CoreResult<()> {
         "UPDATE jobs SET title=?2, artist=?3, duration_s=?4, status=?5, stage=?6, progress=?7, \
          overall_progress=?8, speed_bps=?9, eta_s=?10, error_kind=?11, error_message=?12, \
          attempts=?13, output_path=?14, library_id=?15, position=?16, updated_at=?17, \
-         finished_at=?18, warnings_json=?19 WHERE id=?1",
+         finished_at=?18, warnings_json=?19, source_url=?20, source_id=?21, \
+         metadata_result_json=?22, confidence=?23 WHERE id=?1",
         params![
             job.id,
             job.title,
@@ -143,6 +154,13 @@ pub fn save(conn: &Connection, job: &Job) -> CoreResult<()> {
             job.updated_at,
             job.finished_at,
             serde_json::to_string(&job.warnings)?,
+            job.source_url,
+            job.source_id,
+            job.metadata_result
+                .as_ref()
+                .map(serde_json::to_string)
+                .transpose()?,
+            job.confidence,
         ],
     )?;
     Ok(())

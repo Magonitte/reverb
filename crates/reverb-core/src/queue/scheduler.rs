@@ -173,6 +173,8 @@ impl QueueService {
             profile_id: profile_id.clone(),
             options: request.options.clone().unwrap_or_default(),
             metadata_override: request.metadata_override.clone(),
+            confidence: None,
+            metadata_result: None,
             warnings: Vec::new(),
             playlist_ctx: request.playlist_ctx.clone(),
             sync_id,
@@ -604,11 +606,24 @@ impl Inner {
                 PipelineEvent::Convert(percent) => {
                     live.job.speed_bps = None;
                     live.job.eta_s = None;
-                    if !live.present.contains(&JobStage::Converting) {
-                        let at = live.present.len().saturating_sub(1);
-                        live.present.insert(at, JobStage::Converting);
-                    }
+                    insert_before_moving(&mut live.present, JobStage::Converting);
                     (JobStage::Converting, f64::from(percent) / 100.0)
+                }
+                PipelineEvent::Analyzing => (JobStage::Analyzing, 0.0),
+                PipelineEvent::SourceSwitched { url, source_id } => {
+                    live.job.source_url = url;
+                    live.job.source_id = Some(source_id);
+                    (previous, live.job.progress)
+                }
+                PipelineEvent::Identifying => {
+                    live.job.speed_bps = None;
+                    live.job.eta_s = None;
+                    insert_before_moving(&mut live.present, JobStage::Metadata);
+                    (JobStage::Metadata, 0.0)
+                }
+                PipelineEvent::Identified(result) => {
+                    live.job.apply_metadata(&result);
+                    (JobStage::Metadata, 1.0)
                 }
             };
             live.job.stage = stage;
@@ -802,6 +817,14 @@ impl Inner {
     }
 }
 
+/// Acrescenta um estágio que só se revela durante o job, antes de `Moving` (que fica por último).
+fn insert_before_moving(present: &mut Vec<JobStage>, stage: JobStage) {
+    if !present.contains(&stage) {
+        let at = present.len().saturating_sub(1);
+        present.insert(at, stage);
+    }
+}
+
 /// Estágios que o job deve atravessar, para o progresso geral. Só o perfil `original` pode (ou
 /// não) converter; ele só vira `Converting` se o pipeline emitir conversão.
 fn planned_stages(profile_id: &str) -> Vec<JobStage> {
@@ -894,6 +917,8 @@ async fn run_job(inner: Arc<Inner>, job: Job, cancel: CancellationToken) {
         profile: chosen,
         out_dir,
         sponsorblock: sponsorblock_categories(&job, &inner),
+        metadata_override: job.metadata_override.clone(),
+        fetch_metadata: job.options.fetch_metadata,
     };
     let on_event = |event| inner.on_event(&id, event);
     let result = inner.runner.run(&pipeline_job, &cancel, &on_event).await;
