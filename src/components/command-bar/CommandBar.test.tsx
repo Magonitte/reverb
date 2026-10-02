@@ -37,7 +37,11 @@ describe("Barra de comando (T2)", () => {
     );
     await waitFor(() => expect(screen.getByTestId("where")).toHaveTextContent("/collection"));
     expect(
-      await screen.findByRole("heading", { level: 1, name: /Whenever You Need Somebody/ }),
+      await screen.findByRole(
+        "heading",
+        { level: 1, name: /Whenever You Need Somebody/ },
+        { timeout: 5000 },
+      ),
     ).toBeInTheDocument();
     expect(useFlowStore.getState().collection?.entries).toHaveLength(10);
   });

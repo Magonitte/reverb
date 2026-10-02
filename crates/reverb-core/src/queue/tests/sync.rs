@@ -330,36 +330,43 @@ async fn t4_background_waits_two_minutes_then_polls_every_fifteen() {
     );
     service.create(create(None)).await.unwrap();
     let cancel = CancellationToken::new();
+    let started = tokio::time::Instant::now();
     service.start(cancel.clone());
     tokio::task::yield_now().await;
     tokio::time::advance(Duration::from_secs(119)).await;
     service.reconcile().await.unwrap();
     assert_eq!(env.backend.analyze_log().len(), 1);
     tokio::time::advance(Duration::from_secs(1)).await;
-    for _ in 0..100 {
-        tokio::task::yield_now().await;
-    }
-    // The maintenance loop also awaits its database worker.
-    for _ in 0..100 {
-        if env.backend.analyze_log().len() == 2 {
-            break;
-        }
-        tokio::task::yield_now().await;
-    }
+    wait_for_analyses(&env, 2).await;
     service.reconcile().await.unwrap();
     assert_eq!(env.backend.analyze_log().len(), 2);
     env.clock.fetch_add(86400, Ordering::SeqCst);
-    tokio::time::advance(Duration::from_secs(899)).await;
+    tokio::time::advance(
+        (started + Duration::from_secs(1019))
+            .saturating_duration_since(tokio::time::Instant::now()),
+    )
+    .await;
     service.reconcile().await.unwrap();
     assert_eq!(env.backend.analyze_log().len(), 2);
     tokio::time::advance(Duration::from_secs(1)).await;
-    for _ in 0..100 {
-        tokio::task::yield_now().await;
-    }
+    wait_for_analyses(&env, 3).await;
     service.reconcile().await.unwrap();
     assert_eq!(env.backend.analyze_log().len(), 3);
     cancel.cancel();
     env.queue.shutdown().await;
+}
+
+async fn wait_for_analyses(env: &Env, count: usize) {
+    // Keep the paused runtime ready while SQLite's real worker thread catches up.
+    // A fixed number of yields depends on the CI runner's CPU scheduling.
+    let deadline = std::time::Instant::now() + Duration::from_secs(10);
+    while env.backend.analyze_log().len() < count {
+        assert!(
+            std::time::Instant::now() < deadline,
+            "scheduled analysis did not start"
+        );
+        tokio::task::yield_now().await;
+    }
 }
 
 #[tokio::test(start_paused = true)]
