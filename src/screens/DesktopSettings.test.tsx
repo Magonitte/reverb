@@ -1,4 +1,4 @@
-import { screen, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, it, vi } from "vitest";
 import { renderApp, resetFlowTests } from "@/testing/flow";
@@ -38,7 +38,8 @@ it("shows missing tools, reruns after installation, and retains the latest repor
   expect(within(results).getAllByText("OK", { selector: "span" })).toHaveLength(10);
   view.unmount();
   renderApp("/settings/advanced");
-  expect(await screen.findByRole("list", { name: "Resultados do diagnóstico" })).toBeVisible();
+  const retained = await screen.findByRole("list", { name: "Resultados do diagnóstico" });
+  await waitFor(() => expect(retained).toBeVisible());
 });
 
 it("updates runtime, channel and weekly diagnostics, and handles run failures", async () => {
