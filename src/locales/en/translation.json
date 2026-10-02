@@ -590,6 +590,11 @@
   },
   "integration": {
     "linkAdded": "Link added to the queue",
-    "linkFailed": "Could not add the link to the queue"
+    "linkFailed": "Could not add the link to the queue",
+    "bookmarkletCode": "Bookmarklet code",
+    "bookmarkletCopied": "Bookmarklet copied",
+    "copyBookmarklet": "Copy bookmarklet",
+    "bookmarkletTitle": "Download from your browser",
+    "bookmarkletHelp": "Copy the code and save it as the address of a bookmark, or drag the Reverb bookmark to your bookmarks bar. Use it on a YouTube page to add audio to the Reverb queue."
   }
 }

@@ -23,7 +23,8 @@ describe("F12 deep links in the real app", () => {
       });
       child.once("exit", (code) => {
         clearTimeout(timer);
-        code === 0 ? resolve() : reject(new Error(`second instance exited ${code}`));
+        if (code === 0) resolve();
+        else reject(new Error(`second instance exited ${code}`));
       });
     });
     await browser.waitUntil(async () => (await invoke("jobs_list")).length === before.length + 1, {

@@ -161,6 +161,9 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             commands::app_info,
+            commands::integration::bookmarklet_code,
+            commands::integration::bookmarklet_copy,
+            commands::integration::deeplink_test,
             commands::settings::settings_get,
             commands::settings::settings_update,
             commands::settings::settings_reset,

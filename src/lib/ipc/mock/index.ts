@@ -1,7 +1,15 @@
 import type { AppInfo } from "@/bindings/AppInfo";
+import { BOOKMARKLET, mockBookmarkletCopy, mockDeepLinkTest } from "./integration";
 import type { SyncCreate } from "@/bindings/SyncCreate";
 import type { SyncUpdate } from "@/bindings/SyncUpdate";
-import { mockSyncsList, mockSyncCreate, mockSyncUpdate, mockSyncDelete, mockSyncRun, mockSyncItems } from "./syncs";
+import {
+  mockSyncsList,
+  mockSyncCreate,
+  mockSyncUpdate,
+  mockSyncDelete,
+  mockSyncRun,
+  mockSyncItems,
+} from "./syncs";
 export { resetMockSyncs } from "./syncs";
 import type { LibraryQuery } from "@/bindings/LibraryQuery";
 import type { TrackTags } from "@/bindings/TrackTags";
@@ -83,6 +91,9 @@ const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
   sync_run: (args) => mockSyncRun(args?.id as string),
   sync_items: (args) => mockSyncItems(args?.id as string),
   app_info: (): AppInfo => ({ version: "0.1.0", platform: "windows", arch: "x86_64" }),
+  bookmarklet_code: () => BOOKMARKLET,
+  bookmarklet_copy: () => mockBookmarkletCopy(),
+  deeplink_test: (args) => mockDeepLinkTest(args?.link as string),
   settings_get: () => mockSettingsGet(),
   settings_update: (args) => mockSettingsUpdate((args?.patch ?? {}) as SettingsPatch),
   settings_reset: () => mockSettingsReset(),
@@ -117,8 +128,13 @@ const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
   library_delete: (args) => mockLibraryDelete(args?.ids as number[], Boolean(args?.deleteFiles)),
   library_clear: () => mockLibraryClear(),
   review_dismiss: (args) => mockReviewDismiss(args?.id as number),
-  review_list: (args) => mockLibraryList({needsReview:true,offset:args?.offset as number}),
-  review_apply: (args) => mockReviewApply(args?.id as number,args?.candidate as Candidate | null,args?.manual as TrackTags | null),
+  review_list: (args) => mockLibraryList({ needsReview: true, offset: args?.offset as number }),
+  review_apply: (args) =>
+    mockReviewApply(
+      args?.id as number,
+      args?.candidate as Candidate | null,
+      args?.manual as TrackTags | null,
+    ),
   find_official_version: (args) =>
     mockFindOfficialVersion(args?.video as VideoInfo, args?.isrc as string | null | undefined),
   metadata_preview: (args) => mockMetadataPreview(args?.request as PreviewRequest),

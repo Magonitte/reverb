@@ -590,6 +590,11 @@
   },
   "integration": {
     "linkAdded": "Link adicionado à fila",
-    "linkFailed": "Não foi possível adicionar o link à fila"
+    "linkFailed": "Não foi possível adicionar o link à fila",
+    "bookmarkletCode": "Código do bookmarklet",
+    "bookmarkletCopied": "Bookmarklet copiado",
+    "copyBookmarklet": "Copiar bookmarklet",
+    "bookmarkletTitle": "Baixar do navegador",
+    "bookmarkletHelp": "Copie o código e salve como endereço de um favorito, ou arraste o favorito Reverb para a barra de favoritos. Ao usá-lo em uma página do YouTube, o Reverb adiciona o áudio à fila."
   }
 }

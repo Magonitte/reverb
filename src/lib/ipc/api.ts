@@ -42,7 +42,15 @@ export async function call<T>(cmd: string, args?: Record<string, unknown>): Prom
 }
 
 export const COMMANDS = [
-  "syncs_list", "sync_create", "sync_update", "sync_delete", "sync_run", "sync_items",
+  "bookmarklet_code",
+  "bookmarklet_copy",
+  "deeplink_test",
+  "syncs_list",
+  "sync_create",
+  "sync_update",
+  "sync_delete",
+  "sync_run",
+  "sync_items",
   "app_info",
   "settings_get",
   "settings_update",
@@ -102,6 +110,9 @@ export const COMMANDS = [
 export type SearchSource = "ytmusic" | "youtube";
 
 export const api = {
+  bookmarkletCode: () => call<string>("bookmarklet_code"),
+  bookmarkletCopy: () => call<void>("bookmarklet_copy"),
+  deeplinkTest: (link: string) => call<void>("deeplink_test", { link }),
   syncsList: () => call<Sync[]>("syncs_list"),
   syncCreate: (request: SyncCreate) => call<Sync>("sync_create", { request }),
   syncUpdate: (id: string, request: SyncUpdate) => call<Sync>("sync_update", { id, request }),

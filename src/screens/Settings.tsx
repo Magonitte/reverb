@@ -11,6 +11,7 @@ import { Select } from "@/components/ui/Select";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Tabs } from "@/components/ui/Tabs";
 import { UpdatesTab } from "./UpdatesTab";
+import { IntegrationTab } from "./IntegrationTab";
 import { PostprocessSettings } from "./PostprocessSettings";
 import { useSettingsStore } from "@/stores/settings";
 import { useUiStore } from "@/stores/ui";
@@ -100,8 +101,9 @@ export default function Settings() {
       >
         {tab === "general" && <Appearance />}
         {tab === "updates" && <UpdatesTab />}
+        {tab === "integration" && <IntegrationTab />}
         {(tab === "downloads" || tab === "metadata") && <PostprocessSettings key={tab} tab={tab} />}
-        {tab !== "general" && tab !== "updates" && tab !== "downloads" && tab !== "metadata" && (
+        {tab === "advanced" && (
           <EmptyState
             icon={<SettingsIcon aria-hidden="true" />}
             title={t(`settings.empty.${tab}.title`)}
