@@ -1,6 +1,7 @@
 mod commands;
 mod headless;
 mod integration;
+mod notifications;
 mod state;
 mod tray;
 mod updater;
@@ -31,6 +32,7 @@ pub fn run() {
             integration::show_window(app);
         }))
         .plugin(tauri_plugin_deep_link::init())
+        .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_dialog::init())
@@ -177,6 +179,7 @@ pub fn run() {
             builder.build()?;
             tray::initialize(app.handle())?;
             window::initialize(app.handle());
+            notifications::initialize(app.handle())?;
             integration::initialize(app.handle())?;
             Ok(())
         })
