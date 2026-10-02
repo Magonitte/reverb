@@ -1,8 +1,40 @@
 // F12 T10: a second invocation hands its link to the running application.
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
+import { basename, dirname } from "node:path";
 import { invoke, waitForHome } from "../helpers.mjs";
 
 describe("F12 deep links in the real app", () => {
+  it("T11: autostart registers the test executable with --minimized and can be disabled", async () => {
+    await waitForHome();
+    const name = `Reverb-test-${basename(dirname(process.env.REVERB_DATA_DIR)).replace(/[^a-z0-9]/gi, "")}`;
+    const read = () => {
+      const result = spawnSync(
+        "powershell.exe",
+        [
+          "-NoProfile",
+          "-Command",
+          "$taskValue = Get-ItemPropertyValue -LiteralPath 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name $env:REVERB_TEST_AUTOSTART_NAME -ErrorAction SilentlyContinue; ConvertTo-Json -InputObject $taskValue",
+        ],
+        {
+          encoding: "utf8",
+          windowsHide: true,
+          env: { ...process.env, REVERB_TEST_AUTOSTART_NAME: name },
+        },
+      );
+      expect(result.status).toBe(0);
+      return JSON.parse(result.stdout);
+    };
+    expect(read()).toBeNull();
+    try {
+      await invoke("settings_update", { patch: { launchAtStartup: true } });
+      const command = read();
+      expect(command).toContain(process.env.REVERB_E2E_APP);
+      expect(command).toContain("--minimized");
+    } finally {
+      await invoke("settings_update", { patch: { launchAtStartup: false } });
+    }
+    expect(read()).toBeNull();
+  });
   it("forwards a link from a second instance and creates exactly one job", async () => {
     await waitForHome();
     await invoke("queue_pause");

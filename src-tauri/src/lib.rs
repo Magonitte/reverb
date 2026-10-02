@@ -2,6 +2,7 @@ mod commands;
 mod headless;
 mod integration;
 mod notifications;
+mod startup;
 mod state;
 mod tray;
 mod updater;
@@ -33,6 +34,12 @@ pub fn run() {
         }))
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_notification::init())
+        .plugin(
+            tauri_plugin_autostart::Builder::new()
+                .arg("--minimized")
+                .app_name(startup::app_name())
+                .build(),
+        )
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_dialog::init())
@@ -163,6 +170,10 @@ pub fn run() {
             // Janela por plataforma (design §1): Windows transparente com Mica; Linux opaca
             // (WebKitGTK é lento com transparência; a UI usa `data-transparency="reduced"`).
             let builder = WebviewWindowBuilder::new(app, "main", WebviewUrl::default())
+                .visible(
+                    !(args.iter().any(|arg| arg == "--minimized")
+                        && app.state::<AppState>().settings.get().start_minimized),
+                )
                 .data_directory(app.state::<AppState>().paths.data_dir.join("webview"))
                 .title("Reverb")
                 .inner_size(1200.0, 800.0)
@@ -181,6 +192,10 @@ pub fn run() {
             window::initialize(app.handle());
             notifications::initialize(app.handle())?;
             integration::initialize(app.handle())?;
+            let launch = app.state::<AppState>().settings.get().launch_at_startup;
+            if let Err(error) = startup::apply(app.handle(), launch) {
+                tracing::warn!(kind = error.kind(), "autostart synchronization failed");
+            }
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
