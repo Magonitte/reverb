@@ -2,6 +2,7 @@ mod commands;
 mod headless;
 mod integration;
 mod state;
+mod tray;
 mod updater;
 
 use std::sync::Arc;
@@ -156,6 +157,7 @@ pub fn run() {
             #[cfg(not(windows))]
             let builder = builder.transparent(false);
             builder.build()?;
+            tray::initialize(app.handle())?;
             integration::initialize(app.handle())?;
             Ok(())
         })

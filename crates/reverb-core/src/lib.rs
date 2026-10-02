@@ -4,6 +4,7 @@ pub mod app_info;
 pub mod artwork;
 pub mod backend;
 pub mod db;
+pub mod desktop;
 pub mod error;
 pub mod events;
 pub mod exec;

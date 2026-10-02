@@ -14,6 +14,21 @@ pub enum DeepLinkAction {
     },
 }
 
+pub fn supported_url(input: &str) -> Option<String> {
+    match classify(input) {
+        UrlKind::Video { url, .. } | UrlKind::Collection { url } => Some(url),
+        _ => None,
+    }
+}
+
+pub fn add_link(input: &str) -> CoreResult<String> {
+    let url = supported_url(input).ok_or_else(|| CoreError::invalid("unsupported URL"))?;
+    let mut link =
+        Url::parse("reverb://add").map_err(|error| CoreError::Internal(error.to_string()))?;
+    link.query_pairs_mut().append_pair("url", &url);
+    Ok(link.to_string())
+}
+
 pub fn parse_deep_link(input: &str) -> CoreResult<DeepLinkAction> {
     let link = Url::parse(input).map_err(|_| CoreError::invalid("invalid deep link"))?;
     if link.scheme() != "reverb"
@@ -54,6 +69,17 @@ pub fn parse_deep_link(input: &str) -> CoreResult<DeepLinkAction> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn copied_links_use_the_same_validated_entry_point() {
+        let link = add_link("https://youtu.be/jNQXAC9IVRw?t=2").unwrap();
+        assert!(matches!(
+            parse_deep_link(&link).unwrap(),
+            DeepLinkAction::Add { .. }
+        ));
+        assert!(add_link("ordinary text").is_err());
+        assert!(add_link("https://evil.example").is_err());
+    }
 
     #[test]
     fn deep_links_validate_and_decode_external_input() {
