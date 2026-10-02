@@ -5,8 +5,8 @@
 
 ## Situação atual
 
-- **Fase atual:** F11 — CONCLUÍDA (F00–F11 concluídas); próxima F12.
-- **Último ponto de parada:** F11 implementada, todos os quatro portões verdes no head final; fase-11-ok publicada. Continuar automaticamente na F12 conforme pedido do usuário.
+- **Fase atual:** F12 — EM ANDAMENTO (F00–F11 concluídas).
+- **Último ponto de parada:** Retomada em codex/f12-integration a partir de a7e354c. Tarefa 1 implementada e verificada no core/native check; T10/T10b adicionados para o portão real. Próxima tarefa: bookmarklet.
 - **Pendências humanas abertas:** nenhuma
 - **Pendência técnica:** nenhuma (F02/T13 resolvida: job Linux do CI verde).
 
@@ -45,6 +45,16 @@
 ---
 
 ## Registro das fases
+
+### F12 — Integração com o sistema, onboarding e diagnóstico
+
+- **Status:** EM ANDAMENTO
+- **Início / fim:** 2026-10-02 / —
+- **Tarefas:** [x] 1 · [ ] 2 · [ ] 3 · [ ] 4 · [ ] 5 · [ ] 6 · [ ] 7 · [ ] 8 · [ ] 9 · [ ] 10 · [ ] 11 · [ ] 12
+- **Verificação da tarefa 1:** parser puro com tabela de casos válidos/inválidos passou; cargo check -p reverb passou; check:i18n e check:ipc verdes (60 comandos). T10/T10b implementados, execução pendente do build embutido no portão e2e:app. Portão completo ainda não executado.
+- **Pendências humanas:** T13 após implementação e verificações automatizadas.
+- **Worktree:** a45c/Reverb, limpo ao iniciar; HEAD inicial F08 corrigido para o head publicado da F11, sem modificar os demais worktrees.
+
 
 ### F09 — Capas, letras, ReplayGain, tags e organização da biblioteca
 

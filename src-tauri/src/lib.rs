@@ -1,5 +1,6 @@
 mod commands;
 mod headless;
+mod integration;
 mod state;
 mod updater;
 
@@ -23,6 +24,11 @@ pub fn run() {
     };
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            // The deep-link feature forwards the arguments through on_open_url.
+            integration::show_window(app);
+        }))
+        .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_dialog::init())
@@ -150,6 +156,7 @@ pub fn run() {
             #[cfg(not(windows))]
             let builder = builder.transparent(false);
             builder.build()?;
+            integration::initialize(app.handle())?;
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![

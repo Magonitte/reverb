@@ -587,5 +587,9 @@
     "nextHours_one": "Next in {{count}} hour",
     "nextHours_other": "Next in {{count}} hours",
     "pacing": "Pause between playlist track starts (seconds)"
+  },
+  "integration": {
+    "linkAdded": "Link added to the queue",
+    "linkFailed": "Could not add the link to the queue"
   }
 }

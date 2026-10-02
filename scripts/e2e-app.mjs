@@ -9,6 +9,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+import { testDeepLinkStartup } from "./test-deep-link-startup.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 const isWindows = process.platform === "win32";
@@ -112,6 +113,7 @@ mkdirSync(outputDir, { recursive: true });
 // Configura o app antes de abrir: pasta de saída temporária e onboarding concluído.
 const targetDir = process.env.CARGO_TARGET_DIR ?? join(root, "target");
 const cli = join(targetDir, "debug", exe("reverb-cli"));
+await testDeepLinkStartup(join(targetDir, "debug", exe("reverb")), cli, toolsDir);
 const setting = (key, json) => run(cli, ["--data-dir", dataDir, "settings", "set", key, json]);
 setting("outputDir", JSON.stringify(outputDir));
 setting("onboardingCompleted", "true");

@@ -7,6 +7,7 @@ pub mod db;
 pub mod error;
 pub mod events;
 pub mod exec;
+pub mod integration;
 pub mod library;
 pub mod logging;
 pub mod loudness;

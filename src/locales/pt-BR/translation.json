@@ -587,5 +587,9 @@
     "nextHours_one": "Próxima em {{count}} hora",
     "nextHours_other": "Próxima em {{count}} horas",
     "pacing": "Pausa entre inícios de faixas da playlist (segundos)"
+  },
+  "integration": {
+    "linkAdded": "Link adicionado à fila",
+    "linkFailed": "Não foi possível adicionar o link à fila"
   }
 }
