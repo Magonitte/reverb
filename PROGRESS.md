@@ -6,7 +6,7 @@
 ## Situação atual
 
 - **Fase atual:** F13 — CONCLUÍDA (F00–F13 concluídas; F14 não iniciada).
-- **Último ponto de parada:** F13 aprovada nos quatro portões em 2026-10-02, branch codex/f13-quality baseada em e20c170. Publicação e atualização do PC autorizadas e em execução.
+- **Último ponto de parada:** F13 aprovada nos quatro portões em 2026-10-02 e publicada no PR #4; Reverb do PC atualizado e reaberto. CI Windows/Linux em execução no momento do registro final.
 - **Pendências humanas abertas:** nenhuma.
 - **Pendência técnica:** nenhuma (F02/T13 resolvida: job Linux do CI verde).
 
@@ -60,6 +60,8 @@
 - **Verificações intermediárias:** 73 Playwright verdes; imagens da Biblioteca e Editor conferidas nos temas claro/escuro e quatro bases Windows atualizadas para as ações da F13. Preparação inicial do Vite excedeu 30 s (build CSS de 74 s); timeout ampliado somente no aquecimento, mantendo asserções e limites dos testes. Fixtures reais de Firefox e seis capítulos passaram. Testes de UI cobrem Premium/padrão/erro, melhorias, chaves mascaradas, corte e opção de capítulos.
 - **Pendências humanas:** nenhuma; envio ao GitHub e instalação autorizados pelo usuário.
 - **Commit/tag:** feat(F13): qualidade avançada, capítulos e cortes · fase-13-ok. fase-12-ok recuperada em e20c170 após confirmação manual do usuário.
+- **GitHub:** implementação 45c366a publicada em codex/f13-quality; PR draft #4 sobre codex/f12-integration: https://github.com/Magonitte/reverb/pull/4. CI inicial 37065461571 em andamento (Windows/Linux); portões locais completos verdes.
+- **Instalação concluída:** release otimizado em 6m01s, NSIS x64 8,98 MiB gerado e instalado em 2026-10-02 às 18:18 pelo instalador /S (exit 0). Executável em C:/Users/Jean Carlos de Souza/AppData/Local/Reverb/reverb.exe corresponde ao build após normalizar somente o marcador Tauri NSS/UNK de 3 bytes. SHA256 instalado 65EA6F403E5DB425508E531EC54E9818577D9C8BC873AB67ECE393B24DB9C496, diferente da F12. Autoteste do executável instalado exit 0, protocolo reverb:// correto e app reaberto com janela Reverb. Comparação somente de leitura confirmou hashes idênticos de todas as linhas da biblioteca (4) e fila (3) antes/depois da instalação. Bundle local --no-sign; tags de fase publicadas, sem release v*.
 
 
 ### F12 — Integração com o sistema, onboarding e diagnóstico
