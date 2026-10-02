@@ -6,8 +6,9 @@ describe("F11 playlist synchronization in the real app", () => {
   it("creates a one-track manual sync and downloads it into the detail view", async () => {
     await waitForHome();
     await $('[data-testid="nav-playlists"]').click();
-    const buttons = await $$('//button[normalize-space()="Criar sincronização"]');
-    await buttons[0].click();
+    const create = await $('(//button[normalize-space()="Criar sincronização"])[1]');
+    await create.waitForClickable();
+    await create.click();
     const field = async (label) => {
       const element = await $(`//label[normalize-space()="${label}"]`);
       const id = await element.getAttribute("for");
