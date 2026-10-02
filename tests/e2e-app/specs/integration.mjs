@@ -38,6 +38,20 @@ describe("F12 deep links in the real app", () => {
   it("forwards a link from a second instance and creates exactly one job", async () => {
     await waitForHome();
     await invoke("queue_pause");
+    const principalCount = () => {
+      const result = spawnSync(
+        "powershell.exe",
+        [
+          "-NoProfile",
+          "-Command",
+          "@(Get-CimInstance Win32_Process -Filter \"Name='reverb.exe'\" | Where-Object { $_.ExecutablePath -eq [IO.Path]::GetFullPath($env:REVERB_E2E_APP) }).Count",
+        ],
+        { encoding: "utf8", windowsHide: true },
+      );
+      expect(result.status).toBe(0);
+      return Number(result.stdout.trim());
+    };
+    expect(principalCount()).toBe(1);
     const before = await invoke("jobs_list");
     const child = spawn(
       process.env.REVERB_E2E_APP,
@@ -64,6 +78,7 @@ describe("F12 deep links in the real app", () => {
       timeoutMsg: "forwarded deep link did not create a job",
     });
     const jobs = await invoke("jobs_list");
+    expect(principalCount()).toBe(1);
     const added = jobs.filter((job) => !before.some((previous) => previous.id === job.id));
     expect(added).toHaveLength(1);
     expect(added[0].sourceId).toBe("jNQXAC9IVRw");

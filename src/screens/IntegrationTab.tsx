@@ -12,6 +12,8 @@ import { useSettingsStore } from "@/stores/settings";
 export function IntegrationTab() {
   const { t } = useTranslation();
   const [code, setCode] = useState("");
+  const [testLink, setTestLink] = useState("reverb://open");
+  const [testing, setTesting] = useState(false);
   const toast = useUiStore((state) => state.pushToast);
   const settings = useSettingsStore((state) => state.settings);
   const update = useSettingsStore((state) => state.update);
@@ -75,6 +77,28 @@ export function IntegrationTab() {
       </a>
       <Button disabled={!code} onClick={() => void copy()}>
         {t("integration.copyBookmarklet")}
+      </Button>
+      <Input
+        label={t("integration.testLink")}
+        value={testLink}
+        onChange={(event) => setTestLink(event.target.value)}
+      />
+      <Button
+        variant="secondary"
+        loading={testing}
+        disabled={!testLink.trim()}
+        onClick={() => {
+          setTesting(true);
+          void api
+            .deeplinkTest(testLink.trim())
+            .then(
+              () => toast({ message: t("integration.testSuccess"), tone: "success" }),
+              () => toast({ message: t("integration.testFailed"), tone: "error" }),
+            )
+            .finally(() => setTesting(false));
+        }}
+      >
+        {t("integration.test")}
       </Button>
     </Card>
   );

@@ -156,7 +156,11 @@ export function mockSettingsUpdate(patch: SettingsPatch): SettingsView {
 }
 
 export function mockSettingsReset(): SettingsView {
-  current = { ...structuredClone(DEFAULT_SETTINGS), secretsStatus: statusOf(secrets) };
+  current = {
+    ...structuredClone(DEFAULT_SETTINGS),
+    onboardingCompleted: false,
+    secretsStatus: statusOf(secrets),
+  };
   mockBus.emit("settings://changed", structuredClone(current));
   return structuredClone(current);
 }

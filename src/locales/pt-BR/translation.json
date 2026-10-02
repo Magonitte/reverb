@@ -469,6 +469,54 @@
       "preview": "Exemplo de caminho",
       "previewPending": "Atualizando prévia…",
       "watchLibrary": "Monitorar pasta da biblioteca"
+    },
+    "desktop": {
+      "title": "Comportamento da janela",
+      "launchAtStartup": "Iniciar com o sistema",
+      "startMinimized": "Iniciar minimizado",
+      "minimizeToTray": "Minimizar para a bandeja",
+      "closeToTray": "Fechar para a bandeja",
+      "completionNotifications": "Notificar ao concluir downloads"
+    },
+    "advanced": {
+      "tools": "Ferramentas de download",
+      "weekly": "Rodar diagnóstico semanal",
+      "diagnostics": "Diagnóstico",
+      "run": "Rodar agora",
+      "last": "Última execução: {{date}}",
+      "never": "O diagnóstico ainda não foi executado.",
+      "result": "Resultados do diagnóstico",
+      "data": "Dados e backups",
+      "backupHelp": "O backup contém o banco e as configurações. Áudios, chaves de API e cookies ficam de fora. A restauração reinicia o Reverb.",
+      "portable": "Modo portátil",
+      "installed": "Modo instalado",
+      "logs": "Exportar logs",
+      "backup": "Criar backup",
+      "restore": "Restaurar backup",
+      "open": "Abrir pasta de dados",
+      "reset": "Restaurar padrões",
+      "failed": "A operação falhou. Confira as ferramentas, a conexão e o arquivo escolhido e tente novamente.",
+      "exported": "Arquivo salvo",
+      "restarting": "Backup restaurado. Reiniciando o Reverb…",
+      "restoreConfirm": "Substituir o banco e as configurações pelo backup escolhido? O Reverb salvará um backup dos dados atuais, interromperá downloads e reiniciará.",
+      "resetConfirm": "Restaurar as configurações padrão? As chaves de API serão mantidas. O assistente de configuração será aberto novamente.",
+      "levels": {
+        "ok": "OK",
+        "warning": "Aviso",
+        "error": "Erro"
+      },
+      "items": {
+        "ytdlp": "Executável do yt-dlp",
+        "ffmpeg": "Executável do FFmpeg",
+        "ffprobe": "Executável do ffprobe",
+        "runtime": "Runtime JavaScript",
+        "ytdlpVersion": "Última versão do yt-dlp",
+        "simulate": "Teste de extração do YouTube",
+        "outputWrite": "Acesso à pasta de destino",
+        "diskSpace": "Espaço livre no disco",
+        "database": "Integridade do banco",
+        "pot": "Provedor de PO token"
+      }
     }
   },
   "onboarding": {
@@ -642,6 +690,10 @@
     "shortcut": "Atalho global",
     "shortcutConflict": "Atalho já em uso ou indisponível",
     "shortcutEmpty": "Nenhum",
-    "shortcutRecording": "Pressione as teclas…"
+    "shortcutRecording": "Pressione as teclas…",
+    "testLink": "Link para testar",
+    "test": "Testar link",
+    "testSuccess": "Link recebido",
+    "testFailed": "Link inválido ou não suportado"
   }
 }
