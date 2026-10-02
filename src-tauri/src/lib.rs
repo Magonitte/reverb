@@ -105,7 +105,8 @@ pub fn run() {
                 Arc::clone(&sink),
             )?);
             // Ferramentas faltantes e atualizações automáticas, em segundo plano (§16).
-            tauri::async_runtime::spawn(Arc::clone(&tools).background_startup());
+            let tools_startup =
+                tauri::async_runtime::spawn(Arc::clone(&tools).background_startup());
             let backend: Arc<dyn DownloadBackend> = Arc::new(YtDlpProcessBackend::new(
                 YtDlpRunner::new(Some(Arc::clone(&tools))),
                 Arc::new(ToolsContext::new(Arc::clone(&tools), Arc::clone(&settings))),
@@ -165,6 +166,7 @@ pub fn run() {
                 db,
                 settings,
                 tools,
+                tools_startup: tokio::sync::Mutex::new(Some(tools_startup)),
                 queue,
                 syncs,
                 background_cancel,
@@ -218,6 +220,12 @@ pub fn run() {
             commands::app_info,
             commands::diagnostics::diagnostics_run,
             commands::diagnostics::diagnostics_last,
+            commands::backup::logs_export,
+            commands::backup::data_export,
+            commands::backup::data_import,
+            commands::backup::open_data_dir,
+            commands::backup::data_paths,
+            commands::backup::pick_backup_path,
             commands::integration::bookmarklet_code,
             commands::integration::bookmarklet_copy,
             commands::integration::deeplink_test,

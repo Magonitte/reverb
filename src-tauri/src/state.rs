@@ -14,6 +14,7 @@ pub struct AppState {
     pub db: Db,
     pub settings: Arc<SettingsService>,
     pub tools: Arc<ToolsManager>,
+    pub tools_startup: tokio::sync::Mutex<Option<tauri::async_runtime::JoinHandle<()>>>,
     pub queue: QueueService,
     pub syncs: Arc<reverb_core::sync::SyncService>,
     pub background_cancel: tokio_util::sync::CancellationToken,

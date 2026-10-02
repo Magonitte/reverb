@@ -61,7 +61,7 @@ pub fn initialize(app: &AppHandle) {
                 result = weekly(&app) => { if let Err(error) = result { tracing::warn!(kind = error.kind(), "weekly diagnostics failed"); } }
             }
             let tools = app.state::<AppState>().tools.clone();
-            tokio::select! { _ = cancel.cancelled() => break, _ = tools.background_startup() => {} }
+            tokio::select! { _ = cancel.cancelled() => break, _ = async { let _guard = GATE.lock().await; tools.background_startup().await; } => {} }
             tokio::select! { _ = cancel.cancelled() => break, _ = tokio::time::sleep(Duration::from_secs(900)) => {} }
         }
     });

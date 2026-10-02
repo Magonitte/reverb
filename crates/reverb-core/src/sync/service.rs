@@ -445,6 +445,12 @@ impl SyncService {
     pub fn stop(&self) {
         self.stop.cancel();
     }
+
+    /// Cancel maintenance and wait for the current operation before restoring the database.
+    pub async fn stop_and_wait(&self) -> tokio::sync::MutexGuard<'_, ()> {
+        self.stop();
+        self.ops.lock().await
+    }
 }
 
 fn validate(profile: &str, interval: u32, max: Option<u32>) -> CoreResult<()> {

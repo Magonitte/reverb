@@ -1,4 +1,5 @@
 import { mockDiagnosticsLast, mockDiagnosticsRun } from "./diagnostics";
+import { mockCalls } from "./media";
 import type { AppInfo } from "@/bindings/AppInfo";
 import { mockRuntimeChoices } from "./tools";
 import { BOOKMARKLET, mockBookmarkletCopy, mockDeepLinkTest } from "./integration";
@@ -86,6 +87,25 @@ export { resetMockTools, seedMockTool, seedMockToolVersions } from "./tools";
 export { resetMockUpdater, setMockUpdaterMode } from "./updater";
 
 const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
+  data_paths: () => ({ dataDir: "C:/Reverb", portable: false }),
+  logs_export: () => {
+    mockCalls.push({ cmd: "logs_export" });
+    return "C:/Reverb/logs.zip";
+  },
+  data_export: (args) => {
+    mockCalls.push({ cmd: "data_export", args });
+  },
+  data_import: (args) => {
+    mockCalls.push({ cmd: "data_import", args });
+    return "C:/Reverb/backups/before-restore.zip";
+  },
+  open_data_dir: () => {
+    mockCalls.push({ cmd: "open_data_dir" });
+  },
+  pick_backup_path: (args) => {
+    mockCalls.push({ cmd: "pick_backup_path", args });
+    return "C:/Reverb/backup.zip";
+  },
   diagnostics_last: () => mockDiagnosticsLast(),
   diagnostics_run: () => mockDiagnosticsRun(),
   syncs_list: () => mockSyncsList(),
