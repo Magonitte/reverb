@@ -1,8 +1,10 @@
 import { TrimDialog } from "@/components/TrimDialog";
+import { LosslessDialog } from "@/components/LosslessDialog";
 import { UpgradePanel } from "@/components/UpgradePanel";
 import { useEffect, useState } from "react";
 import {
   FileAudio,
+  AudioLines,
   FolderOpen,
   Tags,
   ArrowUp,
@@ -39,6 +41,7 @@ export default function Library() {
     useLibraryStore();
   const pushToast = useUiStore((s) => s.pushToast);
   const [trim, setTrim] = useState<{ path: string; duration: number } | null>(null);
+  const [lossless, setLossless] = useState<number | null>(null);
   const [selected, setSelected] = useState<number[]>([]);
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
   const [pending, setPending] = useState(false);
@@ -362,6 +365,17 @@ export default function Library() {
               render: (i) => (
                 <span title={i.title}>
                   <span>{i.title}</span>
+                  {i.provider && i.provider !== "youtube" && (
+                    <span className="ml-2 text-xs text-fg-muted">{t(`sources.${i.provider}`)}</span>
+                  )}
+                  {i.codec === "flac" && (
+                    <span className="ml-2 text-xs text-fg-muted">{t("lossless.flac")}</span>
+                  )}
+                  {i.losslessVerdict && (
+                    <span className="ml-2 text-xs text-fg-muted">
+                      {t(`lossless.verdicts.${i.losslessVerdict}`)}
+                    </span>
+                  )}
                   {i.sourceAbrKbps !== null && (
                     <span className="ml-2 text-xs text-fg-muted">
                       {i.sourceAbrKbps >= 200 ? t("quality.premium") : t("quality.sourceQuality")}{" "}
@@ -404,6 +418,13 @@ export default function Library() {
               width: "180px",
               render: (i) => (
                 <div className="flex gap-1">
+                  <IconButton
+                    label={`${t("lossless.title")} ${i.title}`}
+                    disabled={i.missing || loading}
+                    onClick={() => setLossless(i.id)}
+                  >
+                    <AudioLines />
+                  </IconButton>
                   <IconButton
                     disabled={i.missing || loading}
                     label={t("library.openTrack", { title: i.title })}
@@ -501,6 +522,7 @@ export default function Library() {
           onDone={() => void load()}
         />
       )}
+      {lossless !== null && <LosslessDialog id={lossless} onClose={() => setLossless(null)} />}
       <ConfirmDialog
         open={confirmation != null}
         title={t(`library.confirm.${confirmation?.kind ?? "clear"}.title`)}

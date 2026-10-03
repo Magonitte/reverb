@@ -57,6 +57,10 @@ fn build(
             Arc::clone(&settings),
         )),
     ));
+    let backend = Arc::new(reverb_core::sources::SourcesBackend::new(
+        backend,
+        Arc::clone(&settings),
+    ));
     let heal = Arc::new(HealCoordinator::new(
         Arc::new(ToolsHeal::new(Arc::clone(&manager), Arc::clone(&settings))),
         db.clone(),

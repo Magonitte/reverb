@@ -54,6 +54,11 @@ export function mockUrlClassify(input: string): UrlKind {
   if (hint === "search") return { kind: "search", query: text };
   if (hint === "empty" || hint === "unsupported") return { kind: "unsupported" };
   const url = new URL(/^www\./i.test(text) ? `https://${text}` : text);
+  if (!url.hostname.includes("youtube") && url.hostname !== "youtu.be") {
+    return hint === "collection"
+      ? { kind: "collection", url: url.toString() }
+      : { kind: "video", url: url.toString(), sourceId: url.pathname, playlistHint: false };
+  }
   if (hint === "collection") return { kind: "collection", url: url.toString() };
   const id = videoId(url) ?? "";
   return {
@@ -66,6 +71,70 @@ export function mockUrlClassify(input: string): UrlKind {
 
 export function mockAnalyze(url: string): Analysis {
   const parsed = new URL(url);
+  if (parsed.hostname.includes("archive.org")) {
+    const title = parsed.searchParams.get("file");
+    if (!title)
+      return {
+        type: "collection",
+        info: {
+          id: "OpenGoldbergVariations",
+          title: "The Open Goldberg Variations",
+          channel: "Kimiko Ishizaka",
+          thumbnail: null,
+          entries: [
+            {
+              id: "OpenGoldbergVariations/Aria.flac",
+              title: "Aria",
+              duration: 181,
+              url: "https://archive.org/details/OpenGoldbergVariations?file=Aria.flac",
+            },
+          ],
+        },
+      };
+    return {
+      type: "video",
+      info: {
+        ...FX2_MUSIC,
+        id: `OpenGoldbergVariations/${title}`,
+        title: "Aria",
+        track: "Aria",
+        artist: "Kimiko Ishizaka",
+        album: "The Open Goldberg Variations",
+        webpageUrl: url,
+        extractorKey: "archive",
+        audioFormats: [{ formatId: "original", acodec: "flac", ext: "flac", abr: null }],
+        bestAudioAbr: null,
+      },
+    };
+  }
+  if (parsed.hostname.endsWith(".bandcamp.com")) {
+    if (parsed.pathname.includes("paid")) throw { kind: "bandcamp_restricted" };
+    return {
+      type: "video",
+      info: {
+        ...FX2_MUSIC,
+        id: "bandcamp-track",
+        title: "Mellow Harmonics",
+        track: "Mellow Harmonics",
+        artist: "Sounds Like An Earful",
+        webpageUrl: url,
+        extractorKey: "bandcamp",
+        bestAudioAbr: null,
+      },
+    };
+  }
+  if (parsed.hostname.includes("jamendo.com") || parsed.hostname.includes("soundcloud.com"))
+    return {
+      type: "video",
+      info: {
+        ...FX2_MUSIC,
+        id: parsed.pathname,
+        title: "Free track",
+        webpageUrl: url,
+        extractorKey: parsed.hostname.includes("jamendo") ? "jamendo" : "soundcloud",
+        bestAudioAbr: null,
+      },
+    };
   const id = videoId(parsed);
   if (id === null) return { type: "collection", info: FX4_ALBUM };
   if (id.startsWith("unavailable")) {
@@ -82,6 +151,28 @@ export function mockAnalyze(url: string): Analysis {
 
 export function mockSearch(source: string, query: string): SearchResult[] {
   if (!query.trim()) return [];
+  if (source === "archive")
+    return [
+      {
+        id: "OpenGoldbergVariations",
+        title: "The Open Goldberg Variations",
+        url: "https://archive.org/details/OpenGoldbergVariations",
+        channel: "Kimiko Ishizaka",
+        duration: null,
+      },
+    ];
+  if (source === "jamendo") {
+    if (!mockSettingsGet().secretsStatus.jamendo) throw { kind: "jamendo_key" };
+    return [
+      {
+        id: "1",
+        title: "Free Jamendo track",
+        url: "https://www.jamendo.com/track/1",
+        duration: 180,
+        channel: "Artist",
+      },
+    ];
+  }
   // O YouTube Music não informa duração (FX7); o YouTube comum sim.
   return source === "ytmusic"
     ? FX7_SEARCH.map((r) => ({ ...r, duration: null }))

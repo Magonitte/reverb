@@ -192,7 +192,7 @@ impl QueueService {
         let mut job = Job {
             id: uuid_v4(),
             kind: kind.to_string(),
-            provider: PROVIDER.to_string(),
+            provider: crate::sources::provider_id(&url).to_string(),
             source_url: url,
             source_id: request.source_id.clone(),
             title: request.title.clone(),
@@ -281,7 +281,18 @@ impl QueueService {
         let profile_id = profile_id.unwrap_or_else(|| self.inner.settings.get().default_profile);
         self.inner
             .db
-            .call(move |conn| repo::find_duplicates(conn, PROVIDER, &source_ids, &profile_id))
+            .call(move |conn| {
+                let mut hits = Vec::new();
+                for provider in [PROVIDER, "soundcloud", "bandcamp", "archive", "jamendo"] {
+                    hits.extend(repo::find_duplicates(
+                        conn,
+                        provider,
+                        &source_ids,
+                        &profile_id,
+                    )?);
+                }
+                Ok(hits)
+            })
             .await
     }
 

@@ -111,6 +111,9 @@ pub fn run() {
                 YtDlpRunner::new(Some(Arc::clone(&tools))),
                 Arc::new(ToolsContext::new(Arc::clone(&tools), Arc::clone(&settings))),
             ));
+            let backend: Arc<dyn DownloadBackend> = Arc::new(
+                reverb_core::sources::SourcesBackend::new(backend, Arc::clone(&settings)),
+            );
             // Um só serviço por processo: os limitadores de taxa dos provedores são dele.
             let metadata = Arc::new(MetadataService::new(
                 Arc::clone(&backend),
@@ -225,6 +228,8 @@ pub fn run() {
             commands::quality::waveform,
             commands::quality::audio_duration,
             commands::quality::trim_audio,
+            commands::sources::verify_lossless,
+            commands::sources::open_source_url,
             commands::diagnostics::diagnostics_run,
             commands::diagnostics::diagnostics_last,
             commands::backup::logs_export,

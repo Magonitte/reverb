@@ -30,9 +30,18 @@ fn failure(error: DownloadError) -> anyhow::Error {
     anyhow::anyhow!("{} ({})", error.message, error.kind.as_str())
 }
 
-fn backend(manager: Arc<ToolsManager>, settings: Arc<SettingsService>) -> YtDlpProcessBackend {
-    let context = Arc::new(ToolsContext::new(Arc::clone(&manager), settings));
-    YtDlpProcessBackend::new(YtDlpRunner::new(Some(manager)), context)
+fn backend(
+    manager: Arc<ToolsManager>,
+    settings: Arc<SettingsService>,
+) -> reverb_core::sources::SourcesBackend {
+    let context = Arc::new(ToolsContext::new(Arc::clone(&manager), settings.clone()));
+    reverb_core::sources::SourcesBackend::new(
+        Arc::new(YtDlpProcessBackend::new(
+            YtDlpRunner::new(Some(manager)),
+            context,
+        )),
+        settings,
+    )
 }
 
 fn minutes(seconds: f64) -> String {

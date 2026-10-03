@@ -229,6 +229,13 @@ function PreviewBody({ info, onClose }: { info: VideoInfo; onClose: () => void }
               <p className="truncate text-xs text-fg-dim">{info.channel}</p>
             )}
             <div className="mt-3 flex flex-wrap gap-2">
+              {info.extractorKey &&
+                ["archive", "jamendo", "bandcamp", "Soundcloud"].includes(info.extractorKey) && (
+                  <Badge tone="neutral">{t(`sources.${info.extractorKey.toLowerCase()}`)}</Badge>
+                )}
+              {info.audioFormats.some((f) => f.acodec === "flac") && (
+                <Badge tone="neutral">{t("lossless.flac")}</Badge>
+              )}
               <Badge tone="neutral">
                 {isMusic(info) ? t("preview.kindMusic") : t("preview.kindOther")}
               </Badge>

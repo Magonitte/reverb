@@ -40,7 +40,9 @@
     "sourcesLabel": "Onde pesquisar",
     "sources": {
       "ytmusic": "YouTube Music",
-      "youtube": "YouTube"
+      "youtube": "YouTube",
+      "archive": "Internet Archive",
+      "jamendo": "Jamendo"
     },
     "noResults": {
       "title": "Nada encontrado",
@@ -469,7 +471,8 @@
       "preview": "Exemplo de caminho",
       "previewPending": "Atualizando prévia…",
       "watchLibrary": "Monitorar pasta da biblioteca",
-      "trimSilence": "Remover silêncio do início e do fim"
+      "trimSilence": "Remover silêncio do início e do fim",
+      "verifyLosslessOnImport": "Verificar FLAC e WAV ao importar"
     },
     "desktop": {
       "title": "Comportamento da janela",
@@ -600,7 +603,9 @@
     "cookies_locked": "O banco de cookies está bloqueado. Feche o navegador e tente novamente, ou use o Firefox.",
     "cookies_decrypt": "Não foi possível descriptografar os cookies do Chrome/Edge. Use o Firefox ou um arquivo de cookies.",
     "provider_api": "O provedor recusou a consulta. Confira as credenciais e restrições de acesso à API.",
-    "provider_key": "Configure a chave do provedor primeiro."
+    "provider_key": "Configure a chave do provedor primeiro.",
+    "bandcamp_restricted": "Este lançamento exige compra ou e-mail. Abra no navegador.",
+    "jamendo_key": "Configure o Client ID do Jamendo em Configurações › Metadados."
   },
   "notices": {
     "potEnabled": "O YouTube pediu verificação: o Reverb ligou o provedor de PO token.",
@@ -615,7 +620,8 @@
     "loudness": "Não foi possível analisar o ReplayGain.",
     "other": "Não foi possível salvar algumas informações adicionais.",
     "trimReencode": "A remoção de silêncio recodifica o áudio original.",
-    "fingerprint": "A identificação pelo áudio falhou."
+    "fingerprint": "A identificação pelo áudio falhou.",
+    "originalUnavailable": "Arquivo original indisponível; usando o melhor stream gratuito."
   },
   "sync": {
     "thisCollection": "Sincronizar esta playlist",
@@ -744,18 +750,42 @@
     "providers": {
       "spotify": "Spotify",
       "discogs": "Discogs",
-      "acoustid": "AcoustID"
+      "acoustid": "AcoustID",
+      "jamendo": "Jamendo"
     },
     "fields": {
       "spotifyClientId": "Spotify Client ID",
       "spotifyClientSecret": "Spotify Client Secret",
       "discogsToken": "Token Discogs",
-      "acoustidKey": "Chave AcoustID"
+      "acoustidKey": "Chave AcoustID",
+      "jamendoClientId": "Jamendo Client ID"
     },
     "configured": "Configurado",
     "notConfigured": "Não configurado",
     "apiOk": "Conexão válida",
     "testApi": "Testar conexão",
     "clearKey": "Remover chave"
-  }
+  },
+  "sources": {
+    "youtube": "YouTube",
+    "soundcloud": "SoundCloud",
+    "bandcamp": "Bandcamp",
+    "archive": "Internet Archive",
+    "jamendo": "Jamendo"
+  },
+  "lossless": {
+    "title": "Verificar lossless",
+    "heuristic": "Análise aproximada do espectro. O resultado indica uma origem provável e não garante a qualidade da gravação.",
+    "spectrogram": "Espectrograma do áudio",
+    "checking": "Analisando espectro…",
+    "flac": "FLAC",
+    "verifyOnImport": "Verificar FLAC e WAV ao importar",
+    "verdicts": {
+      "lossless": "Provável lossless",
+      "lossy_16k": "Provável fonte com perdas (corte em 16 kHz)",
+      "lossy_19k": "Provável fonte com perdas (corte em 19 kHz)",
+      "inconclusive": "Resultado inconclusivo"
+    }
+  },
+  "sourcesOpen": "Abrir no navegador"
 }

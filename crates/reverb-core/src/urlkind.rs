@@ -137,6 +137,10 @@ fn channel_base<'a>(segments: &[&'a str]) -> (String, Option<&'a str>) {
 
 /// Classifica o que o usuário colou ou digitou.
 pub fn classify(input: &str) -> UrlKind {
+    crate::sources::matches(input.trim()).unwrap_or_else(|| classify_youtube_input(input))
+}
+
+pub(crate) fn classify_youtube_input(input: &str) -> UrlKind {
     let text = input.trim();
     if text.is_empty() {
         return UrlKind::Unsupported;

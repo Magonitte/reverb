@@ -83,8 +83,16 @@ pub async fn run(
                         }
                         pending.remove(&path);
                         if let Ok(ffprobe)=resolve() {
-                            if let Err(error)=super::files::import(&db,vec![path],&ffprobe,sink.clone(),"scan").await {
+                            if let Err(error)=super::files::import(&db,vec![path.clone()],&ffprobe,sink.clone(),"scan").await {
                                 tracing::warn!(%error,"Library watch import failed");
+                            }
+                            if config.verify_lossless_on_import {
+                                let ffmpeg=ffprobe.with_file_name(if cfg!(windows){"ffmpeg.exe"}else{"ffmpeg"});
+                                match crate::lossless::verify_imports(&db,vec![path],&ffmpeg,&ffprobe).await {
+                                    Ok(failures) if failures.is_empty()=>sink.emit("library://changed",serde_json::json!({})),
+                                    Ok(_)=>tracing::warn!("Library watch spectrum verification failed"),
+                                    Err(error)=>tracing::warn!(%error,"Library watch spectrum verification failed"),
+                                }
                             }
                         }
                     } else {
