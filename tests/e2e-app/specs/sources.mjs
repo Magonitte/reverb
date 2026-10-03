@@ -60,6 +60,7 @@ describe("F14 lossless no app real", () => {
       const search = await $('input[aria-label="Buscar na biblioteca"]');
       await search.waitForDisplayed();
       await search.setValue("F14 white noise");
+      await $('button[aria-label="Detalhes e ações de F14 white noise"]').click();
       const button = await $('button[aria-label="Verificar lossless F14 white noise"]');
       await button.waitForClickable();
       await button.click();

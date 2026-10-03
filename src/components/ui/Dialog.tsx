@@ -119,7 +119,14 @@ export function Dialog({
             <X />
           </IconButton>
         </div>
-        <div className="flex-1 overflow-y-auto px-6 py-5">{children}</div>
+        <div
+          role="region"
+          aria-label={title}
+          tabIndex={0}
+          className="flex-1 overflow-y-auto px-6 py-5"
+        >
+          {children}
+        </div>
         {footer && (
           <div className="flex justify-end gap-2 border-t border-glass-border px-6 py-4">
             {footer}

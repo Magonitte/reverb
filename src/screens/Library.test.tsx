@@ -22,6 +22,95 @@ afterEach(() => {
 });
 
 describe("Biblioteca F10", () => {
+  it("shows preparation while an import is pending and prevents a second import", async () => {
+    let finish!: (report: { imported: number; skipped: number; failures: [] }) => void;
+    vi.spyOn(api, "pickFolder").mockResolvedValue("C:/Music");
+    vi.spyOn(api, "libraryImport").mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+    renderApp("/library");
+    await screen.findByText("Sua biblioteca está vazia");
+    await userEvent.click(screen.getByRole("button", { name: "Importar pasta" }));
+    await screen.findByText(/Preparando importação/);
+    expect(screen.getByRole("button", { name: "Importar arquivo" })).toBeDisabled();
+    await act(async () => finish({ imported: 0, skipped: 0, failures: [] }));
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Importar arquivo" })).toBeEnabled(),
+    );
+  });
+  it.each([false, true])(
+    "imports audio (folder=%s), clears filters and displays the result",
+    async (folder) => {
+      seedMockLibrary([{ title: "Existing" }]);
+      vi.spyOn(api, folder ? "pickFolder" : "pickAudioFile").mockResolvedValue(
+        folder ? "C:/Music" : "C:/Music/imported.opus",
+      );
+      const importing = vi.spyOn(api, "libraryImport").mockImplementation(async () => {
+        seedMockLibrary([{ title: "Imported" }, { title: "Nested track" }]);
+        return { imported: 2, skipped: 0, failures: [] };
+      });
+      renderApp("/library");
+      await screen.findByText("1–1 de 1 faixas");
+      await userEvent.type(
+        screen.getByRole("textbox", { name: "Buscar na biblioteca" }),
+        "no match",
+      );
+      await screen.findByText("Nenhuma faixa encontrada");
+      await userEvent.click(
+        screen.getByRole("button", { name: folder ? "Importar pasta" : "Importar arquivo" }),
+      );
+      await screen.findByText("Imported");
+      expect(screen.getByRole("textbox", { name: "Buscar na biblioteca" })).toHaveValue("");
+      expect(importing).toHaveBeenCalledWith([folder ? "C:/Music" : "C:/Music/imported.opus"]);
+    },
+  );
+
+  it("reports empty folders, import errors and cancellation without a broken busy state", async () => {
+    const pick = vi.spyOn(api, "pickFolder").mockResolvedValue(null);
+    const importing = vi.spyOn(api, "libraryImport");
+    renderApp("/library");
+    await screen.findByText("Sua biblioteca está vazia");
+    const button = screen.getByRole("button", { name: "Importar pasta" });
+    await userEvent.click(button);
+    expect(importing).not.toHaveBeenCalled();
+    pick.mockResolvedValue("C:/Empty");
+    importing.mockResolvedValueOnce({ imported: 0, skipped: 0, failures: [] });
+    await userEvent.click(button);
+    await screen.findByText(/Nenhum áudio compatível/);
+    importing.mockRejectedValueOnce({ kind: "disk", message: "failure" });
+    await userEvent.click(button);
+    await screen.findByRole("alert");
+    expect(button).toBeEnabled();
+  });
+
+  it("does not inherit the review-only filter and respects filters in album view", async () => {
+    seedMockLibrary([
+      { title: "A", album: "Visible", needsReview: false },
+      { title: "B", album: "Other", needsReview: true },
+    ]);
+    await useLibraryStore.getState().setQuery({ needsReview: true });
+    renderApp("/library");
+    await screen.findByText("1–2 de 2 faixas");
+    await userEvent.type(screen.getByRole("textbox", { name: "Buscar na biblioteca" }), "A");
+    await screen.findByText("1–1 de 1 faixas");
+    await userEvent.click(screen.getByRole("button", { name: "Álbuns" }));
+    expect(screen.getByRole("button", { name: "Visible" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Other" })).not.toBeInTheDocument();
+  });
+
+  it("opens track details and exposes secondary actions", async () => {
+    seedMockLibrary([{ title: "Track", filePath: "C:/Music/Track.opus" }]);
+    renderApp("/library");
+    await screen.findByText("1–1 de 1 faixas");
+    await userEvent.click(screen.getByRole("button", { name: "Detalhes e ações de Track" }));
+    const dialog = screen.getByRole("dialog");
+    expect(within(dialog).getByText("C:/Music/Track.opus")).toBeInTheDocument();
+    await userEvent.click(within(dialog).getByRole("button", { name: "Mostrar Track na pasta" }));
+    expect(mockCalls.some((c) => c.cmd === "library_reveal")).toBe(true);
+  });
   it("paginates 5000 records, virtualizes the DOM, searches accentless prefixes", async () => {
     applyScenario("big");
     renderApp("/library");

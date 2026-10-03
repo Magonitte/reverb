@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.5
+
+- Biblioteca reorganizada com importação em destaque, filtros agrupados, seleção contextual e detalhes das faixas.
+- Importações exibem preparação, progresso, falhas e pastas sem áudio; filtros são limpos para mostrar as músicas importadas.
+- Pastas selecionadas por alias são resolvidas antes da varredura; caminhos UNC do Windows preservam a identificação do compartilhamento.
+- Retorno de Revisar não mantém o filtro de revisão; álbuns respeitam os filtros e a página atual.
+- Resultados dos catálogos com capa e detalhes completos no editor e na revisão; metadados continuam utilizáveis quando a capa não pode ser obtida.
+- Editor com retorno à Biblioteca, campo ISRC e nova tentativa de leitura; falhas de consulta não mantêm resultados antigos.
+- Busca de metadados distingue artista e título para melhorar a correspondência nos catálogos.
+- Conteúdo rolável dos diálogos acessível pelo teclado.
+
 ## 0.1.4
 
 - Atualizador do Reverb em seu próprio cartão nas Configurações, com versão instalada, verificação manual, oferta de instalação e progresso; funciona com verificação automática desligada.

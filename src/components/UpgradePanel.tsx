@@ -13,9 +13,12 @@ export function UpgradePanel({ ids }: { ids?: number[] }) {
   const [error, setError] = useState("");
   const [queued, setQueued] = useState(false);
   const scan = async () => {
+    if (busy) return;
     setBusy(true);
     setError("");
     setQueued(false);
+    setCandidates(null);
+    setSelected([]);
     try {
       const result = await api.upgradeScan(ids);
       setCandidates(result);
@@ -27,7 +30,9 @@ export function UpgradePanel({ ids }: { ids?: number[] }) {
     }
   };
   const enqueue = async () => {
+    if (busy || !selected.length) return;
     setBusy(true);
+    setError("");
     try {
       await api.upgradeEnqueue(selected);
       setQueued(true);
@@ -40,7 +45,7 @@ export function UpgradePanel({ ids }: { ids?: number[] }) {
   };
   return (
     <Card className="space-y-3">
-      <Button disabled={busy} onClick={() => void scan()}>
+      <Button loading={busy} onClick={() => void scan()}>
         {t(busy ? "common.loading" : ids ? "quality.upgrade" : "quality.scanAll")}
       </Button>
       {error && <p role="alert">{error}</p>}

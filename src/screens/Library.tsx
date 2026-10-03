@@ -12,10 +12,12 @@ import {
   ArrowUp,
   Scissors,
   Library as LibraryIcon,
+  MoreHorizontal,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import type { ImportReport } from "@/bindings/ImportReport";
+import type { LibraryItem } from "@/bindings/LibraryItem";
 import type { LibraryDateRange } from "@/bindings/LibraryDateRange";
 import type { LibrarySort } from "@/bindings/LibrarySort";
 import { ScreenHeader } from "@/components/ScreenHeader";
@@ -24,6 +26,7 @@ import { IconButton } from "@/components/ui/IconButton";
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { Dialog } from "@/components/ui/Dialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SearchInput } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
@@ -31,7 +34,7 @@ import { VirtualTable } from "@/components/ui/VirtualTable";
 import { api } from "@/lib/ipc/api";
 import { errorText } from "@/lib/errors";
 import { onEvent } from "@/lib/ipc/events";
-import { useLibraryStore } from "@/stores/library";
+import { defaultLibraryQuery, useLibraryStore } from "@/stores/library";
 import { useUiStore } from "@/stores/ui";
 
 type Confirmation = { kind: "clear" | "remove" | "trash"; ids: number[] };
@@ -39,7 +42,7 @@ const LIBRARY_TABS = ["library", "artists", "missing"];
 
 export default function Library() {
   const { t } = useTranslation();
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const [tab, setTab] = useState(() => (params.has("follow") ? "artists" : "library"));
   const hasFollow = params.has("follow");
   const [previousFollow, setPreviousFollow] = useState(hasFollow);
@@ -52,7 +55,15 @@ export default function Library() {
     <>
       <div className="mb-4 flex flex-wrap gap-2" role="group" aria-label={t("artists.views")}>
         {LIBRARY_TABS.map((value) => (
-          <Button key={value} aria-pressed={active === value} onClick={() => setTab(value)}>
+          <Button
+            key={value}
+            variant={active === value ? "secondary" : "ghost"}
+            aria-pressed={active === value}
+            onClick={() => {
+              setTab(value);
+              if (hasFollow) setParams({});
+            }}
+          >
             {t(`artists.tabs.${value}`)}
           </Button>
         ))}
@@ -81,6 +92,8 @@ function LibraryFiles() {
   const [pending, setPending] = useState(false);
   const [importing, setImporting] = useState(false);
   const [report, setReport] = useState<ImportReport | null>(null);
+  const [importError, setImportError] = useState<unknown>(null);
+  const [details, setDetails] = useState<LibraryItem | null>(null);
   const [view, setView] = useState<"list" | "albums">("list");
   const [progress, setProgress] = useState<{ processed: number; total: number } | null>(null);
   useEffect(() => {
@@ -99,28 +112,50 @@ function LibraryFiles() {
     };
   }, []);
   const importFiles = async (folder: boolean) => {
-    const path = folder ? await api.pickFolder() : await api.pickAudioFile();
-    if (!path) return;
     setImporting(true);
+    setProgress(null);
+    setImportError(null);
+    setReport(null);
     try {
+      const path = folder ? await api.pickFolder() : await api.pickAudioFile();
+      if (!path) return;
       setReport(await api.libraryImport([path]));
-      await load();
+      setSelected([]);
+      setView("list");
+      await setQuery({
+        ...defaultLibraryQuery,
+        text: null,
+        artist: null,
+        album: null,
+        format: null,
+        missing: null,
+        needsReview: null,
+      });
+    } catch (error) {
+      setImportError(error);
     } finally {
+      await load();
       setImporting(false);
     }
   };
   const rescan = async () => {
     setImporting(true);
+    setProgress(null);
+    setReport(null);
+    setImportError(null);
     try {
       setReport(await api.libraryRescan());
       await load();
+    } catch (error) {
+      setImportError(error);
     } finally {
       setImporting(false);
     }
   };
   useEffect(() => {
-    void load();
-  }, [load]);
+    // Review uses the same store; entering Library must not inherit its review-only query.
+    void setQuery({ needsReview: null });
+  }, [setQuery]);
   const offset = query.offset ?? 0;
   const limit = query.limit ?? 100;
   const visibleSelected = selected.filter((id) => items.some((i) => i.id === id));
@@ -155,6 +190,28 @@ function LibraryFiles() {
   const canRedownload =
     visibleSelected.length > 0 &&
     items.filter((i) => visibleSelected.includes(i.id)).every((i) => i.sourceUrl);
+  const hasFilters = !!(
+    query.text ||
+    query.artist ||
+    query.album ||
+    query.format ||
+    query.missing ||
+    query.needsReview ||
+    (query.dateRange && query.dateRange !== "all")
+  );
+  const resetFilters = () =>
+    change({
+      ...defaultLibraryQuery,
+      text: null,
+      artist: null,
+      album: null,
+      format: null,
+      missing: null,
+      needsReview: null,
+    });
+  const pageAlbums = [
+    ...new Set(items.map((item) => item.album).filter((album): album is string => !!album)),
+  ];
   return (
     <>
       <ScreenHeader
@@ -163,25 +220,31 @@ function LibraryFiles() {
         actions={
           <div className="flex flex-wrap gap-2">
             <Button
-              variant="ghost"
-              disabled={importing}
+              variant="primary"
+              icon={<FileAudio className="size-4" aria-hidden="true" />}
+              disabled={importing || pending}
               onClick={() => void run(() => importFiles(false))}
             >
               {t("library.importFile")}
             </Button>
             <Button
-              variant="ghost"
-              disabled={importing}
+              variant="secondary"
+              icon={<FolderOpen className="size-4" aria-hidden="true" />}
+              disabled={importing || pending}
               onClick={() => void run(() => importFiles(true))}
             >
               {t("library.importFolder")}
             </Button>
-            <Button variant="ghost" disabled={importing} onClick={() => void run(rescan)}>
+            <Button
+              variant="ghost"
+              disabled={importing || pending}
+              onClick={() => void run(rescan)}
+            >
               {t("library.rescan")}
             </Button>
             <Button
               variant="ghost"
-              disabled={!total || pending}
+              disabled={!total || pending || importing}
               onClick={() => setConfirmation({ kind: "clear", ids: [] })}
             >
               {t("library.clear")}
@@ -189,21 +252,47 @@ function LibraryFiles() {
           </div>
         }
       />
+      {importing && (
+        <div role="status" className="glass mb-4 rounded-lg p-4 text-sm">
+          {progress ? t("library.importProgress", progress) : t("library.discovering")}
+          {progress && progress.total > 0 && (
+            <progress
+              aria-label={t("library.importFolder")}
+              className="mt-2 w-full accent-accent"
+              value={progress.processed}
+              max={progress.total}
+            />
+          )}
+        </div>
+      )}
+      {importError != null && (
+        <div role="alert" className="mb-4 rounded-lg border border-error/30 p-4 text-error">
+          {errorText(t, importError)}
+        </div>
+      )}
       {report && (
-        <div role="status" className="mb-4 text-sm text-fg-muted">
+        <div role="status" className="glass mb-4 rounded-lg p-4 text-sm text-fg-secondary">
           {t("library.importResult", {
             imported: report.imported,
             skipped: report.skipped,
             failed: report.failures.length,
           })}
-          {report.failures.map((failure) => (
-            <p key={failure.path}>
-              {failure.path}: {t(failure.message, { defaultValue: failure.message })}
-            </p>
-          ))}
+          {!report.imported && !report.skipped && !report.failures.length && (
+            <p className="mt-2">{t("library.noAudio")}</p>
+          )}
+          {report.failures.length > 0 && (
+            <details className="mt-2">
+              <summary className="cursor-pointer">{t("library.importFailures")}</summary>
+              {report.failures.map((failure, index) => (
+                <p key={`${failure.path}:${index}`} className="mt-2 break-all">
+                  {failure.path}: {t(failure.message, { defaultValue: failure.message })}
+                </p>
+              ))}
+            </details>
+          )}
         </div>
       )}
-      <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div className="glass mb-4 grid grid-cols-2 gap-3 rounded-lg p-4 md:grid-cols-4">
         <SearchInput
           aria-label={t("library.search")}
           placeholder={t("library.search")}
@@ -273,6 +362,11 @@ function LibraryFiles() {
             {t("library.missing")}
           </Checkbox>
         </div>
+        {hasFilters && (
+          <Button variant="ghost" onClick={resetFilters}>
+            {t("library.resetFilters")}
+          </Button>
+        )}
       </div>
       {error != null && (
         <div role="alert" className="mb-4 text-error">
@@ -282,45 +376,54 @@ function LibraryFiles() {
           </Button>
         </div>
       )}
-      <div className="mb-3 flex flex-wrap items-center gap-2">
-        <Checkbox
-          checked={items.length > 0 && visibleSelected.length === items.length}
-          disabled={!items.length || loading}
-          onChange={(checked) => setSelected(checked ? items.map((i) => i.id) : [])}
-        >
-          {t("library.selectPage")}
-        </Checkbox>
-        <Button
-          variant="ghost"
-          disabled={!visibleSelected.length || loading || pending}
-          onClick={() => setConfirmation({ kind: "remove", ids: visibleSelected })}
-        >
-          {t("library.remove")}
-        </Button>
-        <Button
-          variant="ghost"
-          disabled={!visibleSelected.length || loading || pending}
-          onClick={() => setConfirmation({ kind: "trash", ids: visibleSelected })}
-        >
-          {t("library.trash")}
-        </Button>
-        <Button
-          variant="ghost"
-          disabled={!canRedownload || loading}
-          onClick={() =>
-            void run(async () => {
-              for (const item of items.filter((i) => visibleSelected.includes(i.id)))
-                await api.enqueue({
-                  url: item.sourceUrl!,
-                  profileId: item.profileId ?? undefined,
-                  allowDuplicate: true,
-                });
-            })
-          }
-        >
-          {t("library.redownload")}
-        </Button>
-      </div>
+      {items.length > 0 && (
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <Checkbox
+            checked={items.length > 0 && visibleSelected.length === items.length}
+            disabled={!items.length || loading}
+            onChange={(checked) => setSelected(checked ? items.map((i) => i.id) : [])}
+          >
+            {t("library.selectPage")}
+          </Checkbox>
+          {visibleSelected.length > 0 && (
+            <>
+              <span className="text-sm text-fg-muted">
+                {t("library.selected", { count: visibleSelected.length })}
+              </span>
+              <Button
+                variant="ghost"
+                disabled={!visibleSelected.length || loading || pending}
+                onClick={() => setConfirmation({ kind: "remove", ids: visibleSelected })}
+              >
+                {t("library.remove")}
+              </Button>
+              <Button
+                variant="ghost"
+                disabled={!visibleSelected.length || loading || pending}
+                onClick={() => setConfirmation({ kind: "trash", ids: visibleSelected })}
+              >
+                {t("library.trash")}
+              </Button>
+              <Button
+                variant="ghost"
+                disabled={!canRedownload || loading}
+                onClick={() =>
+                  void run(async () => {
+                    for (const item of items.filter((i) => visibleSelected.includes(i.id)))
+                      await api.enqueue({
+                        url: item.sourceUrl!,
+                        profileId: item.profileId ?? undefined,
+                        allowDuplicate: true,
+                      });
+                  })
+                }
+              >
+                {t("library.redownload")}
+              </Button>
+            </>
+          )}
+        </div>
+      )}
       <div className="mb-4 flex gap-2" role="group" aria-label={t("library.view")}>
         <Button
           variant={view === "list" ? "secondary" : "ghost"}
@@ -337,16 +440,15 @@ function LibraryFiles() {
           {t("library.albumView")}
         </Button>
       </div>
-      {importing && progress && <p role="status">{t("library.importProgress", progress)}</p>}
-      {view === "albums" && albums.length > 0 ? (
+      {view === "albums" && pageAlbums.length > 0 ? (
         <ul className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-3">
-          {albums.map((album) => {
+          {pageAlbums.map((album) => {
             const representative = items.find((item) => item.album === album);
             return (
               <li key={album}>
                 <button
                   type="button"
-                  className="glass flex w-full items-center gap-3 rounded-lg p-4 text-left"
+                  className="glass flex w-full flex-col items-center gap-3 rounded-lg p-4 text-center transition-colors hover:bg-hover"
                   onClick={() => {
                     change({ album });
                     setView("list");
@@ -357,14 +459,21 @@ function LibraryFiles() {
                       id={representative.id}
                       updatedAt={representative.updatedAt}
                       missing={representative.missing}
+                      size={112}
                     />
                   )}
-                  <span className="truncate">{album}</span>
+                  <span className="line-clamp-2 w-full break-words font-medium">{album}</span>
                 </button>
               </li>
             );
           })}
         </ul>
+      ) : view === "albums" && items.length > 0 ? (
+        <EmptyState
+          icon={<LibraryIcon />}
+          title={t("library.noAlbums")}
+          description={t("library.noAlbumsHint")}
+        />
       ) : items.length > 0 ? (
         <VirtualTable
           key={JSON.stringify(query)}
@@ -395,7 +504,7 @@ function LibraryFiles() {
             {
               key: "title",
               header: t("library.track"),
-              width: "2fr",
+              width: "minmax(0,2fr)",
               render: (i) => (
                 <span title={i.title}>
                   <span>{i.title}</span>
@@ -449,55 +558,14 @@ function LibraryFiles() {
             {
               key: "actions",
               header: t("library.actions"),
-              width: "180px",
+              width: "108px",
               render: (i) => (
                 <div className="flex gap-1">
                   <IconButton
-                    label={`${t("lossless.title")} ${i.title}`}
-                    disabled={i.missing || loading}
-                    onClick={() => setLossless(i.id)}
+                    label={t("library.detailsTrack", { title: i.title })}
+                    onClick={() => setDetails(i)}
                   >
-                    <AudioLines />
-                  </IconButton>
-                  <IconButton
-                    disabled={i.missing || loading}
-                    label={t("library.openTrack", { title: i.title })}
-                    onClick={() => void run(() => api.libraryOpenFile(i.filePath))}
-                  >
-                    <FileAudio />
-                  </IconButton>
-                  <IconButton
-                    disabled={i.missing || loading}
-                    label={t("library.revealTrack", { title: i.title })}
-                    onClick={() => void run(() => api.libraryReveal(i.filePath))}
-                  >
-                    <FolderOpen />
-                  </IconButton>
-                  <IconButton
-                    label={`${t("quality.trim")} ${i.title}`}
-                    disabled={i.missing || !i.durationS}
-                    onClick={() => setTrim({ path: i.filePath, duration: i.durationS ?? 0 })}
-                  >
-                    <Scissors />
-                  </IconButton>
-                  <IconButton
-                    label={`${t("quality.upgrade")} ${i.title}`}
-                    disabled={
-                      i.missing || i.provider !== "youtube" || (i.sourceAbrKbps ?? 200) >= 200
-                    }
-                    onClick={() =>
-                      void run(async () => {
-                        const available = await api.upgradeScan([i.id]);
-                        if (available.length) {
-                          await api.upgradeEnqueue([i.id]);
-                          pushToast({ message: t("quality.queued"), tone: "success" });
-                        } else {
-                          pushToast({ message: t("quality.found", { count: 0 }), tone: "info" });
-                        }
-                      })
-                    }
-                  >
-                    <ArrowUp />
+                    <MoreHorizontal />
                   </IconButton>
                   <IconButton
                     label={t("library.editTrack", { title: i.title })}
@@ -506,6 +574,13 @@ function LibraryFiles() {
                   >
                     <Tags />
                   </IconButton>
+                  <IconButton
+                    disabled={i.missing || loading}
+                    label={t("library.openTrack", { title: i.title })}
+                    onClick={() => void run(() => api.libraryOpenFile(i.filePath))}
+                  >
+                    <FileAudio />
+                  </IconButton>
                 </div>
               ),
             },
@@ -513,12 +588,127 @@ function LibraryFiles() {
         />
       ) : loading ? (
         <p role="status">{t("common.loading")}</p>
-      ) : (
+      ) : error == null ? (
         <EmptyState
           icon={<LibraryIcon />}
-          title={t("library.empty.title")}
-          description={t("library.empty.description")}
+          title={t(hasFilters ? "library.noResults" : "library.empty.title")}
+          description={t(hasFilters ? "library.noResultsHint" : "library.empty.description")}
         />
+      ) : null}
+      {details && (
+        <Dialog
+          open
+          title={details.title}
+          closeLabel={t("common.close")}
+          onClose={() => setDetails(null)}
+        >
+          <div className="space-y-4">
+            <LibraryCover
+              id={details.id}
+              updatedAt={details.updatedAt}
+              missing={details.missing}
+              size={160}
+            />
+            <p>
+              {details.artist} · {details.album}
+            </p>
+            <p className="break-all text-sm text-fg-muted">{details.filePath}</p>
+            <p className="text-sm text-fg-muted">
+              {details.codec?.toUpperCase()} ·{" "}
+              {details.durationS == null
+                ? t("metadataDetails.unavailable")
+                : t("review.duration", { seconds: Math.round(details.durationS) })}
+            </p>
+            <dl className="grid grid-cols-2 gap-3 text-sm">
+              {[
+                [t("tagEditor.fields.year"), details.year],
+                [t("tagEditor.fields.genre"), details.genre],
+                [t("metadataDetails.isrc"), details.isrc],
+                [t("metadataDetails.provider"), details.metadataSource ?? details.provider],
+              ].map(([label, value]) => (
+                <div key={String(label)}>
+                  <dt className="text-fg-muted">{label}</dt>
+                  <dd className="break-words">{value ?? t("metadataDetails.unavailable")}</dd>
+                </div>
+              ))}
+            </dl>
+            {details.missing && (
+              <p role="alert" className="text-warning">
+                {t("library.missing")}
+              </p>
+            )}
+            <div className="flex flex-wrap gap-2">
+              <Button
+                aria-label={`${t("lossless.title")} ${details.title}`}
+                disabled={details.missing || loading}
+                onClick={() => {
+                  setDetails(null);
+                  setLossless(details.id);
+                }}
+              >
+                <AudioLines className="size-4" aria-hidden="true" />
+                {t("lossless.title")}
+              </Button>
+              <Button
+                disabled={details.missing || loading}
+                aria-label={t("library.openTrack", { title: details.title })}
+                onClick={() => void run(() => api.libraryOpenFile(details.filePath))}
+              >
+                <FileAudio className="size-4" aria-hidden="true" />
+                {t("library.open")}
+              </Button>
+              <Button
+                disabled={details.missing || loading}
+                aria-label={t("library.revealTrack", { title: details.title })}
+                onClick={() => void run(() => api.libraryReveal(details.filePath))}
+              >
+                <FolderOpen className="size-4" aria-hidden="true" />
+                {t("library.reveal")}
+              </Button>
+              <Button
+                aria-label={`${t("quality.trim")} ${details.title}`}
+                disabled={details.missing || !details.durationS}
+                onClick={() => {
+                  setDetails(null);
+                  setTrim({ path: details.filePath, duration: details.durationS ?? 0 });
+                }}
+              >
+                <Scissors className="size-4" aria-hidden="true" />
+                {t("quality.trim")}
+              </Button>
+              <Button
+                aria-label={`${t("quality.upgrade")} ${details.title}`}
+                disabled={
+                  details.missing ||
+                  details.provider !== "youtube" ||
+                  (details.sourceAbrKbps ?? 200) >= 200
+                }
+                onClick={() =>
+                  void run(async () => {
+                    const available = await api.upgradeScan([details.id]);
+                    if (available.length) {
+                      await api.upgradeEnqueue([details.id]);
+                      pushToast({ message: t("quality.queued"), tone: "success" });
+                    } else {
+                      pushToast({ message: t("quality.found", { count: 0 }), tone: "info" });
+                    }
+                  })
+                }
+              >
+                <ArrowUp className="size-4" aria-hidden="true" />
+                {t("quality.upgrade")}
+              </Button>
+              <Button
+                aria-label={t("library.editTrack", { title: details.title })}
+                disabled={details.missing || loading}
+                onClick={() => navigate(`/tag-editor?path=${encodeURIComponent(details.filePath)}`)}
+              >
+                <Tags className="size-4" aria-hidden="true" />
+                {t("tagEditor.title")}
+              </Button>
+            </div>
+          </div>
+        </Dialog>
       )}
       <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
         <p role="status" aria-live="polite" className="text-sm text-fg-muted">

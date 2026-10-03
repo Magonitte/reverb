@@ -252,10 +252,10 @@
   },
   "library": {
     "title": "Biblioteca",
-    "subtitle": "Suas músicas baixadas, com busca instantânea.",
+    "subtitle": "Importe, organize e confira sua coleção de músicas.",
     "empty": {
       "title": "Sua biblioteca está vazia",
-      "description": "As faixas que você baixar vão aparecer aqui."
+      "description": "Importe um arquivo ou uma pasta de músicas. Os seus downloads também aparecem aqui."
     },
     "search": "Buscar na biblioteca",
     "format": "Formato",
@@ -274,7 +274,7 @@
     "selectTrack": "Selecionar {{title}}",
     "track": "Faixa",
     "actions": "Ações",
-    "open": "Abrir",
+    "open": "Reproduzir",
     "folder": "Pasta",
     "openTrack": "Abrir {{title}}",
     "revealTrack": "Mostrar {{title}} na pasta",
@@ -318,7 +318,19 @@
     "listView": "Lista",
     "albumView": "Álbuns",
     "importProgress": "Importando {{processed}} de {{total}} arquivos…",
-    "addedAt": "Data"
+    "addedAt": "Data",
+    "discovering": "Preparando importação e procurando arquivos de áudio…",
+    "noAudio": "Nenhum áudio compatível encontrado. Formatos: MP3, M4A, Opus, OGG, FLAC e WAV. Subpastas são incluídas.",
+    "importFailures": "Ver arquivos com falha",
+    "resetFilters": "Limpar filtros",
+    "selected": "{{count}} selecionada(s)",
+    "noResults": "Nenhuma faixa encontrada",
+    "noResultsHint": "Ajuste a busca ou limpe os filtros para ver suas músicas.",
+    "noAlbums": "Nenhum álbum nesta página",
+    "noAlbumsHint": "Use a lista para editar as tags das faixas ou avance para outra página.",
+    "detailsTrack": "Detalhes e ações de {{title}}",
+    "reveal": "Mostrar na pasta",
+    "back": "Voltar à Biblioteca"
   },
   "review": {
     "title": "Revisar",
@@ -914,5 +926,22 @@
       "notify": "Novos lançamentos geram aviso e aparecem em Faltando. Você decide quando baixar.",
       "none": "Novos lançamentos serão registrados sem avisos nem downloads automáticos."
     }
+  },
+  "metadataDetails": {
+    "title": "Detalhes do resultado",
+    "results": "Resultados dos catálogos",
+    "hint": "Confira a fonte, a capa e os detalhes antes de usar os metadados.",
+    "view": "Ver detalhes",
+    "provider": "Fonte",
+    "providerId": "ID na fonte",
+    "recordingId": "ID MusicBrainz",
+    "duration": "Duração",
+    "isrc": "ISRC",
+    "unavailable": "Não informado",
+    "noCover": "Sem capa",
+    "saveHint": "Usar metadados preenche o editor. Clique em Salvar para gravar no arquivo.",
+    "applied": "Metadados aplicados ao editor. Salve para gravar no arquivo.",
+    "count": "{{count}} resultado(s) encontrado(s).",
+    "empty": "Nenhum resultado encontrado. Ajuste o título e o artista e tente novamente."
   }
 }

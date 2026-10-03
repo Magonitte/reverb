@@ -253,5 +253,12 @@ export function mockMetadataPreview(request: PreviewRequest): MetadataResult {
 
 export function mockMetadataSearch(query: string): Candidate[] {
   if (!query.trim()) return [];
-  return /rick|never gonna/i.test(query) ? [ITUNES_RICK] : [];
+  return /rick|never gonna/i.test(query)
+    ? [
+        {
+          ...ITUNES_RICK,
+          coverUrl: new URL("/mock-cover.svg", window.location.origin).href,
+        },
+      ]
+    : [];
 }

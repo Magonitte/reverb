@@ -29,6 +29,15 @@ test("F10 editor opens, changes artwork, searches and saves external tags", asyn
   await page.getByRole("button", { name: /Escolher arquivo de capa/ }).click();
   await expect(page.getByRole("img", { name: "Capa do álbum" })).toBeVisible();
   await page.getByRole("button", { name: "Buscar metadados" }).click();
+  await page.getByRole("button", { name: "Ver detalhes" }).click();
+  const details = page.getByRole("dialog");
+  await expect(details.getByText("itunes", { exact: true })).toBeVisible();
+  await expect(details.getByRole("img", { name: "Capa do álbum" })).toHaveAttribute(
+    "src",
+    /mock-cover\.svg/,
+  );
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.keyboard.press("Escape");
   await page.getByRole("button", { name: "Usar metadados" }).click();
   await expect(page.getByLabel("Título", { exact: true })).toHaveValue("Never Gonna Give You Up");
   await page.getByRole("button", { name: "Salvar", exact: true }).click();
@@ -46,7 +55,7 @@ for (const theme of ["dark", "light"] as const) {
     });
     await page.getByRole("button", { name: "Álbuns", exact: true }).click();
     await expect(
-      page.getByRole("button", { name: "Whenever You Need Somebody", exact: true }),
+      page.getByRole("button", { name: "Album 49", exact: true }),
     ).toBeVisible();
     await expect(page).toHaveScreenshot(`library-albums-${theme}.png`, { animations: "disabled" });
     await goHash(page, "/review");
