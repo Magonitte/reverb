@@ -362,6 +362,10 @@ async fn t5_checksum_errado_da_erro_e_nao_altera_o_manifesto() {
     assert!(h.manager.resolve(Tool::Ytdlp).is_err());
     assert!(staging_is_clean(&h));
     assert!(h.sink.named(EVENT_CHANGED).is_empty());
+    let failures = h.sink.named("tools://failed");
+    assert_eq!(failures.len(), 1);
+    assert_eq!(failures[0]["tool"], "ytdlp");
+    assert_eq!(failures[0]["error"]["kind"], "checksum_mismatch");
 }
 
 #[tokio::test]
@@ -690,6 +694,24 @@ async fn ffmpeg_atualiza_pela_data_do_asset_e_nao_pela_tag() {
         manifest_json(&h)["tools"]["ffmpeg"]["current"]["asset_updated_at"],
         "2026-10-01T18:57:10Z"
     );
+    // The cached pre-install check must not keep offering the version now installed.
+    let status = h.manager.status().await.unwrap();
+    assert!(
+        !status
+            .iter()
+            .find(|s| s.tool == Tool::Ffmpeg)
+            .unwrap()
+            .update_available
+    );
+    h.manager.rollback(Tool::Ffmpeg).await.unwrap();
+    let status = h.manager.status().await.unwrap();
+    assert!(
+        status
+            .iter()
+            .find(|s| s.tool == Tool::Ffmpeg)
+            .unwrap()
+            .update_available
+    );
 }
 
 #[tokio::test]
@@ -933,6 +955,40 @@ async fn startup_atualiza_o_ytdlp_quando_a_verificacao_esta_vencida() {
 
     Arc::clone(&h.manager).background_startup().await;
     assert_eq!(current_version(&h, "ytdlp").as_deref(), Some("2026.10.09"));
+}
+
+#[tokio::test]
+async fn startup_applies_known_ffmpeg_update_even_after_recent_manual_check() {
+    let h = harness().await;
+    publish_all(&h).await;
+    h.manager.install_missing().await.unwrap();
+    publish_ffmpeg(&h.github, "2026-10-03T02:00:00Z").await;
+    h.manager.check_updates(true).await.unwrap();
+    let last = h
+        .manager
+        .db
+        .kv_get("tools.last_check.ffmpeg")
+        .await
+        .unwrap()
+        .unwrap()
+        .parse()
+        .unwrap();
+    assert!(!check_due(Some(last), now_secs(), OTHER_CHECK_INTERVAL));
+    Arc::clone(&h.manager).background_startup().await;
+    assert_eq!(
+        current_version(&h, "ffmpeg").as_deref(),
+        Some("20261003T020000Z")
+    );
+    assert!(
+        !h.manager
+            .status()
+            .await
+            .unwrap()
+            .iter()
+            .find(|s| s.tool == Tool::Ffmpeg)
+            .unwrap()
+            .update_available
+    );
 }
 
 #[tokio::test]

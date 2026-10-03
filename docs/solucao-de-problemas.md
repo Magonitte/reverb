@@ -33,3 +33,7 @@ Comece por **Configurações → Avançado → Diagnóstico** e pela situação 
 Abra uma [issue](https://github.com/Magonitte/reverb/issues) com versão, sistema operacional, passos para reproduzir, comportamento esperado/observado e mensagem ou trecho de log relevante. Informe se usou a versão instalada, dev ou mock.
 
 Não anexe o banco completo, cookies ou credenciais. Remova dados privados dos registros e use uma faixa/URL pública de exemplo quando possível. Para continuidade da implementação, registre a falha, hipótese, correção e portão em PROGRESS.
+
+## Atualizações nas Configurações
+
+Para atualizar o aplicativo, use o cartão **Reverb → Verificar atualização do Reverb → Atualizar agora**. Para FFmpeg e outras ferramentas, use o botão da respectiva linha. No modo offline, consultas e instalações ficam desabilitadas. Se aparecer **Aguardando downloads terminarem**, aguarde os trabalhos ativos concluírem. Uma falha mostra mensagem e mantém a ação para nova tentativa; quando necessário, use **Reverter** para voltar à versão anterior da ferramenta.

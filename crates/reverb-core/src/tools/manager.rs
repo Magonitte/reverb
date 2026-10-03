@@ -273,7 +273,14 @@ impl ToolsManager {
                 installed_at: current.as_ref().map(|c| c.installed_at.clone()),
                 path,
                 latest_version: info.as_ref().map(|i| i.latest.clone()),
-                update_available: info.as_ref().is_some_and(|i| i.update_available),
+                update_available: info.as_ref().is_some_and(|i| {
+                    current.as_ref().is_some_and(|c| {
+                        self.spec(tool).is_ok_and(|spec| {
+                            compare(spec.version_kind, &i.latest, &c.version).is_gt()
+                                || (i.update_available && c.channel != self.channel_label(tool))
+                        })
+                    })
+                }),
                 last_checked: info.map(|i| i.checked_at),
             });
         }
@@ -323,12 +330,25 @@ impl ToolsManager {
 
     /// Instala a última versão se a atual faltar ou estiver defasada (usa o cache de 1 h do GitHub).
     pub async fn install(&self, tool: Tool) -> CoreResult<InstallOutcome> {
-        self.ensure_latest(tool, false).await
+        let result = self.ensure_latest(tool, false).await;
+        self.report_failure(tool, &result);
+        result
     }
 
     /// Como `install`, mas consulta o GitHub sem cache. Troca de canal do yt-dlp reinstala.
     pub async fn update(&self, tool: Tool) -> CoreResult<InstallOutcome> {
-        self.ensure_latest(tool, true).await
+        let result = self.ensure_latest(tool, true).await;
+        self.report_failure(tool, &result);
+        result
+    }
+
+    fn report_failure(&self, tool: Tool, result: &CoreResult<InstallOutcome>) {
+        if let Err(error) = result {
+            self.sink.emit(
+                "tools://failed",
+                serde_json::json!({ "tool": tool, "error": error }),
+            );
+        }
     }
 
     async fn ensure_latest(&self, tool: Tool, force_api: bool) -> CoreResult<InstallOutcome> {
@@ -867,7 +887,13 @@ impl ToolsManager {
                 .ok()
                 .flatten()
                 .and_then(|text| text.parse::<u64>().ok());
-            if !check_due(last, now, interval) {
+            // A manual check must not postpone an already known update for another week.
+            let pending = self.status().await.ok().is_some_and(|statuses| {
+                statuses
+                    .iter()
+                    .any(|status| status.tool == tool && status.update_available)
+            });
+            if !pending && !check_due(last, now, interval) {
                 continue;
             }
             match self.update(tool).await {

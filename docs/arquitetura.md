@@ -44,3 +44,7 @@ O job mantém os metadados/ISRC da fonte, `importSourceTrackId` e `importMatch` 
 - [Fases](../plano/fases/) e [PROGRESS](../PROGRESS.md): requisitos, decisões e o que já foi validado.
 
 O plano contém especificações futuras. Em caso de diferença, confira o código e o desvio registrado no PROGRESS; não presuma que todo comando proposto já foi implementado. Não mova código ou renomeie comandos sem atualizar imports, scripts, testes, bindings e documentação.
+
+### Eventos de atualização de ferramentas
+
+`tools://progress` informa a fase e o percentual; `tools://changed` encerra o progresso e atualiza a versão instalada. `tools://failed` contém a ferramenta e o erro estruturado, libera o estado de progresso e permite nova tentativa na interface, inclusive quando a falha ocorre em uma atualização automática. O cache de consulta informa a versão mais recente; a disponibilidade é recalculada contra o manifesto da instalação atual.

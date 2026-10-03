@@ -13,7 +13,7 @@ import { useUiStore } from "@/stores/ui";
 import { useUpdaterStore, type UpdaterPhase } from "@/stores/updater";
 import { api } from "@/lib/ipc/api";
 
-const TOOLS: Tool[] = ["ytdlp", "deno", "ffmpeg"];
+const TOOLS: Tool[] = ["ytdlp", "deno", "ffmpeg", "fpcalc", "bgutil"];
 const CHANNELS = ["stable", "nightly"] as const satisfies readonly YtdlpChannel[];
 
 const PHASE_KEY: Record<UpdaterPhase, string> = {
@@ -32,6 +32,10 @@ export function UpdatesTab() {
   const settings = useSettingsStore((s) => s.settings);
   const updateSettings = useSettingsStore((s) => s.update);
   const statuses = useToolsStore((s) => s.statuses);
+  const toolProgress = useToolsStore((s) => s.progress);
+  const updating = useToolsStore((s) => s.updating);
+  const toolErrors = useToolsStore((s) => s.errors);
+  const updateTool = useToolsStore((s) => s.updateTool);
   const appVersion = useAppInfoStore((s) => s.info?.version);
   const phase = useUpdaterStore((s) => s.phase);
   const version = useUpdaterStore((s) => s.version);
@@ -57,17 +61,22 @@ export function UpdatesTab() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Card aria-labelledby="updates-app-title">
+      <Card role="region" aria-labelledby="updates-app-title">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h2 id="updates-app-title" className="text-sm font-semibold text-fg">
               {t("settings.updates.appTitle")}
             </h2>
+            <p className="mt-1 text-[13px] text-fg-muted">
+              {t("settings.updates.installedVersion", { version: current || "—" })}
+            </p>
             <p data-testid="updater-phase" className="mt-1 text-[13px] text-fg-secondary">
               {t(PHASE_KEY[phase])}
             </p>
             {showOffer && version && (
-              <p className="mt-1 text-[13px] text-fg">{t("settings.updates.toVersion", { current, version })}</p>
+              <p className="mt-1 text-[13px] text-fg">
+                {t("settings.updates.toVersion", { current, version })}
+              </p>
             )}
             {phase === "downloading" && percent !== null && (
               <p className="mt-1 text-xs text-fg-muted">
@@ -80,17 +89,21 @@ export function UpdatesTab() {
             {(phase === "available" || phase === "ready") && (
               <p className="mt-2 text-[13px] text-fg-muted">{t("updater.windowsCloseNotice")}</p>
             )}
-            {phase === "error" && error && (
-              <p className="mt-2 text-[13px] text-error">{error}</p>
-            )}
+            {phase === "error" && error && <p className="mt-2 text-[13px] text-error">{error}</p>}
           </div>
           {phase === "available" && (
-            <Button variant="primary" onClick={() => void install()}>
+            <Button
+              variant="primary"
+              disabled={settings.offlineMode}
+              onClick={() => void install()}
+            >
               {t("settings.updates.installNow")}
             </Button>
           )}
           {phase === "error" && (
-            <Button onClick={() => void check()}>{t("settings.updates.retry")}</Button>
+            <Button disabled={settings.offlineMode} onClick={() => void check(false)}>
+              {t("settings.updates.retry")}
+            </Button>
           )}
         </div>
         {phase === "downloading" && (
@@ -101,6 +114,28 @@ export function UpdatesTab() {
             />
           </div>
         )}
+        <div className="mt-4 flex flex-col gap-3">
+          <div>
+            <Button
+              loading={phase === "checking"}
+              disabled={
+                settings.offlineMode || ["downloading", "ready", "restarting"].includes(phase)
+              }
+              onClick={() => void check(false)}
+            >
+              {t("settings.updates.checkApp")}
+            </Button>
+          </div>
+          <p className="text-xs text-fg-muted">{t("settings.updates.appHint")}</p>
+          <label className="flex items-center justify-between gap-3 text-[13px] text-fg">
+            <span>{t("settings.updates.autoApp")}</span>
+            <Toggle
+              checked={settings.autoCheckAppUpdates}
+              onChange={(checked) => save({ autoCheckAppUpdates: checked })}
+              label={t("settings.updates.autoApp")}
+            />
+          </label>
+        </div>
       </Card>
 
       <Card aria-labelledby="updates-tools-title">
@@ -110,36 +145,108 @@ export function UpdatesTab() {
         <ul className="flex flex-col gap-2">
           {TOOLS.map((tool) => {
             const status = statuses.find((item) => item.tool === tool);
+            const progress = toolProgress[tool];
+            const working = updating[tool] || !!progress;
             const label = !status?.installed
               ? t("tools.missing")
               : status.updateAvailable
                 ? t("tools.updateAvailable")
                 : t("tools.upToDate");
             return (
-              <li key={tool} className="flex flex-wrap items-center gap-3 text-[13px]">
-                <span className="w-20 font-medium text-fg">{t(`tools.${tool}`)}</span>
-                <span className="w-36 text-fg-muted">{status?.version ?? "—"}</span>
-                <span className="text-fg-secondary">{label}</span>
-                {status?.previousVersion && (
-                  <Button
-                    size="sm"
-                    className="ml-auto"
-                    onClick={() => {
-                      api
-                        .toolsRollback(tool)
-                        .then(() => useToolsStore.getState().load())
-                        .catch(() => toast({ message: t("settings.updates.rollbackFailed"), tone: "error" }));
-                    }}
-                  >
-                    {t("settings.updates.rollback")}
-                  </Button>
+              <li
+                key={tool}
+                aria-label={t(`tools.${tool}`)}
+                className="rounded-md border border-glass-border p-3 text-[13px]"
+              >
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="w-20 font-medium text-fg">{t(`tools.${tool}`)}</span>
+                  <span className="min-w-0 flex-1 break-all text-fg-muted">
+                    {status?.version ?? "—"}
+                  </span>
+                  <span role={working ? "status" : undefined} className="text-fg-secondary">
+                    {working
+                      ? t(
+                          progress
+                            ? `settings.updates.toolPhases.${progress.phase}`
+                            : "settings.updates.updatingTool",
+                        )
+                      : label}
+                  </span>
+                  <div className="ml-auto flex gap-2">
+                    {(working ||
+                      !status?.installed ||
+                      status.updateAvailable ||
+                      toolErrors[tool]) && (
+                      <Button
+                        size="sm"
+                        variant="primary"
+                        loading={working}
+                        disabled={settings.offlineMode}
+                        onClick={() =>
+                          void updateTool(tool).catch(() =>
+                            toast({
+                              message: t("settings.updates.toolUpdateFailed"),
+                              tone: "error",
+                            }),
+                          )
+                        }
+                      >
+                        {t(
+                          working
+                            ? "settings.updates.updatingTool"
+                            : status?.installed
+                              ? "settings.updates.updateTool"
+                              : "settings.updates.installTool",
+                          { tool: t(`tools.${tool}`) },
+                        )}
+                      </Button>
+                    )}
+                    {status?.previousVersion && (
+                      <Button
+                        size="sm"
+                        disabled={working}
+                        onClick={() => {
+                          api
+                            .toolsRollback(tool)
+                            .then(() => useToolsStore.getState().load())
+                            .catch(() =>
+                              toast({
+                                message: t("settings.updates.rollbackFailed"),
+                                tone: "error",
+                              }),
+                            );
+                        }}
+                      >
+                        {t("settings.updates.rollback")}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                {progress && (
+                  <div className="mt-2">
+                    <ProgressBar
+                      value={progress.phase === "waiting_jobs" ? undefined : progress.percent / 100}
+                      label={t(`settings.updates.toolPhases.${progress.phase}`)}
+                    />
+                  </div>
+                )}
+                {toolErrors[tool] && (
+                  <p role="alert" className="mt-2 text-error">
+                    {toolErrors[tool]}
+                  </p>
                 )}
               </li>
             );
           })}
         </ul>
         <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
-          <Button loading={phase === "checking"} onClick={() => void check()}>
+          <Button
+            loading={phase === "checking"}
+            disabled={
+              settings.offlineMode || ["downloading", "ready", "restarting"].includes(phase)
+            }
+            onClick={() => void check()}
+          >
             {t("settings.updates.check")}
           </Button>
           <fieldset className="flex flex-col gap-1">
@@ -154,26 +261,29 @@ export function UpdatesTab() {
                     checked={settings.ytdlpChannel === value}
                     onChange={() => save({ ytdlpChannel: value })}
                   />
-                  {t(value === "stable" ? "settings.updates.channelStable" : "settings.updates.channelNightly")}
+                  {t(
+                    value === "stable"
+                      ? "settings.updates.channelStable"
+                      : "settings.updates.channelNightly",
+                  )}
                 </label>
               ))}
             </div>
           </fieldset>
         </div>
         <div className="mt-4 flex flex-col gap-3">
-          <label className="flex items-center justify-between gap-3 text-[13px] text-fg">
-            <span>{t("settings.updates.autoApp")}</span>
-            <Toggle
-              checked={settings.autoCheckAppUpdates}
-              onChange={(checked) => save({ autoCheckAppUpdates: checked })}
-              label={t("settings.updates.autoApp")}
-            />
-          </label>
+          <p className="text-xs text-fg-muted">{t("settings.updates.autoToolsHint")}</p>
           <label className="flex items-center justify-between gap-3 text-[13px] text-fg">
             <span>{t("settings.updates.autoTools")}</span>
             <Toggle
               checked={settings.autoUpdateTools}
-              onChange={(checked) => save({ autoUpdateTools: checked })}
+              onChange={(checked) => {
+                updateSettings({ autoUpdateTools: checked })
+                  .then(() => {
+                    if (checked) void check();
+                  })
+                  .catch(() => toast({ message: t("settings.saveFailed"), tone: "error" }));
+              }}
               label={t("settings.updates.autoTools")}
             />
           </label>

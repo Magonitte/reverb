@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.4
+
+- Atualizador do Reverb em seu próprio cartão nas Configurações, com versão instalada, verificação manual, oferta de instalação e progresso; funciona com verificação automática desligada.
+
+- Diálogo Seguir artista reorganizado, com opções visíveis, busca por Enter, identificação do artista selecionado e seleção de pasta.
+- Preferências salvas antes da consulta do catálogo; falhas de consulta permitem tentar novamente sem repetir o cadastro.
+- Lançamentos agrupados por artista, filtro em Faltando e estados de carregamento/verificação claros.
+- Botões para instalar/atualizar cada ferramenta, incluindo FFmpeg, com progresso, espera por downloads ativos, erro e nova tentativa.
+- Atualizações automáticas aplicam versões disponíveis ao verificar e ao iniciar o app; o aviso desaparece após instalar a versão atual.
+
 ## 0.1.3
 
 - Importação de playlists, álbuns e faixas do Deezer e Spotify com casamento por ISRC e metadados da fonte.

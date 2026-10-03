@@ -22,7 +22,8 @@ Não é necessário instalar Node.js, Rust ou Python para usar os pacotes public
 - SoundCloud, Bandcamp gratuito, Internet Archive e Jamendo com Client ID próprio.
 - Importação de catálogos Deezer/Spotify, casamento no YouTube por ISRC ou texto, artistas seguidos e visão **Faltando**.
 - Melhoria de qualidade e análise de provável lossless com espectrograma.
-- Atualizações do app e das ferramentas, bandeja, notificações, atalhos e diagnóstico.
+- Atualizador do Reverb em Configurações, com consulta manual e instalação assinada; ferramentas com botões de instalação/atualização e progresso.
+- Bandeja, notificações, atalhos e diagnóstico.
 
 **Deezer funciona sem credenciais.** Spotify requer credenciais próprias e permissões compatíveis. Os testes contratuais do Spotify não comprovam acesso real da conta; a verificação de rede sem credenciais foi registrada como N/A com consentimento do usuário. Veja as [limitações e a configuração](docs/configuracao.md#spotify).
 

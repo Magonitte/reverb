@@ -56,7 +56,7 @@ export function resetFlowTests(): void {
     jobs: {},
     queue: { paused: false, running: 0, queued: 0, healing: false },
   });
-  useToolsStore.setState({ statuses: [], progress: {} });
+  useToolsStore.setState({ statuses: [], progress: {}, updating: {}, errors: {} });
   useHealStore.setState({ stage: null });
   useUpdaterStore.setState(initialUpdaterState);
   useFlowStore.setState({ preview: null, collection: null, collectionUrl: null, imported: null });
