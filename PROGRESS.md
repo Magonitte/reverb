@@ -5,10 +5,10 @@
 
 ## Situação atual
 
-- **Fase atual:** F14 — CONCLUÍDA (F00–F14 concluídas); publicação e atualização do PC em execução.
-- **Último ponto de parada:** F14/0.1.2 passou todos os portões: 602 Rust, 237 Vitest, 75 Playwright, 27 rede e 8 app real. Preparando commit/tag, PR e release. App F13 permanece instalado até concluir a atualização.
+- **Fase atual:** F14 — CONCLUÍDA (F00–F14 concluídas), publicada e instalada; próxima fase F15.
+- **Último ponto de parada:** F14/0.1.2 passou todos os portões: 602 Rust, 237 Vitest, 75 Playwright, 27 rede e 8 app real. Commit 05c0487, tags fase-14-ok/v0.1.2 e PR #5 no GitHub. Release 0.1.2 publicada com instaladores Windows/Linux assinados; Reverb do PC atualizado para 0.1.2 com os dados preservados.
 - **Pendências humanas abertas:** nenhuma impeditiva; Jamendo Client ID opcional não fornecido, integração real pode ser configurada depois.
-- **Pendência técnica:** publicar versão 0.1.2 e instalar a atualização autorizada; próxima fase de implementação é F15.
+- **Pendência técnica:** nenhuma nesta tarefa; próxima fase de implementação é F15.
 
 ## Ambiente (preenchido na F00, 2026-10-01)
 
@@ -76,7 +76,10 @@
 - **Rodada final 0.1.2 — rede:** npm run verify:net OK, 27 testes reais, aproximadamente 172.6 s (log completo). Archive/Bandcamp/SoundCloud verdes, incluindo T6 pelo pipeline e provável lossless. Jamendo T9 N/A: Client ID não fornecido; usuário confirmou prosseguir com a etapa que explicitava Jamendo opcional sem chave. App real em execução com dados isolados.
 
 - **Portão final:** verify 979,4 s (602 Rust/237 Vitest), navegador 75 em 1,2 min, rede 27, app real 8 testes/5 specs em 454,3 s incluindo builds; sessão nativa 151 s. Todos verdes nas fontes finais 0.1.2. App confirma FLAC lossless, WAV pcm_f32le/22,05 kHz inconclusivo, persistência e PNG 800×300. FFmpeg foi atualizado automaticamente para 20261002T225919Z durante o app; testes espectrais de ruído original e MP3 128/320 repetidos e verdes com essa versão, sem alterações de código ou asserções.
-- **Commit/tag:** feat(F14): fontes gratuitas e verificador lossless; branch codex/f14-sources; tags fase-14-ok e v0.1.2. Publicação/instalação em execução.
+- **Commit/tag:** 05c0487 — feat(F14): fontes gratuitas e verificador lossless; branch codex/f14-sources; tags fase-14-ok e v0.1.2; PR #5 (base codex/f13-quality), https://github.com/Magonitte/reverb/pull/5.
+
+- **Publicação:** workflow Release 37085679842 verde no commit 05c0487: Windows 13m14s, Ubuntu 8m16s. https://github.com/Magonitte/reverb/releases/tag/v0.1.2 pública, com NSIS, AppImage, DEB, assinaturas e latest.json. As versões antigas foram mantidas.
+- **Instalação verificada:** atualizador do Reverb instalado confirmou 0.1.1 → 0.1.2, baixou/verificou assinatura e instalou (código 0). Autoteste do executável em C:/Users/Jean Carlos de Souza/AppData/Local/Reverb/reverb.exe: version=0.1.2, ok=true, portable=false. SHA-256 4EFCB7A9E3AE414763540F3CC6BC4B05666F6F2312FCDB3871DB4338110A1086. Banco real preservado: hashes idênticos antes/depois para library, jobs e kv (0 itens de biblioteca, 3 jobs concluídos, 8 registros kv). Relatórios locais .f14-installed-selftest.log, .f14-install-report.log e .f14-before/after-install.log. App real e testes usaram dados temporários isolados; a instalação manteve o diretório original de dados.
 
 ### F13 — Qualidade avançada
 
