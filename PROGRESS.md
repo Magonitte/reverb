@@ -6,9 +6,9 @@
 ## Situação atual
 
 - **Fase atual:** F15 — CONCLUÍDA (F00–F15 concluídas; F16 não iniciada).
-- **Último ponto de parada:** F15/0.1.3 passou os quatro portões: 624 Rust, 239 Vitest, 79 Playwright, 29 rede e 9 testes no app real. Commit dff41eb, tags fase-15-ok/v0.1.3 e PR #6. Release Windows/Linux publicada; Reverb do PC atualizado para 0.1.3, autoteste verde e hashes das sete tabelas idênticos antes/depois.
+- **Último ponto de parada:** correções pós-F15/0.1.4 entregues: 625 Rust, 247 Vitest, 82 Playwright, 29 rede e 11 testes no app real. PR #7 integrada à main, tag v0.1.4, release assinada Windows/Linux e PC atualizado para 0.1.4. Atualizador e formulário conferidos na instalação final; F16 não iniciada.
 - **Pendências humanas abertas:** nenhuma impeditiva; Jamendo Client ID e credenciais Spotify opcionais não fornecidos. Spotify T12 N/A autorizado, sem acesso real de conta validado.
-- **Pendência técnica:** correções pós-F15 solicitadas em Seguir artista e Atualizações, em validação para 0.1.4. F16 não iniciada.
+- **Pendência técnica:** nenhuma nas correções pós-F15. F16 não iniciada.
 
 ## Ambiente (preenchido na F00, 2026-10-01)
 
@@ -46,7 +46,7 @@
 
 ## Correções pós-F15 — 0.1.4
 
-- **Status:** testes concluídos; publicação/instalação em andamento (2026-10-03).
+- **Status:** CONCLUÍDA (2026-10-03).
 - **Escopo autorizado:** abrir/testar Seguir artista, corrigir comportamento e aparência, oferecer atualização manual/automática do FFmpeg; autorização anterior de envio ao GitHub e atualização do PC mantida.
 - **Diagnóstico no app instalado:** quatro checkboxes sem texto visível; resultados sem destaque de seleção; FFmpeg com atualização disponível sem ação manual.
 - **Correções:** formulário e catálogo reorganizados, tipos com texto visível, busca por Enter, pasta/perfil, persistência separada da consulta; atualização individual e automática com progresso/erro; cache de disponibilidade corrigido.
@@ -56,7 +56,10 @@
 - **Portão final:** verify OK (161,7 s): 625 Rust/247 Vitest, TypeScript/lint/i18n/IPC/build/bindings/segredos verdes; e2e 82 verdes (1,2 min); verify:net 29 verdes na segunda rodada; e2e:app 11 testes/8 specs verdes (5 min 31 s de sessão). Logs locais .f15-fix-final-verify4.log, .f15-fix-final-e2e.log, .f15-fix-final-net2.log e .f15-fix-final-app.log.
 - **Inspeção visual:** diálogos e discografia nos temas claro/escuro; tipos, variantes, perfil e pasta visíveis com rodapé fixo. Fluxo nativo exercitou todas as opções, persistência e edição, consulta real do catálogo e atualização manual do Reverb com verificação automática desligada. Nenhuma base visual original foi alterada.
 - **Proteção de dados:** cadastro e downloads testados em base temporária. Instância instalada encerrada somente após confirmar três jobs concluídos e nenhum pendente; nenhuma tabela do usuário usada nos testes de alteração.
-- **Publicação/PC:** pendentes de release assinada 0.1.4.
+- **Publicação:** commit a1bae54, PR #7 integrada no commit c1fbeac; tag v0.1.4 e release assinada Windows/Linux. CI da PR verde nas duas plataformas; execução pós-merge apresentou falha transitória no teclado J de Review.test.tsx, sem alteração de código/asserções, e a repetição integral do job Windows passou (verify, e2e, build e autoteste). CI final da main verde em Windows/Linux: execução 37105890879.
+- **PC:** atualizador da instalação anterior detectou 0.1.4 e instalou com saída 0; autoteste confirmou versão 0.1.4, modo instalado e pasta correta. Sete tabelas idênticas antes/depois da instalação. Após reabrir e atualizar FFmpeg, configurações e seis tabelas de dados continuaram idênticas; apenas o cache kv das ferramentas mudou, conforme esperado.
+- **FFmpeg real:** core atualizou 20261001T193014Z para 20261002T225919Z, incluindo download, checksum, extração e teste de execução; interface mostra N-127117-g98e92563a3-20261002 como Atualizado e oferece Reverter.
+- **Conferência instalada:** texto de cada opção de artista e destino visível, sem cadastrar artista no banco real; botão Verificar atualização do Reverb testado visualmente e retornou Atualizado. App deixado aberto em Configurações → Atualizações.
 
 ## Registro das fases
 
