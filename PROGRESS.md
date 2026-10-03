@@ -6,7 +6,7 @@
 ## Situação atual
 
 - **Fase atual:** F15 — CONCLUÍDA (F00–F15 concluídas; F16 não iniciada).
-- **Último ponto de parada:** revisão da Biblioteca concluída na branch `codex/library-ux-import-details`: 627 Rust, 256 Vitest, 84 Playwright e 12 testes no app real aprovados. Importação de arquivo/pasta, detalhes dos catálogos com imagem e persistência de tags confirmados. Release 0.1.5 em preparação para entrega pelo atualizador; instalada anteriormente: 0.1.4. F16 não iniciada.
+- **Último ponto de parada:** Biblioteca revisada e release assinada 0.1.5 publicada/instalada pelo atualizador: 627 Rust, 256 Vitest, 84 Playwright e 12 testes nativos da revisão aprovados. CI e release Windows/Linux aprovadas. Detecção automática de 0.1.5 na instalação 0.1.4, instalação, ausência de nova atualização e interface final confirmadas; banco preservado. PR #8 aberto, merge aguardando autorização explícita por bloqueio da revisão automática. F16 não iniciada.
 - **Pendências humanas abertas:** nenhuma impeditiva; Jamendo Client ID e credenciais Spotify opcionais não fornecidos. Spotify T12 N/A autorizado, sem acesso real de conta validado.
 - **Pendência técnica:** nenhuma nas correções pós-F15. F16 não iniciada.
 
@@ -25,12 +25,16 @@
 
 ## Entrega instalável da Biblioteca — 0.1.5
 
-- **Status:** EM ANDAMENTO (2026-10-03).
+- **Status:** CONCLUÍDA (2026-10-03); integração do PR à main separadamente pendente de autorização.
 - Diagnóstico: PR #8 com CI Windows/Linux aprovada, mas sem release; aplicativo instalado e manifesto `latest.json` ainda em 0.1.4. O atualizador não podia oferecer as mudanças da branch.
 - Consulta no aplicativo instalado confirmou "Atualizado", sem erro. Manifesto anterior com plataforma Windows e assinatura presentes. A opção automática apenas verifica/avisa, conforme o texto da interface; instalar exige a ação de atualização.
 - Preparação da release 0.1.5 e validação da atualização assinada de 0.1.4 para 0.1.5, preservando dados e conferindo a Biblioteca instalada.
 - Backup SQLite consistente dos dados locais criado antes da atualização. Revalidação com compilação limitada a um processo após esgotamento de memória ao executar compilação e testes de interface simultaneamente.
 - Portões finais da 0.1.5: 627 Rust, 256 Vitest, 84 Playwright aprovados; tipos, lint, i18n, IPC, build, fmt, clippy, bindings e segredos aprovados. Teste de logs repetido com `RUST_LOG=info`, pois a sessão herdava `warn` e ocultava o evento esperado.
+- Commit de versão `c51017d`, tag `v0.1.5`; CI `37117227717` e release `37117226679` aprovadas nos dois sistemas. Instaladores e assinaturas Windows/Linux, manifesto completo e assinatura Windows correspondente conferidos.
+- Instalação 0.1.4 confirmou `available=true, version=0.1.5`; aviso automático ao iniciar e oferta no cartão de Atualizações conferidos. A mesma rotina do atualizador (`--headless-update-install`) baixou/verificou/instalou e saiu com código 0. Executável instalado e autoteste em 0.1.5; nova consulta retornou `available=false`.
+- Banco local comparado antes/depois da instalação: 14/14 tabelas idênticas por contagem/hash; diretório de dados mantido. Biblioteca final aberta na instalação do usuário e layout revisado confirmado.
+- Merge do PR #8 bloqueado pela revisão automática por falta de autorização explícita para alterar a main. Branch e release entregues; não foi tentado contornar o bloqueio.
 
 ## Ambiente (preenchido na F00, 2026-10-01)
 
