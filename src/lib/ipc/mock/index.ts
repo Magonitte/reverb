@@ -1,4 +1,18 @@
 import {
+  mockImportAnalyze,
+  mockImportEnqueue,
+  mockArtistFollow,
+  mockArtistsFollowed,
+  mockArtistUpdate,
+  mockArtistUnfollow,
+  mockArtistReleases,
+  mockArtistsCheck,
+  mockMissingDownload,
+  resetMockCollection,
+} from "./collection";
+import type { ArtistOptions } from "@/bindings/ArtistOptions";
+import type { ImportSelection } from "@/bindings/ImportSelection";
+import {
   mockUpgradeScan,
   mockUpgradeEnqueue,
   mockProviderTest,
@@ -86,6 +100,7 @@ import {
 import { mockAppRestart, mockUpdaterCheck, mockUpdaterInstall } from "./updater";
 
 export { mockBus } from "./bus";
+export { resetMockCollection };
 export { mockCalls, resetMockMedia, setMockClipboard } from "./media";
 export { resetMockQueue } from "./queue";
 export { applyScenario, scenarioFromLocation, startMock } from "./scenarios";
@@ -94,6 +109,19 @@ export { resetMockTools, seedMockTool, seedMockToolVersions } from "./tools";
 export { resetMockUpdater, setMockUpdaterMode } from "./updater";
 
 const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
+  import_analyze: (a) => mockImportAnalyze(a?.url as string),
+  import_enqueue: (a) => mockImportEnqueue(a?.selection as ImportSelection),
+  artists_search: () => [{ id: "6160", name: "Rick Astley", picture: null, fans: 100000 }],
+  artist_follow: (a) =>
+    mockArtistFollow(a?.providerArtistId as string, a?.options as ArtistOptions),
+  artist_update: (a) => mockArtistUpdate(a?.id as string, a?.options as ArtistOptions),
+  artist_unfollow: (a) => mockArtistUnfollow(a?.id as string),
+  artists_followed: () => mockArtistsFollowed(),
+  artist_releases: (a) => mockArtistReleases(a?.id as string),
+  artists_check_now: () => mockArtistsCheck(),
+  missing_list: (a) =>
+    mockArtistReleases(a?.artistId as string).filter((r) => r.monitored && r.present < r.total),
+  missing_download: (a) => mockMissingDownload(a?.releaseIds as string[]),
   verify_lossless: (args) => {
     mockCalls.push({ cmd: "verify_lossless", args });
     return {

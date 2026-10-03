@@ -1063,6 +1063,7 @@ async fn enqueue_valida_a_entrada() {
     assert_eq!(bad_profile.kind(), "invalid");
 }
 
+mod collection;
 mod metadata;
 mod postprocess;
 mod sync;

@@ -155,8 +155,19 @@ pub fn run() {
                 sink.clone(),
             );
             // Core background services require the Tauri Tokio runtime during startup.
+            let imports = reverb_core::import::ImportService::new(
+                db.clone(),
+                settings.clone(),
+                backend.clone(),
+                queue.clone(),
+                sink.clone(),
+            );
+            syncs.with_imports(imports.clone());
+            let artists =
+                reverb_core::artists::ArtistService::new(db.clone(), imports.clone(), sink.clone());
             tauri::async_runtime::block_on(async {
                 syncs.start(background_cancel.clone());
+                artists.start(background_cancel.clone(), backend.clone());
             });
             tauri::async_runtime::spawn(reverb_core::library::watch::run(
                 db.clone(),
@@ -173,6 +184,8 @@ pub fn run() {
                 tools_startup: tokio::sync::Mutex::new(Some(tools_startup)),
                 queue,
                 syncs,
+                imports,
+                artists,
                 background_cancel,
                 backend,
                 metadata,
@@ -221,6 +234,17 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            commands::collection::import_analyze,
+            commands::collection::import_enqueue,
+            commands::collection::artists_search,
+            commands::collection::artist_follow,
+            commands::collection::artist_update,
+            commands::collection::artist_unfollow,
+            commands::collection::artists_followed,
+            commands::collection::artist_releases,
+            commands::collection::artists_check_now,
+            commands::collection::missing_list,
+            commands::collection::missing_download,
             commands::app_info,
             commands::quality::upgrade_scan,
             commands::quality::upgrade_enqueue,

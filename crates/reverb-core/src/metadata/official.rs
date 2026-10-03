@@ -401,6 +401,26 @@ pub async fn find_official(
         return None;
     }
     let tolerance = DurationTolerance::Clip;
+    find_subject(backend, &query, &video.id, isrc, tolerance, cancel).await
+}
+
+/// Imported catalog recordings use the track tolerance and all source artists.
+pub async fn find_imported(
+    backend: &dyn DownloadBackend,
+    query: &Subject,
+    isrc: Option<&str>,
+    cancel: &CancellationToken,
+) -> Option<OfficialFound> {
+    find_subject(backend, query, "", isrc, DurationTolerance::Normal, cancel).await
+}
+async fn find_subject(
+    backend: &dyn DownloadBackend,
+    query: &Subject,
+    skip_id: &str,
+    isrc: Option<&str>,
+    tolerance: DurationTolerance,
+    cancel: &CancellationToken,
+) -> Option<OfficialFound> {
     let isrc = isrc.and_then(normalize_isrc);
 
     if let Some(isrc) = isrc.as_deref() {
@@ -409,7 +429,7 @@ pub async fn find_official(
             .await
             .ok()
             .unwrap_or_default();
-        let infos = analyze_top(backend, &results, &video.id, cancel).await;
+        let infos = analyze_top(backend, &results, skip_id, cancel).await;
         let officials: Vec<VideoInfo> = infos
             .iter()
             .filter(|info| info.is_official_track)
@@ -420,7 +440,7 @@ pub async fn find_official(
             return Some(found(info, 1.0, Some(isrc), OfficialVia::Isrc));
         }
         if officials.len() > 1 {
-            if let Some((info, score)) = choose(&query, officials, tolerance, true, true) {
+            if let Some((info, score)) = choose(query, officials, tolerance, true, true) {
                 return Some(found(info, score, Some(isrc), OfficialVia::Isrc));
             }
         }
@@ -431,16 +451,16 @@ pub async fn find_official(
         None => query.title.clone(),
     };
     for (source, only_official) in [
-        (SearchSource::YtMusic, false),
-        (SearchSource::Youtube, true),
+        (SearchSource::YtMusic, true),
+        (SearchSource::Youtube, false),
     ] {
         let results = backend
             .search(source, &text, TOP, cancel)
             .await
             .ok()
             .unwrap_or_default();
-        let infos = analyze_top(backend, &results, &video.id, cancel).await;
-        if let Some((info, score)) = choose(&query, infos, tolerance, false, only_official) {
+        let infos = analyze_top(backend, &results, skip_id, cancel).await;
+        if let Some((info, score)) = choose(query, infos, tolerance, false, only_official) {
             // O ISRC conhecido é da gravação de origem; esta faixa pode ser de outra versão.
             return Some(found(info, score, None, OfficialVia::Text));
         }

@@ -21,7 +21,10 @@ pub async fn verify_lossless(
 }
 #[tauri::command]
 pub fn open_source_url(app: AppHandle, url: String) -> Result<(), CoreError> {
-    if reverb_core::sources::matches(&url).is_none() {
+    if reverb_core::sources::matches(&url).is_none()
+        && reverb_core::import::classify(&url).is_none()
+        && url != "https://developer.spotify.com/dashboard"
+    {
         return Err(CoreError::invalid("Unsupported source URL"));
     }
     app.opener()

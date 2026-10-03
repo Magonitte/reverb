@@ -1,0 +1,31 @@
+{
+  "items": [
+    {
+      "item": {
+        "id": "TRACK1",
+        "name": "Song",
+        "artists": [
+          {
+            "name": "Artist"
+          }
+        ],
+        "album": {
+          "name": "Album",
+          "release_date": "1987-01-01",
+          "images": [
+            {
+              "url": "https://image.example/cover"
+            }
+          ]
+        },
+        "duration_ms": 214000,
+        "external_ids": {
+          "isrc": "GBARL9300135"
+        },
+        "track_number": 2,
+        "disc_number": 1
+      }
+    }
+  ],
+  "next": null
+}

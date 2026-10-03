@@ -17,6 +17,8 @@ pub struct AppState {
     pub tools_startup: tokio::sync::Mutex<Option<tauri::async_runtime::JoinHandle<()>>>,
     pub queue: QueueService,
     pub syncs: Arc<reverb_core::sync::SyncService>,
+    pub imports: Arc<reverb_core::import::ImportService>,
+    pub artists: Arc<reverb_core::artists::ArtistService>,
     pub background_cancel: tokio_util::sync::CancellationToken,
     /// Análise e busca (F07) usam o mesmo backend dos downloads.
     pub backend: Arc<dyn DownloadBackend>,

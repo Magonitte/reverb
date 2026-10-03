@@ -605,7 +605,16 @@
     "provider_api": "O provedor recusou a consulta. Confira as credenciais e restrições de acesso à API.",
     "provider_key": "Configure a chave do provedor primeiro.",
     "bandcamp_restricted": "Este lançamento exige compra ou e-mail. Abra no navegador.",
-    "jamendo_key": "Configure o Client ID do Jamendo em Configurações › Metadados."
+    "jamendo_key": "Configure o Client ID do Jamendo em Configurações › Metadados.",
+    "spotify_credentials_missing": "Configure suas credenciais do Spotify em Configurações › Metadados.",
+    "spotify_playlist_restricted": "O Spotify restringiu esta playlist. O acesso depende das permissões e do modo do seu aplicativo; alguns endpoints exigem autenticação do proprietário ou colaborador.",
+    "spotify_auth": "O Spotify recusou o acesso. Confira credenciais e permissões.",
+    "spotify_not_found": "Álbum ou faixa não encontrado no Spotify.",
+    "deezer_not_found": "Coleção não encontrada no Deezer. Pode ser privada ou ter sido removida.",
+    "import_response": "A fonte devolveu uma resposta inválida.",
+    "import_api": "Não foi possível consultar a fonte.",
+    "import_expired": "Analise a coleção novamente antes de baixar.",
+    "import_url": "O link curto não aponta para uma coleção válida."
   },
   "notices": {
     "potEnabled": "O YouTube pediu verificação: o Reverb ligou o provedor de PO token.",
@@ -787,5 +796,74 @@
       "inconclusive": "Resultado inconclusivo"
     }
   },
-  "sourcesOpen": "Abrir no navegador"
+  "sourcesOpen": "Abrir no navegador",
+  "imports": {
+    "summary": "Importação {{provider}} · {{count}} faixas",
+    "hint": "Encontradas são selecionadas. Marque as duvidosas somente após revisar.",
+    "filter": "Filtrar casamento",
+    "all": "Todas",
+    "ok": "Encontrada",
+    "review": "Revisar",
+    "none": "Não encontrada",
+    "selectOk": "Selecionar encontradas",
+    "match": "Casamento",
+    "synced": "Sincronização criada",
+    "spotifyGuide": "Como configurar o Spotify",
+    "spotifyDashboard": "Abrir painel do Spotify",
+    "step1": "Entre no painel de desenvolvedores do Spotify com sua conta.",
+    "step2": "Crie um aplicativo e habilite Web API.",
+    "step3": "Copie seu Client ID e Client Secret para os campos acima e salve.",
+    "step4": "Teste a conexão. O acesso depende das permissões do aplicativo; playlists restritas podem estar indisponíveis.",
+    "selection": "Seleção"
+  },
+  "artists": {
+    "views": "Visões da biblioteca",
+    "tabs": {
+      "library": "Biblioteca",
+      "artists": "Artistas seguidos",
+      "missing": "Faltando"
+    },
+    "follow": "Seguir artista",
+    "check": "Verificar agora",
+    "empty": "Nenhum artista seguido. Busque um artista para acompanhar sua discografia.",
+    "counts": "{{total}} lançamentos · {{complete}} completos",
+    "edit": "Editar acompanhamento",
+    "unfollow": "Deixar de seguir",
+    "downloadMissing": "Baixar faltantes",
+    "search": "Buscar artista",
+    "fans": "{{count}} fãs",
+    "existing": "O que baixar agora",
+    "new": "Lançamentos novos",
+    "existingOptions": {
+      "all": "Toda a discografia",
+      "latest": "Último lançamento",
+      "none": "Só acompanhar"
+    },
+    "newOptions": {
+      "all": "Baixar automaticamente",
+      "notify": "Avisar e mostrar em Faltando",
+      "none": "Não monitorar"
+    },
+    "types": "Tipos de lançamento",
+    "releaseTypes": {
+      "album": "Álbuns",
+      "ep": "EPs",
+      "single": "Singles"
+    },
+    "excludeVariants": "Excluir ao vivo, remix e edições duplicadas",
+    "states": {
+      "complete": "Completo · {{present}} de {{total}}",
+      "incomplete": "Incompleto · {{present}} de {{total}}",
+      "absent": "Ausente · 0 de {{total}}",
+      "unmonitored": "Não monitorado"
+    },
+    "newRelease": "Novo lançamento de {{artist}}: {{title}}",
+    "qualityTarget": "Qualidade-alvo da fonte",
+    "targetOff": "Desligado",
+    "autoUpgrade": "Melhorar qualidade automaticamente",
+    "interval": "Verificar artistas a cada (horas)",
+    "incomplete": "{{count}} incompletos",
+    "nextCheck": "Próxima verificação: {{date}}",
+    "pendingCheck": "pendente"
+  }
 }

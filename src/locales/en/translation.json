@@ -605,7 +605,16 @@
     "provider_api": "The provider rejected the request. Check credentials and API access restrictions.",
     "provider_key": "Configure the provider key first.",
     "bandcamp_restricted": "This release requires a purchase or email. Open it in your browser.",
-    "jamendo_key": "Configure your Jamendo Client ID in Settings › Metadata."
+    "jamendo_key": "Configure your Jamendo Client ID in Settings › Metadata.",
+    "spotify_credentials_missing": "Configure Spotify credentials in Settings › Metadata.",
+    "spotify_playlist_restricted": "Spotify restricted this playlist. Access depends on your application permissions and mode; some endpoints require owner or collaborator authentication.",
+    "spotify_auth": "Spotify denied access. Check credentials and permissions.",
+    "spotify_not_found": "Album or track not found on Spotify.",
+    "deezer_not_found": "Deezer collection not found. It may be private or removed.",
+    "import_response": "The source returned an invalid response.",
+    "import_api": "Could not query the source.",
+    "import_expired": "Analyze the collection again before downloading.",
+    "import_url": "The short link does not point to a valid collection."
   },
   "notices": {
     "potEnabled": "YouTube asked for verification: Reverb enabled the PO token provider.",
@@ -787,5 +796,74 @@
       "inconclusive": "Inconclusive result"
     }
   },
-  "sourcesOpen": "Open in browser"
+  "sourcesOpen": "Open in browser",
+  "imports": {
+    "summary": "{{provider}} import · {{count}} tracks",
+    "hint": "Matched tracks are selected. Select uncertain matches only after reviewing.",
+    "filter": "Filter matches",
+    "all": "All",
+    "ok": "Matched",
+    "review": "Review",
+    "none": "Not found",
+    "selectOk": "Select matched",
+    "match": "Match",
+    "synced": "Synchronization created",
+    "spotifyGuide": "How to configure Spotify",
+    "spotifyDashboard": "Open Spotify dashboard",
+    "step1": "Sign in to the Spotify developer dashboard with your account.",
+    "step2": "Create an application and enable Web API.",
+    "step3": "Copy your Client ID and Client Secret into the fields above and save.",
+    "step4": "Test the connection. Access depends on application permissions; restricted playlists may be unavailable.",
+    "selection": "Selection"
+  },
+  "artists": {
+    "views": "Library views",
+    "tabs": {
+      "library": "Library",
+      "artists": "Followed artists",
+      "missing": "Missing"
+    },
+    "follow": "Follow artist",
+    "check": "Check now",
+    "empty": "No followed artists. Search for an artist to track their discography.",
+    "counts": "{{total}} releases · {{complete}} complete",
+    "edit": "Edit monitoring",
+    "unfollow": "Unfollow",
+    "downloadMissing": "Download missing",
+    "search": "Search artist",
+    "fans": "{{count}} fans",
+    "existing": "Download now",
+    "new": "New releases",
+    "existingOptions": {
+      "all": "Full discography",
+      "latest": "Latest release",
+      "none": "Monitor only"
+    },
+    "newOptions": {
+      "all": "Download automatically",
+      "notify": "Notify and show as missing",
+      "none": "Do not monitor"
+    },
+    "types": "Release types",
+    "releaseTypes": {
+      "album": "Albums",
+      "ep": "EPs",
+      "single": "Singles"
+    },
+    "excludeVariants": "Exclude live, remix and duplicate editions",
+    "states": {
+      "complete": "Complete · {{present}} of {{total}}",
+      "incomplete": "Incomplete · {{present}} of {{total}}",
+      "absent": "Absent · 0 of {{total}}",
+      "unmonitored": "Not monitored"
+    },
+    "newRelease": "New release by {{artist}}: {{title}}",
+    "qualityTarget": "Source quality target",
+    "targetOff": "Off",
+    "autoUpgrade": "Improve quality automatically",
+    "interval": "Check artists every (hours)",
+    "incomplete": "{{count}} incomplete",
+    "nextCheck": "Next check: {{date}}",
+    "pendingCheck": "pending"
+  }
 }

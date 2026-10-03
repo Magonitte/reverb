@@ -17,6 +17,7 @@ pub struct SyncService {
     ops: tokio::sync::Mutex<()>,
     clock: Arc<dyn Fn() -> i64 + Send + std::marker::Sync>,
     stop: CancellationToken,
+    imports: std::sync::OnceLock<Arc<crate::import::ImportService>>,
 }
 
 pub fn is_due(sync: &Sync, now: i64) -> bool {
@@ -65,11 +66,15 @@ impl SyncService {
             ops: tokio::sync::Mutex::new(()),
             clock,
             stop: CancellationToken::new(),
+            imports: std::sync::OnceLock::new(),
         })
     }
     fn changed(&self, id: &str) {
         self.sink
             .emit("sync://updated", serde_json::json!({"id":id}));
+    }
+    pub fn with_imports(&self, imports: Arc<crate::import::ImportService>) {
+        let _ = self.imports.set(imports);
     }
     pub async fn list(&self) -> CoreResult<Vec<Sync>> {
         self.db.call(|conn| repo::list(conn)).await
@@ -106,6 +111,21 @@ impl SyncService {
             request.max_items,
         )?;
         let _ops = self.ops.lock().await;
+        if crate::import::classify(&request.url).is_some() {
+            let imports = self.imports.get().ok_or_else(|| {
+                CoreError::coded("import_unavailable", "Import service unavailable")
+            })?;
+            let collection = imports.fetch(&request.url).await?;
+            let id = uuid::Uuid::new_v4().to_string();
+            let saved = id.clone();
+            let now = (self.clock)();
+            let sync=self.db.call(move|conn| {
+                conn.execute("INSERT INTO syncs(id,provider,url,playlist_id,title,thumbnail,profile_id,output_dir,interval_hours,max_items,remove_deleted,write_m3u,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",params![saved,collection.provider,collection.url,collection.id,request.title.unwrap_or(collection.title),collection.cover,request.profile_id,request.output_dir,request.interval_hours,request.max_items,request.remove_deleted,request.write_m3u,now])?;
+                repo::get(conn,&saved)
+            }).await?;
+            self.changed(&id);
+            return Ok(sync);
+        }
         let info = self.analyze(&request.url).await?;
         let custom = request
             .title
@@ -201,6 +221,9 @@ impl SyncService {
             .is_some_and(|result| result.running)
         {
             return Err(CoreError::coded("busy", "Playlist is synchronizing"));
+        }
+        if sync.provider != "youtube" {
+            return self.run_external(&sync).await;
         }
         let info = match self.analyze(&sync.url).await {
             Ok(info) => info,
@@ -326,6 +349,144 @@ impl SyncService {
         self.sink.emit("library://changed", serde_json::json!({}));
         self.finalize_locked(id).await?;
         Ok(self.get(id).await?.last_result.unwrap_or(result))
+    }
+    async fn run_external(&self, sync: &Sync) -> CoreResult<SyncResult> {
+        let imports = self
+            .imports
+            .get()
+            .ok_or_else(|| CoreError::coded("import_unavailable", "Import service unavailable"))?;
+        let collection = imports.fetch(&sync.url).await?;
+        let current = self.items(&sync.id).await?;
+        if collection.checksum.is_some()
+            && sync
+                .last_result
+                .as_ref()
+                .is_some_and(|r| r.checksum == collection.checksum && r.failed == 0)
+            && current.iter().all(|i| {
+                i.state == "removed"
+                    || i.library_id.is_some()
+                    || matches!(i.job_status.as_deref(), Some("queued" | "running" | "done"))
+            })
+        {
+            let result = SyncResult {
+                checksum: collection.checksum,
+                ..Default::default()
+            };
+            self.save_result(&sync.id, result.clone()).await?;
+            return Ok(result);
+        }
+        let tracks = collection
+            .tracks
+            .iter()
+            .take(sync.max_items.unwrap_or(u32::MAX) as usize)
+            .collect::<Vec<_>>();
+        let mut result = SyncResult {
+            checksum: collection.checksum.clone(),
+            running: true,
+            ..Default::default()
+        };
+        let mut seen = std::collections::HashSet::new();
+        for (position, track) in tracks.into_iter().enumerate() {
+            if !seen.insert(track.id.clone()) {
+                result.duplicates.push(track.id.clone());
+                continue;
+            }
+            let old = current
+                .iter()
+                .find(|i| i.source_id == track.id && i.state == "present");
+            let mut job = old.and_then(|i| i.job_id.clone());
+            let mut library = old.and_then(|i| i.library_id);
+            let saved = sync.id.clone();
+            let source = track.id.clone();
+            let stored=self.db.call(move|conn|{use rusqlite::OptionalExtension;Ok(conn.query_row("SELECT matched_video_id,match_confidence FROM sync_items WHERE sync_id=? AND source_id=?",params![saved,source],|r|Ok((r.get::<_,Option<String>>(0)?,r.get::<_,Option<f64>>(1)?))).optional()?)}).await?;
+            let matched = if let Some((Some(video), confidence)) = stored {
+                crate::import::MatchResult {
+                    video_id: Some(video),
+                    confidence: confidence.unwrap_or(0.),
+                    via: crate::metadata::official::OfficialVia::Isrc,
+                    bucket:
+                        if confidence.unwrap_or(0.) >= self.settings.get().confidence_auto_apply {
+                            "ok"
+                        } else {
+                            "review"
+                        }
+                        .into(),
+                }
+            } else {
+                imports.match_track(track).await?
+            };
+            if library.is_none() {
+                if let Some(video) = matched.video_id.clone() {
+                    let profile = sync.profile_id.clone();
+                    library = self
+                        .db
+                        .call(move |conn| repo::library_match(conn, "youtube", &video, &profile))
+                        .await?;
+                }
+            }
+            if old.is_none() {
+                result.added += 1;
+            }
+            if library.is_none()
+                && !old
+                    .is_some_and(|i| matches!(i.job_status.as_deref(), Some("queued" | "running")))
+            {
+                if matched.bucket == "ok" {
+                    let item = crate::import::ImportedItem {
+                        track: track.clone(),
+                        matched: matched.clone(),
+                    };
+                    match imports
+                        .enqueue_item(
+                            &item,
+                            &sync.profile_id,
+                            sync.output_dir.clone(),
+                            Some(PlaylistCtx {
+                                playlist_title: sync.title.clone(),
+                                playlist_id: collection.id.clone(),
+                                index: position as u32 + 1,
+                                sync_id: Some(sync.id.clone()),
+                            }),
+                        )
+                        .await
+                    {
+                        Ok(Some(j)) => job = Some(j.id),
+                        Ok(None) => {}
+                        Err(e) => {
+                            result.failed += 1;
+                            result.error = Some(e.to_string());
+                        }
+                    }
+                } else {
+                    result.failed += 1;
+                }
+            }
+            let saved = sync.id.clone();
+            let track = track.clone();
+            let now = (self.clock)();
+            self.db.call(move|conn|{conn.execute("INSERT INTO sync_items(sync_id,source_id,position,title,state,matched_video_id,match_confidence,meta_json,job_id,library_id,first_seen_at) VALUES(?,?,?,?,'present',?,?,?,?,?,?) ON CONFLICT(sync_id,source_id) DO UPDATE SET position=excluded.position,state='present',removed_at=NULL,matched_video_id=excluded.matched_video_id,match_confidence=excluded.match_confidence,meta_json=excluded.meta_json,job_id=excluded.job_id,library_id=excluded.library_id",params![saved,track.id,position as u32+1,track.fields.title,matched.video_id,matched.confidence,serde_json::to_string(&track)?,job,library,now])?;Ok(())}).await?;
+        }
+        for item in current
+            .iter()
+            .filter(|i| i.state == "present" && !seen.contains(&i.source_id))
+        {
+            if let Some(job) = &item.job_id {
+                if matches!(item.job_status.as_deref(), Some("queued" | "running")) {
+                    self.queue.cancel(job).await?;
+                }
+            }
+            let saved = sync.id.clone();
+            let source = item.source_id.clone();
+            let library = item.library_id;
+            let remove = sync.remove_deleted;
+            let now = (self.clock)();
+            self.db.call(move|conn|{if remove {if let Some(id)=library{files::delete_tracks(conn,&[id])?;}}conn.execute("UPDATE sync_items SET state='removed',removed_at=? WHERE sync_id=? AND source_id=?",params![now,saved,source])?;Ok(())}).await?;
+            result.removed += 1;
+        }
+        self.refresh_names(sync).await?;
+        self.save_result(&sync.id, result.clone()).await?;
+        self.finalize_locked(&sync.id).await?;
+        Ok(self.get(&sync.id).await?.last_result.unwrap_or(result))
     }
     async fn save_result(&self, id: &str, result: SyncResult) -> CoreResult<()> {
         let saved = id.to_owned();

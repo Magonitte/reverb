@@ -15,7 +15,7 @@ fn request(url: &str) -> SyncCreate {
         write_m3u: true,
     }
 }
-async fn service(stack: &Stack) -> (QueueService, Arc<SyncService>) {
+pub(super) async fn service(stack: &Stack) -> (QueueService, Arc<SyncService>) {
     let heal = Arc::new(HealCoordinator::new(
         Arc::new(ToolsHeal::new(stack.tools.clone(), stack.settings.clone())),
         stack.db.clone(),

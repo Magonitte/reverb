@@ -1,3 +1,5 @@
+import { ArtistsPanel } from "@/components/ArtistsPanel";
+import { useSearchParams } from "react-router";
 import { TrimDialog } from "@/components/TrimDialog";
 import { LosslessDialog } from "@/components/LosslessDialog";
 import { UpgradePanel } from "@/components/UpgradePanel";
@@ -33,8 +35,34 @@ import { useLibraryStore } from "@/stores/library";
 import { useUiStore } from "@/stores/ui";
 
 type Confirmation = { kind: "clear" | "remove" | "trash"; ids: number[] };
+const LIBRARY_TABS = ["library", "artists", "missing"];
 
 export default function Library() {
+  const { t } = useTranslation();
+  const [params] = useSearchParams();
+  const [tab, setTab] = useState("library");
+  const active = params.has("follow") ? "artists" : tab;
+  return (
+    <>
+      <div className="mb-4 flex flex-wrap gap-2" role="group" aria-label={t("artists.views")}>
+        {LIBRARY_TABS.map((value) => (
+          <Button key={value} aria-pressed={active === value} onClick={() => setTab(value)}>
+            {t(`artists.tabs.${value}`)}
+          </Button>
+        ))}
+      </div>
+      {active === "library" ? (
+        <LibraryFiles />
+      ) : (
+        <>
+          <ScreenHeader title={t(`artists.tabs.${active}`)} />
+          <ArtistsPanel missingOnly={active === "missing"} />
+        </>
+      )}
+    </>
+  );
+}
+function LibraryFiles() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { items, total, artists, albums, query, loading, error, load, setQuery } =

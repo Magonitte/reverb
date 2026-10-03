@@ -20,7 +20,7 @@ pub fn eligible(item: &LibraryItem, available: f64) -> bool {
         && !item.missing
         && item.source_abr_kbps.is_some_and(|current| {
             current.is_finite()
-                && current < 200.0
+                && current >= 0.0
                 && available.is_finite()
                 && available >= current + 40.0
         })
@@ -32,7 +32,7 @@ pub async fn scan(
     cancel: &CancellationToken,
 ) -> CoreResult<Vec<UpgradeCandidate>> {
     let items=db.call(move|conn|{
-        let mut stmt=conn.prepare("SELECT id FROM library WHERE provider='youtube' AND source_abr_kbps<200 AND missing=0")?;
+        let mut stmt=conn.prepare("SELECT id FROM library WHERE provider='youtube' AND source_abr_kbps IS NOT NULL AND missing=0")?;
         let values=stmt.query_map([],|r|r.get::<_,i64>(0))?.collect::<Result<Vec<_>,_>>()?;
         values.into_iter().filter(|id|ids.as_ref().is_none_or(|ids|ids.contains(id))).map(|id|crate::library::get(conn,id)?.ok_or_else(||crate::CoreError::invalid("Missing item"))).collect::<CoreResult<Vec<_>>>()
     }).await?;

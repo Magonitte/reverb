@@ -1,6 +1,7 @@
 //! Núcleo do Reverb: Rust puro, sem dependência de Tauri (arquitetura §1).
 
 pub mod app_info;
+pub mod artists;
 pub mod artwork;
 pub mod backend;
 pub mod db;
@@ -8,6 +9,7 @@ pub mod desktop;
 pub mod error;
 pub mod events;
 pub mod exec;
+pub mod import;
 pub mod integration;
 pub mod library;
 pub mod logging;

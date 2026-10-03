@@ -5,10 +5,10 @@
 
 ## Situação atual
 
-- **Fase atual:** F14 — CONCLUÍDA (F00–F14 concluídas), publicada e instalada; próxima fase F15.
-- **Último ponto de parada:** F14/0.1.2 passou todos os portões: 602 Rust, 237 Vitest, 75 Playwright, 27 rede e 8 app real. Commit 05c0487, tags fase-14-ok/v0.1.2 e PR #5 no GitHub. Release 0.1.2 publicada com instaladores Windows/Linux assinados; Reverb do PC atualizado para 0.1.2 com os dados preservados.
-- **Pendências humanas abertas:** nenhuma impeditiva; Jamendo Client ID opcional não fornecido, integração real pode ser configurada depois.
-- **Pendência técnica:** nenhuma nesta tarefa; próxima fase de implementação é F15.
+- **Fase atual:** F15 — CONCLUÍDA (F00–F15 concluídas; F16 não iniciada).
+- **Último ponto de parada:** F15/0.1.3 passou os quatro portões: 624 Rust, 239 Vitest, 79 Playwright, 29 rede e 9 testes no app real. Código e documentação prontos para publicação. A instalação do PC ainda está em 0.1.2 até a publicação da nova versão.
+- **Pendências humanas abertas:** nenhuma impeditiva; Jamendo Client ID e credenciais Spotify opcionais não fornecidos. Spotify T12 N/A autorizado, sem acesso real de conta validado.
+- **Pendência técnica:** publicar 0.1.3, atualizar main no GitHub e conferir a atualização da instalação do PC.
 
 ## Ambiente (preenchido na F00, 2026-10-01)
 
@@ -45,6 +45,33 @@
 ---
 
 ## Registro das fases
+
+### F15 — Importação e coleção
+
+- **Status:** CONCLUÍDA
+- **Início / fim:** 2026-10-02 / 2026-10-03
+- **Autorizações:** continuar após F14, enviar ao GitHub e atualizar o app do PC ao concluir. Spotify T12 N/A autorizado pelo usuário; fixtures contratuais não equivalem a acesso real da conta.
+- **Tarefas:** [x] fontes e paginação · [x] casamento/ISRC · [x] comandos · [x] sync externa · [x] artistas · [x] faltantes · [x] qualidade-alvo · [x] UI/i18n/mock · [x] fixtures · [x] documentação · [x] quatro portões.
+- **Portão final (2026-10-03):** verify em 455,4 s, 624 Rust/239 Vitest; e2e 79 em 1,2 min; verify:net 29 verdes; e2e:app 9 testes/6 specs, sessão nativa 4 min 41 s. Mesmas fontes finais, dados temporários isolados, nenhuma falha final. Logs locais .f15-final-verify5.log, .f15-final-e2e4.log, .f15-final-net4.log e .f15-final-app3.log. Spotify T12 N/A autorizado, não contado como teste real executado.
+
+
+- **F15 verificação intermediária:** core e Tauri compilam, 92 comandos IPC consistentes, dois Vitest novos verdes. Parsers (7 casos de teste) verdes antes das últimas mudanças. Fixtures públicas Deezer gravadas; Spotify T12 N/A autorizado, fixtures sintéticas contratuais em http/spotify.
+- **F15 falhas/correções:** filtro deluxe perdeu parênteses na normalização; base agora extraída antes de norm_plain. Teste de sync tentava reexecutar com jobs ainda ativos; cenário passou a concluir a fila real e conferir metadados antes do checksum. TypeScript/ESLint corrigidos sem alterar requisitos; npm do PATH aponta instalação inacessível no sandbox, comandos de teste usam Node oficial no PATH e execução autorizada.
+- **F15 decisão Spotify:** documentação atual confirma /playlists/{id}/tracks depreciado e novo /items restrito a proprietário/colaborador autenticado. Revisão final em 2026-10-03 confirmou remoção do endpoint legado em fevereiro/2026: playlists agora usam /items, com parser track/item. Client Credentials mantido conforme E3; acesso proprietário/colaborador continua dependente das permissões reais. Restrição HTTP403/404 explicada na UI; funcionamento real Spotify não afirmado sem credenciais. Fontes: https://developer.spotify.com/documentation/web-api/reference/get-playlists-items e https://developer.spotify.com/documentation/web-api/references/changes/february-2026. Qualidade passa a aceitar melhorias acima de 200 kbps quando abaixo do alvo 256, preservando aumento mínimo de 40 kbps e nunca rebaixando.
+
+- **Rede intermediária:** T10 e T11 verdes: as 3 faixas de T10 com confiança 1,0; 3 jobs de Rick Astley, download de 1 e ISRC conferido na biblioteca e no arquivo. Spotify T12 N/A com consentimento do usuário.
+- **Regressão inicial:** 239 Vitest e quatro Playwright F15 verdes. Clippy apontou condicional colapsável, corrigida. Quatro snapshots da Biblioteca diferiram pela inclusão das abas; actual/diff claro e escuro inspecionados e só essas bases atualizadas. Capturas F15 nos dois temas inspecionadas, sem sobreposição. Rodada final completa em andamento.
+
+- **Portões finais parciais 0.1.3:** verify OK (479,8 s), 623 Rust/239 Vitest, 86 bindings e scan de segredos verdes. E2E OK: 79 Playwright, 1,3 min. Duas bases adicionais da vista de álbuns inspecionadas (actual/diff, ambos os temas) e atualizadas pela mesma inclusão de abas. Rodada concorrente anterior sofreu reinício de páginas; repetição serial integral passou sem alterar asserções. Rede e app nativo pendentes.
+
+- **Rede, diagnóstico:** primeira rodada falhou em T11 porque uma consulta de ISRC caiu no casamento por texto. Repetição isolada das mesmas asserções passou em 48,9 s. A suíte real inteira foi reiniciada com RUST_TEST_THREADS=1 para evitar concorrência entre instâncias independentes contra serviços públicos; concorrência de importação da produção permanece 3. Nenhum teste ignorado nem asserção reduzida.
+
+- **Portão rede final:** verify:net OK, 29 testes reais nas fontes 0.1.3, com RUST_TEST_THREADS=1. T10/T11 e todos os testes das fases anteriores verdes. Spotify T12 continua N/A autorizado; não contado como teste real executado. App nativo em execução com dados temporários isolados.
+
+- **Revisão final (2026-10-03):** endpoint Spotify de playlists atualizado para /items e wiremock correspondente mantido com as mesmas asserções. Os portões completos serão repetidos nesta revisão. Primeiro build nativo parou por falta de espaço (112); removidos 517 PDBs gerados em target, pareados com executáveis, liberando 32,15 GB. Código, executáveis e dados do usuário preservados.
+
+- **Documentação autorizada (2026-10-03):** README público, CONTRIBUTING, índice docs e guias de instalação/configuração/uso/desenvolvimento/arquitetura/diagnóstico criados; modelos GitHub de issue/PR incluídos. 50 links locais válidos, formatação conferida. LEIA-ME corrigido para o diretório real já registrado na F00; contratos técnicos do plano preservados.
+- **Diagnóstico T11/T13:** T11 refazia buscas após enfileirar, medindo resultados novos; importMatch/importSourceTrackId agora persistem no job, e o teste confere os três casamentos efetivamente enfileirados (ISRC e confiança mantidos). Primeiro T13 recebeu bot_check na primeira gravação do chart; teste passa a selecionar outra faixa da mesma coleção, preservando download/ISRC/asserts. Descoberto paralelismo aninhado de até 15 candidatos: consultas de importação agora compartilham três vagas, com teste de pico e cancelamento. Portões completos repetidos nessa revisão; nenhuma fase marcada concluída antecipadamente.
 
 ### F14 — Provedores extras e verificador lossless
 

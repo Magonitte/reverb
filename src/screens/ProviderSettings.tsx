@@ -5,6 +5,7 @@ import { api } from "@/lib/ipc/api";
 import { errorText } from "@/lib/errors";
 import { useSettingsStore } from "@/stores/settings";
 import { useUiStore } from "@/stores/ui";
+const GUIDE_STEPS = ["step1", "step2", "step3", "step4"];
 
 export function ProviderSettings() {
   const { t } = useTranslation();
@@ -51,6 +52,25 @@ export function ProviderSettings() {
                 : "quality.notConfigured",
             )}
           </h3>
+          {group.provider === "spotify" && (
+            <details className="text-sm text-fg-muted">
+              <summary>{t("imports.spotifyGuide")}</summary>
+              <ol className="mt-2 list-decimal space-y-2 pl-5">
+                {GUIDE_STEPS.map((key) => (
+                  <li key={key}>{t(`imports.${key}`)}</li>
+                ))}
+              </ol>
+              <Button
+                onClick={() =>
+                  void api
+                    .openSourceUrl("https://developer.spotify.com/dashboard")
+                    .catch((e) => toast({ message: errorText(t, e), tone: "error" }))
+                }
+              >
+                {t("imports.spotifyDashboard")}
+              </Button>
+            </details>
+          )}
           {group.fields.map((field) => (
             <Input
               key={field}

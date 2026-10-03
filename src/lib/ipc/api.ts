@@ -1,3 +1,9 @@
+import type { ImportAnalysis } from "@/bindings/ImportAnalysis";
+import type { ImportSelection } from "@/bindings/ImportSelection";
+import type { ArtistHit } from "@/bindings/ArtistHit";
+import type { ArtistOptions } from "@/bindings/ArtistOptions";
+import type { FollowedArtist } from "@/bindings/FollowedArtist";
+import type { ArtistRelease } from "@/bindings/ArtistRelease";
 import type { UpgradeCandidate } from "@/bindings/UpgradeCandidate";
 import type { CookiesTestResult } from "@/bindings/CookiesTestResult";
 import { invoke } from "@tauri-apps/api/core";
@@ -48,6 +54,17 @@ export async function call<T>(cmd: string, args?: Record<string, unknown>): Prom
 }
 
 export const COMMANDS = [
+  "import_analyze",
+  "import_enqueue",
+  "artists_search",
+  "artist_follow",
+  "artist_update",
+  "artist_unfollow",
+  "artists_followed",
+  "artist_releases",
+  "artists_check_now",
+  "missing_list",
+  "missing_download",
   "verify_lossless",
   "open_source_url",
   "audio_duration",
@@ -134,6 +151,20 @@ export const COMMANDS = [
 export type SearchSource = "ytmusic" | "youtube" | "archive" | "jamendo";
 
 export const api = {
+  importAnalyze: (url: string) => call<ImportAnalysis>("import_analyze", { url }),
+  importEnqueue: (selection: ImportSelection) => call<Job[]>("import_enqueue", { selection }),
+  artistsSearch: (name: string) => call<ArtistHit[]>("artists_search", { name }),
+  artistFollow: (providerArtistId: string, options: ArtistOptions) =>
+    call<FollowedArtist>("artist_follow", { providerArtistId, options }),
+  artistUpdate: (id: string, options: ArtistOptions) =>
+    call<void>("artist_update", { id, options }),
+  artistUnfollow: (id: string, deleteFiles: boolean) =>
+    call<void>("artist_unfollow", { id, deleteFiles }),
+  artistsFollowed: () => call<FollowedArtist[]>("artists_followed"),
+  artistReleases: (id: string) => call<ArtistRelease[]>("artist_releases", { id }),
+  artistsCheckNow: () => call<Job[]>("artists_check_now"),
+  missingList: (artistId?: string) => call<ArtistRelease[]>("missing_list", { artistId }),
+  missingDownload: (releaseIds: string[]) => call<Job[]>("missing_download", { releaseIds }),
   verifyLossless: (id: number) => call<LosslessReport>("verify_lossless", { id }),
   openSourceUrl: (url: string) => call<void>("open_source_url", { url }),
   audioDuration: (path: string) => call<number>("audio_duration", { path }),

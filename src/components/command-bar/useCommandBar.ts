@@ -5,6 +5,7 @@ import type { SearchResult } from "@/bindings/SearchResult";
 import { api, type SearchSource } from "@/lib/ipc/api";
 import { errorText } from "@/lib/errors";
 import { thumbnailFor } from "@/lib/format";
+import { importUrl } from "@/lib/importUrl";
 import { useFlowStore } from "@/stores/flow";
 import { useUiStore } from "@/stores/ui";
 
@@ -116,6 +117,21 @@ export function useCommandBar(onDone?: () => void): CommandBarController {
     setStatus("loading");
     setError(null);
     try {
+      const imported = importUrl(input);
+      if (imported) {
+        if (imported.kind === "artist") {
+          navigate(`/library?follow=${encodeURIComponent(imported.id)}`);
+        } else {
+          const analysis = await api.importAnalyze(input);
+          if (mine !== ticket.current) return;
+          useFlowStore.getState().openImport(analysis);
+          navigate("/collection");
+        }
+        setStatus("idle");
+        setText("");
+        onDone?.();
+        return;
+      }
       const kind = await api.urlClassify(input);
       if (mine !== ticket.current) return;
       if (kind.kind === "search") {
@@ -129,7 +145,7 @@ export function useCommandBar(onDone?: () => void): CommandBarController {
     } catch (e) {
       if (mine === ticket.current) fail(e);
     }
-  }, [text, source, runSearch, analyzeAndOpen, fail, t]);
+  }, [text, source, runSearch, analyzeAndOpen, fail, t, navigate, setText, onDone]);
 
   const changeSource = useCallback(
     (next: SearchSource) => {

@@ -10,6 +10,27 @@ import { mockEnqueue, mockJobCancel, seedMockJobs } from "./queue";
 import { FX4_ALBUM } from "./fixtures";
 import { mockLibraryMatch, mockLibraryDelete, mockLibraryGet } from "./library";
 import { PROFILE_OPTIONS } from "@/lib/profiles";
+import { importUrl } from "@/lib/importUrl";
+import { mockImportAnalyze } from "./collection";
+import type { Analysis } from "@/bindings/Analysis";
+async function sourceAnalysis(url: string): Promise<Analysis> {
+  if (!importUrl(url)) return mockAnalyze(url);
+  const a = mockImportAnalyze(url);
+  return {
+    type: "collection",
+    info: {
+      ...FX4_ALBUM,
+      id: a.collection.id,
+      title: a.collection.title,
+      entries: a.items.map((i) => ({
+        id: i.track.id,
+        title: i.track.fields.title,
+        duration: i.track.durationS,
+        url: i.matched.videoId ? `https://music.youtube.com/watch?v=${i.matched.videoId}` : null,
+      })),
+    },
+  };
+}
 
 let syncs: Sync[] = [];
 let items: SyncItem[] = [];
@@ -17,6 +38,7 @@ let serial = 0;
 const customTitles = new Set<string>();
 const now = () => Math.floor(Date.now() / 1000);
 const result = (): SyncResult => ({
+  checksum: null,
   added: 0,
   removed: 0,
   failed: 0,
@@ -67,7 +89,7 @@ export function mockSyncItems(id: string): SyncItem[] {
 }
 export async function mockSyncCreate(request: SyncCreate): Promise<Sync> {
   validate(request);
-  const analysis = await mockAnalyze(request.url);
+  const analysis = await sourceAnalysis(request.url);
   if (analysis.type !== "collection") throw { kind: "invalid", message: "Collection required" };
   if (syncs.some((sync) => sync.url === request.url))
     throw { kind: "duplicate", message: "Playlist already synchronized" };
@@ -77,7 +99,7 @@ export async function mockSyncCreate(request: SyncCreate): Promise<Sync> {
     title: request.title?.trim() || analysis.info.title || request.url,
     playlistId: analysis.info.id,
     thumbnail: analysis.info.thumbnail,
-    provider: "youtube",
+    provider: importUrl(request.url)?.provider ?? "youtube",
     enabled: true,
     lastSyncAt: null,
     lastResult: null,
@@ -121,12 +143,13 @@ export function mockSyncDelete(id: string, deleteFiles: boolean): void {
 export async function mockSyncRun(id: string): Promise<SyncResult> {
   const sync = find(id);
   if (sync.lastResult?.running) throw { kind: "busy", message: "Playlist is synchronizing" };
-  const analysis = await mockAnalyze(sync.url);
+  const analysis = await sourceAnalysis(sync.url);
   if (analysis.type !== "collection") throw { kind: "invalid", message: "Collection required" };
   if (!customTitles.has(id) && analysis.info.title) sync.title = analysis.info.title;
   const next = result();
   const seen = new Set<string>();
   const tracks = analysis.info.entries.slice(0, sync.maxItems ?? undefined);
+  const imported = sync.provider !== "youtube" ? mockImportAnalyze(sync.url) : null;
   for (const [index, track] of tracks.entries()) {
     if (!track.id || ["[Private video]", "[Deleted video]"].includes(track.title ?? "")) {
       next.unavailable++;
@@ -158,7 +181,13 @@ export async function mockSyncRun(id: string): Promise<SyncResult> {
     item.position = index + 1;
     item.state = "present";
     item.title = track.title;
-    const existing = mockLibraryMatch("youtube", track.id, sync.profileId);
+    const matched = imported?.items.find((i) => i.track.id === track.id);
+    if (matched && matched.matched.bucket !== "ok") {
+      next.unavailable++;
+      continue;
+    }
+    const videoId = matched?.matched.videoId ?? track.id;
+    const existing = mockLibraryMatch("youtube", videoId, sync.profileId);
     const linked = item.libraryId === null ? null : mockLibraryGet(item.libraryId);
     if (existing || (linked?.profileId === sync.profileId && !linked.missing)) {
       const library = existing ?? linked!;
@@ -167,12 +196,12 @@ export async function mockSyncRun(id: string): Promise<SyncResult> {
       item.jobStatus = "done";
     } else if (!["queued", "running"].includes(item.jobStatus ?? "")) {
       const job = mockEnqueue({
-        url: `https://www.youtube.com/watch?v=${track.id}`,
-        sourceId: track.id,
+        url: track.url ?? `https://www.youtube.com/watch?v=${videoId}`,
+        sourceId: videoId,
         title: track.title ?? undefined,
         profileId: sync.profileId,
         allowDuplicate: true,
-        metadataOverride: null,
+        metadataOverride: matched ? { ...matched.track.fields, isrc: matched.track.isrc } : null,
         priority: false,
         playlistCtx: {
           playlistTitle: sync.title,

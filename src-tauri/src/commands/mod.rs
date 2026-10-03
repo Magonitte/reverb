@@ -1,4 +1,5 @@
 pub mod backup;
+pub mod collection;
 pub mod diagnostics;
 pub mod integration;
 pub mod library;

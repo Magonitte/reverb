@@ -42,6 +42,20 @@ export function IntegrationTab() {
   return (
     <Card className="space-y-4">
       {settings && (
+        <Input
+          type="number"
+          min={1}
+          max={168}
+          label={t("artists.interval")}
+          value={settings.artistCheckIntervalHours}
+          onChange={(e) =>
+            void update({ artistCheckIntervalHours: Number(e.target.value) }).catch(() =>
+              toast({ message: t("settings.saveFailed"), tone: "error" }),
+            )
+          }
+        />
+      )}
+      {settings && (
         <ShortcutSettings
           value={settings.globalShortcut}
           onChange={(globalShortcut) => update({ globalShortcut })}

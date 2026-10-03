@@ -33,6 +33,7 @@ pub struct SyncUpdate {
 #[serde(rename_all = "camelCase", default)]
 #[ts(export)]
 pub struct SyncResult {
+    pub checksum: Option<String>,
     pub added: u32,
     pub removed: u32,
     pub failed: u32,

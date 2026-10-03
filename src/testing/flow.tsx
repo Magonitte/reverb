@@ -8,6 +8,7 @@ import {
   resetMockTools,
   resetMockUpdater,
   resetMockSyncs,
+  resetMockCollection,
 } from "@/lib/ipc/mock";
 import { AppRoutes } from "@/routes";
 import { useFlowStore } from "@/stores/flow";
@@ -41,6 +42,7 @@ export function renderApp(path = "/") {
 export function resetFlowTests(): void {
   resetMockDiagnostics();
   resetMockSyncs();
+  resetMockCollection();
   resetSyncsStore();
   resetMockLibrary();
   resetLibraryStore();
@@ -57,7 +59,7 @@ export function resetFlowTests(): void {
   useToolsStore.setState({ statuses: [], progress: {} });
   useHealStore.setState({ stage: null });
   useUpdaterStore.setState(initialUpdaterState);
-  useFlowStore.setState({ preview: null, collection: null, collectionUrl: null });
+  useFlowStore.setState({ preview: null, collection: null, collectionUrl: null, imported: null });
   useUiStore.setState({
     commandBarOpen: false,
     commandBarText: "",

@@ -606,7 +606,9 @@ impl Inner {
                     let Some(next) = repo::next_queued(conn, &skip)? else {
                         return Ok(None);
                     };
-                    if pacing_delay.is_some() && next.kind == "playlist_item" {
+                    if pacing_delay.is_some()
+                        && matches!(next.kind.as_str(), "playlist_item" | "upgrade")
+                    {
                         skip.insert(next.id);
                         continue;
                     }
@@ -632,7 +634,7 @@ impl Inner {
             let cancel = CancellationToken::new();
             let started_epoch = self.heal.epoch();
             let present = planned_stages(&job.profile_id);
-            if job.kind == "playlist_item" {
+            if matches!(job.kind.as_str(), "playlist_item" | "upgrade") {
                 self.state
                     .lock()
                     .expect("estado da fila")

@@ -21,6 +21,7 @@ import { useSettingsStore } from "@/stores/settings";
 import { useUiStore } from "@/stores/ui";
 import { SyncDialog } from "@/components/playlists/SyncDialog";
 import { useNavigate } from "react-router";
+import { ImportedCollectionView } from "@/components/ImportedCollectionView";
 
 /** Faixa da coleção com a posição original (1-based), que vira o `playlistCtx.index`. */
 interface Row {
@@ -31,6 +32,10 @@ interface Row {
 const WARN_RATIO = 0.9;
 
 export default function Collection() {
+  const imported = useFlowStore((s) => s.imported);
+  return imported ? <ImportedCollectionView analysis={imported} /> : <YoutubeCollection />;
+}
+function YoutubeCollection() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const collectionUrl = useFlowStore((state) => state.collectionUrl);

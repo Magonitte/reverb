@@ -19,6 +19,30 @@ pub fn show(app: &AppHandle, message: &str) {
 }
 
 pub fn initialize(app: &AppHandle) -> reverb_core::CoreResult<()> {
+    let app_artists = app.clone();
+    app.listen("artists://release", move |event| {
+        if !app_artists
+            .state::<AppState>()
+            .settings
+            .get()
+            .completion_notifications
+        {
+            return;
+        }
+        if let Ok(v) = serde_json::from_str::<serde_json::Value>(event.payload()) {
+            if let (Some(artist), Some(title)) = (v["artist"].as_str(), v["title"].as_str()) {
+                let language = app_artists.state::<AppState>().settings.get().language;
+                show(
+                    &app_artists,
+                    &if language == reverb_core::settings::Language::En {
+                        format!("New release by {artist}: {title}")
+                    } else {
+                        format!("Novo lançamento de {artist}: {title}")
+                    },
+                );
+            }
+        }
+    });
     let start = Instant::now();
     let batch = Arc::new(Mutex::new(CompletionBatch::default()));
     let finished = Arc::new(Mutex::new(HashSet::new()));

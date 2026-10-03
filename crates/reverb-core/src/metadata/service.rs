@@ -331,6 +331,9 @@ impl MetadataService {
         // A edição do usuário vence tudo e pula os provedores.
         if let Some(value) = input.user_override.filter(|v| !v.is_null()) {
             MetadataOverride::from_value(value).apply(&mut result.fields);
+            result.isrc = value["isrc"]
+                .as_str()
+                .and_then(super::official::normalize_isrc);
             result.confidence = 1.0;
             result.source = SOURCE_USER.to_string();
             result.bucket = Bucket::Auto;
