@@ -1,4 +1,4 @@
-//! Importação e reexame: paths can be files or folders; symbolic links are not followed.
+//! Importação e reexame: selected roots are resolved; nested symbolic links are not followed.
 use crate::tagging::TrackTags;
 use crate::{CoreError, CoreResult, Db, EventSink};
 use rusqlite::{params, OptionalExtension};
@@ -28,12 +28,39 @@ pub struct ImportReport {
 pub fn canonical(path: &Path) -> CoreResult<PathBuf> {
     let path = std::fs::canonicalize(path)?;
     #[cfg(windows)]
-    let path = PathBuf::from(
-        path.to_string_lossy()
-            .strip_prefix(r"\\?\")
-            .unwrap_or(&path.to_string_lossy()),
-    );
+    let path = windows_path(&path.to_string_lossy());
     Ok(path)
+}
+
+#[cfg(windows)]
+fn windows_path(path: &str) -> PathBuf {
+    // Canonical UNC paths use \\?\UNC\server\share, not \\?\server\share.
+    if let Some(unc) = path.strip_prefix(r"\\?\UNC\") {
+        PathBuf::from(format!(r"\\{unc}"))
+    } else {
+        PathBuf::from(path.strip_prefix(r"\\?\").unwrap_or(path))
+    }
+}
+
+#[cfg(all(test, windows))]
+mod path_tests {
+    use super::*;
+
+    #[test]
+    fn preserves_drive_and_network_paths() {
+        assert_eq!(
+            windows_path(r"\\?\C:\Music\song.opus"),
+            PathBuf::from(r"C:\Music\song.opus")
+        );
+        assert_eq!(
+            windows_path(r"\\?\UNC\server\share\Music"),
+            PathBuf::from(r"\\server\share\Music")
+        );
+        assert_eq!(
+            windows_path(r"\\server\share\Music"),
+            PathBuf::from(r"\\server\share\Music")
+        );
+    }
 }
 
 /// Upgrade existing F09 paths without deleting records or replacing conflicting entries.
@@ -113,13 +140,23 @@ pub async fn import(
         let mut files = BTreeSet::new();
         let mut report = ImportReport::default();
         for path in paths {
-            collect(&path, &mut files, &mut report.failures);
+            match canonical(&path) {
+                Ok(root) => collect(&root, &mut files, &mut report.failures),
+                Err(error) => report.failures.push(ImportFailure {
+                    path: path.to_string_lossy().into_owned(),
+                    message: error.to_string(),
+                }),
+            }
         }
         (files, report)
     })
     .await
     .map_err(|e| CoreError::Internal(e.to_string()))?;
     let total = files.len();
+    sink.emit(
+        "library://import-progress",
+        serde_json::json!({"processed":0,"total":total}),
+    );
     for (index, path) in files.into_iter().enumerate() {
         let text = path.to_string_lossy().into_owned();
         let existing = text.clone();

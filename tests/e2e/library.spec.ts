@@ -1,6 +1,36 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { open } from "./helpers";
+import { open, goHash } from "./helpers";
+
+test("library imports files and folders after a filtered empty result", async ({ page }) => {
+  await open(page, "/library");
+  await page.getByRole("textbox", { name: "Buscar na biblioteca" }).fill("unmatched");
+  await expect(page.getByText("Nenhuma faixa encontrada")).toBeVisible();
+  await page.getByRole("button", { name: "Importar arquivo", exact: true }).click();
+  await expect(page.getByRole("textbox", { name: "Buscar na biblioteca" })).toHaveValue("");
+  await expect(page.getByRole("table", { name: "Biblioteca" })).toBeVisible();
+  await page.getByRole("button", { name: "Importar pasta", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Importar pasta", exact: true })).toBeEnabled();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+
+test("returning from Review shows the full library and track details fit mobile", async ({
+  page,
+}) => {
+  await open(page, "/review", "big");
+  await goHash(page, "/library");
+  await expect(page.getByText("1–100 de 5000 faixas")).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page
+    .getByRole("button", { name: /^Detalhes e ações de/ })
+    .first()
+    .click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+});
 
 test("F10: library search, pagination and virtualization", async ({ page }) => {
   await open(page, "/library", "big");

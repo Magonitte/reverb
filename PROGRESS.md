@@ -6,9 +6,22 @@
 ## Situação atual
 
 - **Fase atual:** F15 — CONCLUÍDA (F00–F15 concluídas; F16 não iniciada).
-- **Último ponto de parada:** correções pós-F15/0.1.4 entregues: 625 Rust, 247 Vitest, 82 Playwright, 29 rede e 11 testes no app real. PR #7 integrada à main, tag v0.1.4, release assinada Windows/Linux e PC atualizado para 0.1.4. Atualizador e formulário conferidos na instalação final; F16 não iniciada.
+- **Último ponto de parada:** revisão da Biblioteca concluída na branch `codex/library-ux-import-details`: 627 Rust, 256 Vitest, 84 Playwright e 12 testes no app real aprovados. Importação de arquivo/pasta, detalhes dos catálogos com imagem e persistência de tags confirmados. Versão instalada/release anterior: 0.1.4; esta revisão não cria release. F16 não iniciada.
 - **Pendências humanas abertas:** nenhuma impeditiva; Jamendo Client ID e credenciais Spotify opcionais não fornecidos. Spotify T12 N/A autorizado, sem acesso real de conta validado.
 - **Pendência técnica:** nenhuma nas correções pós-F15. F16 não iniciada.
+
+## Revisão da Biblioteca — 2026-10-03
+
+- **Status:** CONCLUÍDA; branch `codex/library-ux-import-details`. F16 não iniciada.
+- Biblioteca com importação em destaque, filtros agrupados/limpáveis, seleção contextual, cartões de álbum com capa e detalhes das faixas com ações visíveis.
+- Importação limpa filtros e paginação, informa preparação/progresso, diferencia pasta vazia e apresenta falhas por arquivo; voltar de Revisar remove o filtro compartilhado de revisão. Álbuns acompanham filtros e página atual.
+- Raízes selecionadas são canonicalizadas antes da varredura, incluindo aliases; correção do prefixo UNC do Windows. Links internos continuam ignorados para evitar ciclos.
+- Resultados de metadados no editor e na revisão com fonte, capa, detalhes completos, fallback para imagens ausentes e aplicação explícita. Falha de capa no editor preserva a imagem atual sem bloquear os outros campos. ISRC editável, retorno à Biblioteca e nova tentativa de leitura.
+- Corrigida acessibilidade por teclado do conteúdo rolável dos diálogos. Cenários mock usam capa local determinística; bases visuais afetadas conferidas e atualizadas nos dois temas.
+- Busca do editor separa artista e título para consultar corretamente os catálogos; verificação nativa confirmou a correspondência do artista, imagem real e gravação dos metadados.
+- Validação final: `npm run verify` aprovado em todos os portões (627 Rust); 256 Vitest; 84 Playwright, incluindo acessibilidade e revisão visual, mais 3 testes do editor repetidos após o ajuste final da busca. Typecheck/lint e build Tauri final aprovados.
+- Suíte nativa: 12 testes em 8 arquivos aprovados. Importação de música individual e pasta com subpasta/duplicata; consulta real de catálogos, detalhes com imagem carregada e tags gravadas; regressões de artistas, downloads, importação Deezer, integração desktop, playlists, lossless e atualizador aprovadas.
+- Dados da instalação pessoal preservados; testes usam áudio sintético e pastas temporárias.
 
 ## Ambiente (preenchido na F00, 2026-10-01)
 

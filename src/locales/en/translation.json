@@ -252,10 +252,10 @@
   },
   "library": {
     "title": "Library",
-    "subtitle": "Your downloaded music, with instant search.",
+    "subtitle": "Import, organize and review your music collection.",
     "empty": {
       "title": "Your library is empty",
-      "description": "Tracks you download will show up here."
+      "description": "Import a file or a music folder. Your downloads also appear here."
     },
     "search": "Search the library",
     "format": "Format",
@@ -274,7 +274,7 @@
     "selectTrack": "Select {{title}}",
     "track": "Track",
     "actions": "Actions",
-    "open": "Open",
+    "open": "Play",
     "folder": "Folder",
     "openTrack": "Open {{title}}",
     "revealTrack": "Show {{title}} in folder",
@@ -318,7 +318,19 @@
     "listView": "List",
     "albumView": "Albums",
     "importProgress": "Importing {{processed}} of {{total}} files…",
-    "addedAt": "Date added"
+    "addedAt": "Date added",
+    "discovering": "Preparing import and looking for audio files…",
+    "noAudio": "No supported audio found. Formats: MP3, M4A, Opus, OGG, FLAC and WAV. Subfolders are included.",
+    "importFailures": "View failed files",
+    "resetFilters": "Clear filters",
+    "selected": "{{count}} selected",
+    "noResults": "No tracks found",
+    "noResultsHint": "Adjust the search or clear filters to see your music.",
+    "noAlbums": "No albums on this page",
+    "noAlbumsHint": "Use the list to edit track tags or move to another page.",
+    "detailsTrack": "Details and actions for {{title}}",
+    "reveal": "Show in folder",
+    "back": "Back to Library"
   },
   "review": {
     "title": "Review",
@@ -914,5 +926,22 @@
       "notify": "New releases trigger a notification and appear in Missing. You decide when to download.",
       "none": "New releases are recorded without notifications or automatic downloads."
     }
+  },
+  "metadataDetails": {
+    "title": "Result details",
+    "results": "Catalog results",
+    "hint": "Check the source, artwork and details before using metadata.",
+    "view": "View details",
+    "provider": "Source",
+    "providerId": "Source ID",
+    "recordingId": "MusicBrainz ID",
+    "duration": "Duration",
+    "isrc": "ISRC",
+    "unavailable": "Not provided",
+    "noCover": "No artwork",
+    "saveHint": "Using metadata fills the editor. Click Save to write the file.",
+    "applied": "Metadata applied to the editor. Save to write the file.",
+    "count": "{{count}} result(s) found.",
+    "empty": "No results found. Adjust the title and artist and try again."
   }
 }

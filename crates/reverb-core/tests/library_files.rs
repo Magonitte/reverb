@@ -117,6 +117,8 @@ async fn six_formats_nested_idempotent_and_progress() {
     .unwrap();
     assert!(result.failures.is_empty(), "{:?}", result.failures);
     assert_eq!(result.imported, 6);
+    assert_eq!(sink.named("library://import-progress")[0]["processed"], 0);
+    assert_eq!(sink.named("library://import-progress")[0]["total"], 6);
     let items = page(&db).await;
     assert_eq!(items.total, 6);
     for item in items.items {
@@ -136,6 +138,38 @@ async fn six_formats_nested_idempotent_and_progress() {
     assert_eq!(second.imported, 0);
     assert_eq!(second.skipped, 6);
     assert_eq!(page(&db).await.total, 6);
+}
+
+#[tokio::test]
+async fn empty_folder_and_partial_failure_report_without_losing_valid_audio() {
+    let dir = tempfile::tempdir().unwrap();
+    let db = Db::open_in_memory().unwrap();
+    let empty = import(&db, vec![dir.path().into()]).await;
+    assert_eq!(empty.imported, 0);
+    assert!(empty.failures.is_empty());
+    std::fs::write(dir.path().join("broken.mp3"), b"invalid audio").unwrap();
+    std::fs::write(dir.path().join("notes.txt"), b"not audio").unwrap();
+    audio(&dir.path().join("subfolder"), "valid.opus").await;
+    let report = import(&db, vec![dir.path().into()]).await;
+    assert_eq!(report.imported, 1);
+    assert_eq!(report.failures.len(), 1);
+    assert!(report.failures[0].path.ends_with("broken.mp3"));
+    assert_eq!(page(&db).await.total, 1);
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn explicitly_selected_folder_alias_imports_without_following_nested_links() {
+    let dir = tempfile::tempdir().unwrap();
+    let db = Db::open_in_memory().unwrap();
+    let root = dir.path().join("music");
+    audio(&root, "valid.opus").await;
+    std::os::unix::fs::symlink(&root, root.join("cycle")).unwrap();
+    let alias = dir.path().join("alias");
+    std::os::unix::fs::symlink(&root, &alias).unwrap();
+    let report = import(&db, vec![alias]).await;
+    assert_eq!(report.imported, 1);
+    assert!(report.failures.is_empty());
 }
 
 #[tokio::test]
