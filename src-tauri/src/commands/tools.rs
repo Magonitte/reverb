@@ -5,6 +5,33 @@ use tauri::State;
 use crate::state::AppState;
 
 #[tauri::command]
+pub async fn runtime_choices(
+    state: tauri::State<'_, AppState>,
+) -> Result<Vec<reverb_core::settings::JsRuntime>, reverb_core::CoreError> {
+    use reverb_core::settings::JsRuntime;
+    use reverb_core::tools::{detect_js_runtime, Detection, Tool};
+    let mut choices = Vec::new();
+    for mode in [
+        JsRuntime::ManagedDeno,
+        JsRuntime::SystemDeno,
+        JsRuntime::SystemNode,
+    ] {
+        if matches!(
+            detect_js_runtime(
+                mode,
+                &std::env::var_os("PATH").unwrap_or_default(),
+                state.tools.resolve(Tool::Deno).ok()
+            )
+            .await,
+            Ok(Detection::Found(_))
+        ) {
+            choices.push(mode);
+        }
+    }
+    Ok(choices)
+}
+
+#[tauri::command]
 pub async fn tools_status(state: State<'_, AppState>) -> Result<Vec<ToolStatus>, CoreError> {
     state.tools.status().await
 }

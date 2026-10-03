@@ -1,0 +1,32 @@
+name: Relatar problema
+description: Informe um erro reproduzível no Reverb.
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: "Não envie cookies, tokens, Client Secrets ou o banco completo. Remova dados pessoais de logs e capturas."
+  - type: input
+    id: environment
+    attributes:
+      label: Versão e sistema
+      description: Informe a versão do Reverb, sistema operacional e se usa instalação, dev ou mock.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Como reproduzir
+      description: Descreva os passos e use uma URL pública de exemplo quando possível.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Resultado esperado e observado
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostic
+    attributes:
+      label: Mensagem de erro e diagnóstico
+      description: Inclua apenas o trecho relevante, sem dados secretos.

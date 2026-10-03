@@ -46,7 +46,8 @@ fn limita_a_120_caracteres_sem_quebrar_unicode() {
     assert!(out.chars().all(|c| c == 'ã'));
 
     let emoji = "😀".repeat(200);
-    assert_eq!(sanitize_component(&emoji).chars().count(), 120);
+    assert_eq!(sanitize_component(&emoji).chars().count(), 63);
+    assert_eq!(sanitize_component(&emoji).len(), 252);
 
     // O corte que termina em ponto/espaço é limpo de novo.
     let com_ponto = format!("{}.{}", "a".repeat(119), "b".repeat(50));

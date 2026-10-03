@@ -1,0 +1,52 @@
+{
+ "id": "GBARL0600786 - songs",
+ "title": "GBARL0600786 - songs",
+ "_type": "playlist",
+ "entries": [
+  {
+   "title": "Never Gonna Give You Up",
+   "ie_key": "Youtube",
+   "id": "-aIiQj79b6Q",
+   "_type": "url",
+   "url": "https://music.youtube.com/watch?v=-aIiQj79b6Q",
+   "__x_forwarded_for_ip": null
+  },
+  {
+   "title": "الغابة ليها بابا ( هو الديب لما يغيب )",
+   "ie_key": "Youtube",
+   "id": "wHoUcB87euE",
+   "_type": "url",
+   "url": "https://music.youtube.com/watch?v=wHoUcB87euE",
+   "__x_forwarded_for_ip": null
+  },
+  {
+   "title": "堕天 (Cover) - Daten (Cover)",
+   "ie_key": "Youtube",
+   "id": "OLb0YQJfos0",
+   "_type": "url",
+   "url": "https://music.youtube.com/watch?v=OLb0YQJfos0",
+   "__x_forwarded_for_ip": null
+  }
+ ],
+ "webpage_url": "https://music.youtube.com/search?q=GBARL0600786#songs",
+ "original_url": "https://music.youtube.com/search?q=GBARL0600786#songs",
+ "webpage_url_basename": "search",
+ "webpage_url_domain": "music.youtube.com",
+ "extractor": "youtube:music:search_url",
+ "extractor_key": "YoutubeMusicSearchURL",
+ "release_year": null,
+ "requested_entries": [
+  1,
+  2,
+  3
+ ],
+ "playlist_count": null,
+ "epoch": 1790905392,
+ "__files_to_move": {},
+ "_version": {
+  "version": "2026.08.19",
+  "current_git_head": null,
+  "release_git_head": "594bd50c2c78ac432f81600d309fdc4e0a92d82c",
+  "repository": "yt-dlp/yt-dlp"
+ }
+}

@@ -74,6 +74,7 @@ struct State {
     running: HashMap<String, Live>,
     /// Jobs `queued` esperando o fim do backoff (não podem iniciar ainda).
     waiting: HashSet<String>,
+    last_playlist_start: Option<Instant>,
 }
 
 struct Inner {
@@ -132,8 +133,24 @@ impl QueueService {
         self.inner.wake.notify_one();
     }
 
-    pub async fn enqueue(&self, request: EnqueueRequest) -> CoreResult<Job> {
+    pub async fn enqueue(&self, mut request: EnqueueRequest) -> CoreResult<Job> {
         let inner = &self.inner;
+        if let Some(id) = request.options.as_ref().and_then(|o| o.upgrade_library_id) {
+            let item = inner
+                .db
+                .call(move |conn| crate::library::get(conn, id))
+                .await?
+                .ok_or_else(|| CoreError::invalid("Upgrade item missing"))?;
+            if item.provider.as_deref() != Some("youtube") || item.missing {
+                return Err(CoreError::invalid("Upgrade item unavailable"));
+            }
+            request.url = item
+                .source_url
+                .ok_or_else(|| CoreError::invalid("Upgrade source missing"))?;
+            request.source_id = item.source_id;
+            request.profile_id = item.profile_id;
+            request.allow_duplicate = true;
+        }
         let url = request.url.trim().to_string();
         if url.is_empty() {
             return Err(CoreError::invalid("a URL é obrigatória"));
@@ -151,7 +168,19 @@ impl QueueService {
         let queue_limit = settings.queue_limit;
         let _ops = inner.ops.lock().await;
         let now = repo::now();
-        let kind = if request.playlist_ctx.is_some() {
+        let kind = if request
+            .options
+            .as_ref()
+            .is_some_and(|o| o.upgrade_library_id.is_some())
+        {
+            "upgrade"
+        } else if request
+            .options
+            .as_ref()
+            .is_some_and(|o| o.split_chapters == Some(true))
+        {
+            "chapters"
+        } else if request.playlist_ctx.is_some() {
             "playlist_item"
         } else {
             "single"
@@ -163,7 +192,7 @@ impl QueueService {
         let mut job = Job {
             id: uuid_v4(),
             kind: kind.to_string(),
-            provider: PROVIDER.to_string(),
+            provider: crate::sources::provider_id(&url).to_string(),
             source_url: url,
             source_id: request.source_id.clone(),
             title: request.title.clone(),
@@ -173,6 +202,8 @@ impl QueueService {
             profile_id: profile_id.clone(),
             options: request.options.clone().unwrap_or_default(),
             metadata_override: request.metadata_override.clone(),
+            confidence: None,
+            metadata_result: None,
             warnings: Vec::new(),
             playlist_ctx: request.playlist_ctx.clone(),
             sync_id,
@@ -197,6 +228,10 @@ impl QueueService {
         let job = inner
             .db
             .call(move |conn| {
+                if let Some(id)=job.options.upgrade_library_id {
+                    let exists:bool=conn.query_row("SELECT EXISTS(SELECT 1 FROM jobs WHERE kind='upgrade' AND status IN ('queued','running') AND json_extract(options_json,'$.upgradeLibraryId')=?)",[id],|r|r.get(0))?;
+                    if exists{return Err(CoreError::coded("duplicate","Upgrade already queued"));}
+                }
                 if repo::count_active(conn)? >= queue_limit {
                     return Err(CoreError::coded(
                         "queue_full",
@@ -204,6 +239,10 @@ impl QueueService {
                     ));
                 }
                 if !allow_duplicate {
+                    if let Some(value)=&job.metadata_override {
+                        let ids=crate::library::find_by_fingerprint(conn,value["acoustidId"].as_str(),value["mbRecordingId"].as_str())?;
+                        if !ids.is_empty(){return Err(CoreError::coded("duplicate","Recording already in library"));}
+                    }
                     if let Some(source_id) = &job.source_id {
                         let hits = repo::find_duplicates(
                             conn,
@@ -242,7 +281,18 @@ impl QueueService {
         let profile_id = profile_id.unwrap_or_else(|| self.inner.settings.get().default_profile);
         self.inner
             .db
-            .call(move |conn| repo::find_duplicates(conn, PROVIDER, &source_ids, &profile_id))
+            .call(move |conn| {
+                let mut hits = Vec::new();
+                for provider in [PROVIDER, "soundcloud", "bandcamp", "archive", "jamendo"] {
+                    hits.extend(repo::find_duplicates(
+                        conn,
+                        provider,
+                        &source_ids,
+                        &profile_id,
+                    )?);
+                }
+                Ok(hits)
+            })
             .await
     }
 
@@ -531,7 +581,7 @@ impl Inner {
         loop {
             let _ops = self.ops.lock().await;
             let limit = self.settings.get().parallelism as usize;
-            let skip = {
+            let (mut skip, pacing_delay) = {
                 let state = self.state.lock().expect("estado da fila");
                 if state.paused
                     || state.healing > 0
@@ -540,20 +590,42 @@ impl Inner {
                 {
                     return;
                 }
-                state.waiting.clone()
+                let delay = state.last_playlist_start.and_then(|last| {
+                    (last
+                        + Duration::from_secs(u64::from(
+                            self.settings.get().playlist_pacing_seconds,
+                        )))
+                    .checked_duration_since(Instant::now())
+                    .filter(|delay| !delay.is_zero())
+                });
+                (state.waiting.clone(), delay)
             };
             let claimed = self
                 .db
-                .call(move |conn| {
+                .call(move |conn| loop {
                     let Some(next) = repo::next_queued(conn, &skip)? else {
                         return Ok(None);
                     };
-                    repo::claim(conn, &next.id)
+                    if pacing_delay.is_some()
+                        && matches!(next.kind.as_str(), "playlist_item" | "upgrade")
+                    {
+                        skip.insert(next.id);
+                        continue;
+                    }
+                    return repo::claim(conn, &next.id);
                 })
                 .await;
             let job = match claimed {
                 Ok(Some(job)) => job,
-                Ok(None) => return,
+                Ok(None) => {
+                    if let Some(delay) = pacing_delay {
+                        let inner = Arc::clone(self);
+                        tokio::spawn(async move {
+                            tokio::select! { _=inner.stop.cancelled()=>{}, _=tokio::time::sleep(delay)=>inner.wake.notify_one() }
+                        });
+                    }
+                    return;
+                }
                 Err(error) => {
                     tracing::error!(%error, "falha ao reservar o próximo job");
                     return;
@@ -562,6 +634,12 @@ impl Inner {
             let cancel = CancellationToken::new();
             let started_epoch = self.heal.epoch();
             let present = planned_stages(&job.profile_id);
+            if matches!(job.kind.as_str(), "playlist_item" | "upgrade") {
+                self.state
+                    .lock()
+                    .expect("estado da fila")
+                    .last_playlist_start = Some(Instant::now());
+            }
             self.state.lock().expect("estado da fila").running.insert(
                 job.id.clone(),
                 Live {
@@ -604,11 +682,36 @@ impl Inner {
                 PipelineEvent::Convert(percent) => {
                     live.job.speed_bps = None;
                     live.job.eta_s = None;
-                    if !live.present.contains(&JobStage::Converting) {
-                        let at = live.present.len().saturating_sub(1);
-                        live.present.insert(at, JobStage::Converting);
-                    }
+                    insert_before_moving(&mut live.present, JobStage::Converting);
                     (JobStage::Converting, f64::from(percent) / 100.0)
+                }
+                PipelineEvent::Analyzing => (JobStage::Analyzing, 0.0),
+                PipelineEvent::SourceSwitched { url, source_id } => {
+                    live.job.source_url = url;
+                    live.job.source_id = Some(source_id);
+                    (previous, live.job.progress)
+                }
+                PipelineEvent::Identifying => {
+                    live.job.speed_bps = None;
+                    live.job.eta_s = None;
+                    insert_before_moving(&mut live.present, JobStage::Metadata);
+                    (JobStage::Metadata, 0.0)
+                }
+                PipelineEvent::Identified(result) => {
+                    live.job.apply_metadata(&result);
+                    (JobStage::Metadata, 1.0)
+                }
+                PipelineEvent::Stage(stage) => {
+                    live.job.speed_bps = None;
+                    live.job.eta_s = None;
+                    insert_before_moving(&mut live.present, stage);
+                    (stage, 0.0)
+                }
+                PipelineEvent::Warning(warning) => {
+                    if !live.job.warnings.contains(&warning) {
+                        live.job.warnings.push(warning);
+                    }
+                    (previous, live.job.progress)
                 }
             };
             live.job.stage = stage;
@@ -650,11 +753,21 @@ impl Inner {
             .and_then(|live| live.reason)
     }
 
-    async fn finish_ok(&self, id: &str, output: PipelineOutput) {
-        let Some(live) = self.take_live(id) else {
+    async fn finish_ok(self: &Arc<Self>, id: &str, mut output: PipelineOutput) {
+        if self.reason_of(id).is_some() {
+            self.finish_err(id, DownloadError::cancelled()).await;
+            return;
+        }
+        let Some(mut job) = self
+            .state
+            .lock()
+            .expect("estado da fila")
+            .running
+            .get(id)
+            .map(|live| live.job.clone())
+        else {
             return;
         };
-        let mut job = live.job;
         let now = repo::now();
         job.status = JobStatus::Done;
         job.stage = JobStage::Done;
@@ -665,6 +778,12 @@ impl Inner {
         job.error_kind = None;
         job.error_message = None;
         job.output_path = Some(output.path.to_string_lossy().into_owned());
+        if let Some(file) = &output.library_file {
+            job.title = Some(file.tags.title.clone());
+            job.artist = file.tags.artist.clone();
+            job.duration_s = file.probe.as_ref().map(|probe| probe.duration_s);
+            job.source_id = Some(output.done.id.clone());
+        }
         if job.title.is_none() {
             job.title = Some(output.done.title.clone());
         }
@@ -673,7 +792,63 @@ impl Inner {
         }
         job.updated_at = now;
         job.finished_at = Some(now);
-        self.persist(&job).await;
+        if !output.chapter_files.is_empty() {
+            job.kind = "chapters".into();
+        }
+        let mut recorded = job.clone();
+        let file = output.library_file.take();
+        let chapters = std::mem::take(&mut output.chapter_files);
+        let upgrade_id = output.upgrade_id;
+        let saved = self
+            .db
+            .call(move |conn| {
+                let tx = conn.transaction()?;
+                if let Some(file) = file {
+                    recorded.library_id=if let Some(id)=upgrade_id {
+                        crate::library::files::update_tags(&tx,&file.file_path,&file.tags)?;
+                        tx.execute("UPDATE library SET source_abr_kbps=?,bitrate_kbps=?,duration_s=?,codec=?,replaygain_db=?,updated_at=unixepoch() WHERE id=?",rusqlite::params![file.source_abr_kbps,file.probe.as_ref().and_then(|p|p.bitrate_kbps),file.probe.as_ref().map(|p|p.duration_s),file.probe.as_ref().map(|p|&p.codec),file.replaygain_db,id])?;Some(id)
+                    }else{Some(crate::library::insert_from_job(&tx,&recorded,&file)?)};
+                }
+                for chapter in chapters {
+                    crate::library::insert_from_job(&tx, &recorded, &chapter)?;
+                }
+                repo::save(&tx, &recorded)?;
+                if let Some(library_id) = recorded.library_id {
+                    tx.execute(
+                        "UPDATE sync_items SET library_id=? WHERE job_id=?",
+                        rusqlite::params![library_id, recorded.id],
+                    )?;
+                }
+                tx.commit()?;
+                Ok(recorded)
+            })
+            .await;
+        let job = match saved {
+            Ok(job) => job,
+            Err(error) => {
+                self.finish_err(id, DownloadError::new(ErrorKind::Disk, error.to_string()))
+                    .await;
+                return;
+            }
+        };
+        self.take_live(id);
+        if let Some(publication) = &mut output.publication {
+            publication.commit();
+        }
+        if let Some(replacement) = &mut output.replacement {
+            if let Err(error) = replacement.commit() {
+                tracing::warn!(kind = error.kind(), "Original audio retained after upgrade");
+            }
+        }
+        for publication in &mut output.chapter_publications {
+            publication.commit();
+        }
+        if let Some(library_id) = job.library_id {
+            self.sink.emit(
+                "library://changed",
+                serde_json::json!({ "ids": [library_id] }),
+            );
+        }
         self.emit_job(&job);
         self.after_finish().await;
     }
@@ -802,6 +977,14 @@ impl Inner {
     }
 }
 
+/// Acrescenta um estágio que só se revela durante o job, antes de `Moving` (que fica por último).
+fn insert_before_moving(present: &mut Vec<JobStage>, stage: JobStage) {
+    if !present.contains(&stage) {
+        let at = present.len().saturating_sub(1);
+        present.insert(at, stage);
+    }
+}
+
 /// Estágios que o job deve atravessar, para o progresso geral. Só o perfil `original` pode (ou
 /// não) converter; ele só vira `Converting` se o pipeline emitir conversão.
 fn planned_stages(profile_id: &str) -> Vec<JobStage> {
@@ -882,18 +1065,26 @@ async fn run_job(inner: Arc<Inner>, job: Job, cancel: CancellationToken) {
         return;
     };
     let settings = inner.settings.get();
-    let out_dir = job
-        .options
-        .output_dir
-        .as_deref()
-        .filter(|dir| !dir.is_empty())
-        .map_or_else(|| resolve_output_dir(&settings), PathBuf::from);
+    let out_dir = match output_dir(&inner.db, &job, &settings).await {
+        Ok(path) => path,
+        Err(error) => {
+            inner
+                .finish_err(&id, DownloadError::new(ErrorKind::Disk, error.to_string()))
+                .await;
+            return;
+        }
+    };
     let pipeline_job = PipelineJob {
         job_id: id.clone(),
         url: job.source_url.clone(),
         profile: chosen,
         out_dir,
         sponsorblock: sponsorblock_categories(&job, &inner),
+        metadata_override: job.metadata_override.clone(),
+        fetch_metadata: job.options.fetch_metadata,
+        settings: Some(settings),
+        options: job.options.clone(),
+        playlist_ctx: job.playlist_ctx.clone(),
     };
     let on_event = |event| inner.on_event(&id, event);
     let result = inner.runner.run(&pipeline_job, &cancel, &on_event).await;
@@ -901,4 +1092,37 @@ async fn run_job(inner: Arc<Inner>, job: Job, cancel: CancellationToken) {
         Ok(output) => inner.finish_ok(&id, output).await,
         Err(error) => inner.finish_err(&id, error).await,
     }
+}
+
+pub(crate) async fn output_dir(
+    db: &Db,
+    job: &Job,
+    settings: &crate::Settings,
+) -> CoreResult<PathBuf> {
+    if let Some(dir) = job
+        .options
+        .output_dir
+        .as_deref()
+        .filter(|s| !s.trim().is_empty())
+    {
+        return Ok(PathBuf::from(dir));
+    }
+    if let Some(id) = &job.sync_id {
+        let id = id.clone();
+        let dir = db
+            .call(move |conn| {
+                let mut stmt = conn.prepare_cached("SELECT output_dir FROM syncs WHERE id=?1")?;
+                let mut rows = stmt.query([id])?;
+                Ok(rows
+                    .next()?
+                    .map(|row| row.get::<_, Option<String>>(0))
+                    .transpose()?
+                    .flatten())
+            })
+            .await?;
+        if let Some(dir) = dir.filter(|s| !s.trim().is_empty()) {
+            return Ok(PathBuf::from(dir));
+        }
+    }
+    Ok(resolve_output_dir(settings))
 }

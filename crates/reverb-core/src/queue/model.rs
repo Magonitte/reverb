@@ -4,6 +4,8 @@
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
+use crate::metadata::{ContentType, MetadataResult};
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
@@ -139,6 +141,8 @@ pub struct JobOptions {
     pub auto_organize: Option<bool>,
     pub output_dir: Option<String>,
     pub split_chapters: Option<bool>,
+    #[ts(optional, type = "number")]
+    pub upgrade_library_id: Option<i64>,
 }
 
 /// De onde o job veio, quando é item de uma playlist/álbum.
@@ -170,6 +174,10 @@ pub struct Job {
     pub options: JobOptions,
     #[ts(type = "Record<string, unknown> | null")]
     pub metadata_override: Option<serde_json::Value>,
+    /// Confiança da identificação (F08); `None` antes de identificar ou quando não é música.
+    pub confidence: Option<f64>,
+    /// Resultado da identificação (F08), distinto da edição do usuário.
+    pub metadata_result: Option<MetadataResult>,
     pub warnings: Vec<String>,
     pub playlist_ctx: Option<PlaylistCtx>,
     pub sync_id: Option<String>,
@@ -196,6 +204,17 @@ pub struct Job {
     pub updated_at: i64,
     #[ts(type = "number | null")]
     pub finished_at: Option<i64>,
+}
+
+impl Job {
+    /// Guarda o resultado da identificação: título e artista do job passam a ser os identificados
+    /// e a confiança só vale para música.
+    pub fn apply_metadata(&mut self, result: &MetadataResult) {
+        self.title = Some(result.fields.title.clone());
+        self.artist = result.fields.artist.clone();
+        self.confidence = (result.content_type == ContentType::Music).then_some(result.confidence);
+        self.metadata_result = Some(result.clone());
+    }
 }
 
 /// Pedido para enfileirar (comando `enqueue`).

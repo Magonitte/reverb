@@ -1,0 +1,47 @@
+Input #0, lavfi, from 'anoisesrc=color=pink:amplitude=0.3:duration=2:seed=1':
+  Duration: N/A, start: 0.000000, bitrate: 3072 kb/s
+  Stream #0:0: Audio: pcm_f64le, 48000 Hz, mono, dbl, 3072 kb/s
+Stream mapping:
+  Stream #0:0 -> #0:0 (pcm_f64le (native) -> pcm_s16le (native))
+[Parsed_ebur128_0 @ 000001a87e9d2840] t: 0.0999792  TARGET:-23 LUFS    M:-120.7 S:-120.7     I: -70.0 LUFS       LRA:   0.0 LU  FTPK: -15.4 dBFS  TPK: -15.4 dBFS
+Output #0, null, to 'pipe:':
+  Metadata:
+    encoder         : Lavf63.7.100
+  Stream #0:0: Audio: pcm_s16le, 48000 Hz, mono, s16, 768 kb/s
+    Metadata:
+      encoder         : Lavc63.16.100 pcm_s16le
+[Parsed_ebur128_0 @ 000001a87e9d2840] t: 0.199979   TARGET:-23 LUFS    M:-120.7 S:-120.7     I: -70.0 LUFS       LRA:   0.0 LU  FTPK: -14.3 dBFS  TPK: -14.3 dBFS
+[Parsed_ebur128_0 @ 000001a87e9d2840] t: 0.299979   TARGET:-23 LUFS    M:-120.7 S:-120.7     I: -70.0 LUFS       LRA:   0.0 LU  FTPK: -14.4 dBFS  TPK: -14.3 dBFS
+[Parsed_ebur128_0 @ 000001a87e9d2840] t: 0.399979   TARGET:-23 LUFS    M: -25.0 S:-120.7     I: -25.0 LUFS       LRA:   0.0 LU  FTPK: -14.0 dBFS  TPK: -14.0 dBFS
+[Parsed_ebur128_0 @ 000001a87e9d2840] t: 0.499979   TARGET:-23 LUFS    M: -25.1 S:-120.7     I: -25.0 LUFS       LRA:   0.0 LU  FTPK: -13.1 dBFS  TPK: -13.1 dBFS
+[Parsed_ebur128_0 @ 000001a87e9d2840] t: 0.599979   TARGET:-23 LUFS    M: -25.1 S:-120.7     I: -25.1 LUFS       LRA:   0.0 LU  FTPK: -14.3 dBFS  TPK: -13.1 dBFS
+[Parsed_ebur128_0 @ 000001a87e9d2840] t: 0.699979   TARGET:-23 LUFS    M: -25.1 S:-120.7     I: -25.1 LUFS       LRA:   0.0 LU  FTPK: -14.4 dBFS  TPK: -13.1 dBFS
+[Parsed_ebur128_0 @ 000001a87e9d2840] t: 0.799979   TARGET:-23 LUFS    M: -25.1 S:-120.7     I: -25.1 LUFS       LRA:   0.0 LU  FTPK: -13.8 dBFS  TPK: -13.1 dBFS
+[Parsed_ebur128_0 @ 000001a87e9d2840] t: 0.899979   TARGET:-23 LUFS    M: -25.1 S:-120.7     I: -25.1 LUFS       LRA:   0.0 LU  FTPK: -15.2 dBFS  TPK: -13.1 dBFS
+[Parsed_ebur128_0 @ 000001a87e9d2840] t: 0.999979   TARGET:-23 LUFS    M: -25.1 S:-120.7     I: -25.1 LUFS       LRA:   0.0 LU  FTPK: -15.3 dBFS  TPK: -13.1 dBFS
+[Parsed_ebur128_0 @ 000001a87e9d2840] t: 1.099979   TARGET:-23 LUFS    M: -25.2 S:-120.7     I: -25.1 LUFS       LRA:   0.0 LU  FTPK: -14.7 dBFS  TPK: -13.1 dBFS
+[Parsed_ebur128_0 @ 000001a87e9d2840] t: 1.199979   TARGET:-23 LUFS    M: -25.2 S:-120.7     I: -25.1 LUFS       LRA:   0.0 LU  FTPK: -13.7 dBFS  TPK: -13.1 dBFS
+[Parsed_ebur128_0 @ 000001a87e9d2840] t: 1.299979   TARGET:-23 LUFS    M: -25.1 S:-120.7     I: -25.1 LUFS       LRA:   0.0 LU  FTPK: -14.3 dBFS  TPK: -13.1 dBFS
+[Parsed_ebur128_0 @ 000001a87e9d2840] t: 1.399979   TARGET:-23 LUFS    M: -25.1 S:-120.7     I: -25.1 LUFS       LRA:   0.0 LU  FTPK: -14.3 dBFS  TPK: -13.1 dBFS
+[Parsed_ebur128_0 @ 000001a87e9d2840] t: 1.499979   TARGET:-23 LUFS    M: -25.1 S:-120.7     I: -25.1 LUFS       LRA:   0.0 LU  FTPK: -13.0 dBFS  TPK: -13.0 dBFS
+[Parsed_ebur128_0 @ 000001a87e9d2840] t: 1.599979   TARGET:-23 LUFS    M: -25.2 S:-120.7     I: -25.1 LUFS       LRA:   0.0 LU  FTPK: -14.7 dBFS  TPK: -13.0 dBFS
+[Parsed_ebur128_0 @ 000001a87e9d2840] t: 1.699979   TARGET:-23 LUFS    M: -25.2 S:-120.7     I: -25.1 LUFS       LRA:   0.0 LU  FTPK: -14.2 dBFS  TPK: -13.0 dBFS
+[Parsed_ebur128_0 @ 000001a87e9d2840] t: 1.799979   TARGET:-23 LUFS    M: -25.1 S:-120.7     I: -25.1 LUFS       LRA:   0.0 LU  FTPK: -13.6 dBFS  TPK: -13.0 dBFS
+[Parsed_ebur128_0 @ 000001a87e9d2840] t: 1.899979   TARGET:-23 LUFS    M: -25.0 S:-120.7     I: -25.1 LUFS       LRA:   0.0 LU  FTPK: -12.6 dBFS  TPK: -12.6 dBFS
+[Parsed_ebur128_0 @ 000001a87e9d2840] t: 1.999979   TARGET:-23 LUFS    M: -25.0 S:-120.7     I: -25.1 LUFS       LRA:   0.0 LU  FTPK: -15.2 dBFS  TPK: -12.6 dBFS
+[Parsed_ebur128_0 @ 000001a87e9d2840] Summary:
+
+  Integrated loudness:
+    I:         -25.1 LUFS
+    Threshold: -35.1 LUFS
+
+  Loudness range:
+    LRA:         0.0 LU
+    Threshold:   0.0 LUFS
+    LRA low:     0.0 LUFS
+    LRA high:    0.0 LUFS
+
+  True peak:
+    Peak:      -12.6 dBFS
+[out#0/null @ 000001a87e947180] video:0KiB audio:188KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+size=N/A time=00:00:02.00 bitrate=N/A speed=53.2x elapsed=0:00:00.03    

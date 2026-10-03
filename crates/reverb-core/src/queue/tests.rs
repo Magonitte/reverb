@@ -674,6 +674,8 @@ fn raw_job(id: &str, status: JobStatus, stage: JobStage, position: i64, n: u32) 
         profile_id: "original".to_string(),
         options: JobOptions::default(),
         metadata_override: None,
+        confidence: None,
+        metadata_result: None,
         warnings: Vec::new(),
         playlist_ctx: None,
         sync_id: None,
@@ -862,10 +864,22 @@ async fn t12_duplicatas() {
     // A biblioteca também.
     env.db
         .call(|conn| {
-            conn.execute(
-                "INSERT INTO library (file_path, provider, source_id, title, profile_id, added_at, updated_at) \
-                 VALUES ('/m/a.opus', 'youtube', 'vid9', 'A', 'original', 1, 1)",
-                [],
+            crate::library::insert_from_job(
+                conn,
+                &raw_job("library-job", JobStatus::Done, JobStage::Done, 1, 9),
+                &crate::library::DownloadedFile {
+                    file_path: "/m/a.opus".into(),
+                    tags: crate::tagging::TrackTags {
+                        title: "A".into(),
+                        ..Default::default()
+                    },
+                    probe: None,
+                    source_abr_kbps: None,
+                    content_type: crate::metadata::ContentType::Music,
+                    has_synced_lyrics: false,
+                    cover_source: None,
+                    replaygain_db: None,
+                },
             )?;
             Ok(())
         })
@@ -1048,3 +1062,8 @@ async fn enqueue_valida_a_entrada() {
         .unwrap_err();
     assert_eq!(bad_profile.kind(), "invalid");
 }
+
+mod collection;
+mod metadata;
+mod postprocess;
+mod sync;

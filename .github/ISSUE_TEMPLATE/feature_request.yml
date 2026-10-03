@@ -1,0 +1,22 @@
+name: Sugerir melhoria
+description: Descreva uma necessidade de uso ou desenvolvimento.
+title: "[Melhoria] "
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: Necessidade
+      description: Qual situação ou problema você precisa resolver?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Comportamento desejado
+      description: Dê um exemplo de como a melhoria seria utilizada.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexto e alternativas

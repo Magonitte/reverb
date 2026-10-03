@@ -1,0 +1,118 @@
+// T10 e T11 (F07): fluxo de download no app Tauri real, com rede (yt-dlp e FFmpeg de verdade).
+import { existsSync, readdirSync, statSync } from "node:fs";
+import { join } from "node:path";
+import { byText, invoke, openTab, submitLink, waitForHome, waitForJob } from "../helpers.mjs";
+
+const FX1_URL = "https://www.youtube.com/watch?v=jNQXAC9IVRw";
+const FX3_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+const outputDir = process.env.REVERB_E2E_OUTPUT_DIR;
+
+/** Arquivos com a extensão dada, em qualquer subpasta. */
+function filesWithExtension(dir, extension) {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(dir, entry.name);
+    if (entry.isDirectory()) return filesWithExtension(path, extension);
+    return path.endsWith(extension) ? [path] : [];
+  });
+}
+
+describe("fluxo de download no app real", () => {
+  // Falha clara se a janela não subir.
+  before(async () => {
+    await waitForHome();
+  });
+
+  it("T10: colar FX1 ⇒ Preview ⇒ Adicionar à fila ⇒ Concluído com o arquivo .opus", async () => {
+    await submitLink(FX1_URL);
+
+    const title = await $('[data-testid="preview-title"]');
+    await title.waitForDisplayed({ timeout: 90_000 });
+    await expect(title).toHaveText("Me at the zoo");
+    // O codec real varia com o que o YouTube serve (AAC 130 kbps ou Opus); o selo precisa existir.
+    await expect($('[data-testid="source-quality"]')).toHaveText(
+      expect.stringMatching(/^Fonte: \S+ \d+ kbps$/),
+    );
+
+    const add = await byText("button", "Adicionar à fila");
+    await add.click();
+
+    await $('[data-testid="nav-activity"]').click();
+    await openTab("Concluídos");
+
+    const job = await waitForJob((j) => j.status === "done", {
+      timeout: 120_000,
+      message: "o download não concluiu em 120 s",
+    });
+    const card = await $('[data-testid="job-card"][data-status="done"]');
+    await card.waitForDisplayed({ timeout: 10_000 });
+    await expect(card).toHaveText(expect.stringContaining("Me at the zoo"));
+
+    expect(job.outputPath).toMatch(/\.opus$/);
+    expect(job.outputPath.startsWith(outputDir)).toBe(true);
+    expect(existsSync(job.outputPath)).toBe(true);
+    expect(statSync(job.outputPath).size).toBeGreaterThan(10_000);
+    expect(filesWithExtension(outputDir, ".opus")).toContain(job.outputPath);
+  });
+
+  it("T11: cancelar um download em andamento (limite de velocidade baixo) ⇒ Cancelado", async () => {
+    // `preferOfficialAudio` desligado: com ele o job de FX3 troca o clipe pela faixa oficial (F08/T15)
+    // e o `sourceId` mudaria; este teste é sobre cancelar um download, não sobre a fonte.
+    await invoke("settings_update", { patch: { speedLimitMbps: 0.1, preferOfficialAudio: false } });
+    try {
+      // O app reabre no Início a cada sessão; a Atividade (T10) pode estar aberta ainda.
+      await $('[data-testid="nav-home"]').click();
+      await submitLink(FX3_URL);
+      const title = await $('[data-testid="preview-title"]');
+      await title.waitForDisplayed({ timeout: 90_000 });
+      await (await byText("button", "Baixar agora")).click();
+
+      await $('[data-testid="nav-activity"]').click();
+      const running = await waitForJob(
+        (j) => j.sourceId === "dQw4w9WgXcQ" && j.stage === "downloading",
+        {
+          timeout: 120_000,
+          message: "o download não começou em 120 s",
+        },
+      );
+      await browser.pause(2000); // deixa alguns bytes baixarem antes de cancelar
+      expect(running.status).toBe("running");
+
+      const cancel = await $('//button[starts-with(@aria-label, "Cancelar ")]');
+      await cancel.waitForClickable();
+      await cancel.click();
+
+      await waitForJob((j) => j.sourceId === "dQw4w9WgXcQ" && j.status === "cancelled", {
+        timeout: 60_000,
+        message: "o job não ficou Cancelado em 60 s",
+      });
+      await openTab("Falhas");
+      const card = await $('[data-testid="job-card"][data-status="cancelled"]');
+      await card.waitForDisplayed({ timeout: 10_000 });
+      await expect(card).toHaveText(expect.stringContaining("Cancelado"));
+      expect(filesWithExtension(outputDir, ".opus")).toHaveLength(1); // só o do T10
+    } finally {
+      await invoke("settings_update", { patch: { speedLimitMbps: 0, preferOfficialAudio: true } });
+    }
+  });
+
+  it("F09 T13: baixar FX2 ⇒ capa embutida no concluído ⇒ abrir pasta sem erro", async () => {
+    await $('[data-testid="nav-home"]').click();
+    await submitLink("https://music.youtube.com/watch?v=lYBUbBu4W08");
+    await $('[data-testid="preview-title"]').waitForDisplayed({ timeout: 90_000 });
+    await (await byText("button", "Baixar agora")).click();
+    const job = await waitForJob((j) => j.sourceId === "lYBUbBu4W08" && j.status === "done", { timeout: 240_000 });
+    expect(job.libraryId).toBeGreaterThan(0);
+    expect(existsSync(job.outputPath)).toBe(true);
+    await $('[data-testid="nav-activity"]').click();
+    await openTab("Concluídos");
+    const cover = await $('//li[@data-testid="job-card"][.//p[text()="Never Gonna Give You Up"]]//img[@data-testid="job-cover"]');
+    await cover.waitForDisplayed({ timeout: 10_000 });
+    expect(await cover.getAttribute("src")).toMatch(/^data:image\/jpeg;base64,/);
+    const width = await browser.execute((image) => image.naturalWidth, cover);
+    expect(width).toBe(256);
+    const reveal = await $('//button[@aria-label="Mostrar Never Gonna Give You Up na pasta"]');
+    await reveal.click();
+    await browser.pause(500);
+    expect(await $('[role="alert"]').isExisting()).toBe(false);
+  });
+});

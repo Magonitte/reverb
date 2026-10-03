@@ -10,7 +10,8 @@
     "retry": "Try again",
     "loading": "Loading…",
     "save": "Save",
-    "back": "Back"
+    "back": "Back",
+    "delete": "Delete"
   },
   "titlebar": {
     "minimize": "Minimize",
@@ -30,7 +31,27 @@
   "commandBar": {
     "placeholder": "Paste a link or search for a song…",
     "label": "Command bar",
-    "hint": "Paste a YouTube link or type a song name. Esc closes."
+    "hint": "Paste a YouTube link or type a song name. Esc closes.",
+    "unsupported": "That link is not from YouTube or YouTube Music.",
+    "hint_video": "Video — Enter opens the preview",
+    "hint_collection": "Playlist, album or channel — Enter opens the collection",
+    "hint_search": "Search — Enter searches",
+    "hint_unsupported": "Unsupported link",
+    "sourcesLabel": "Where to search",
+    "sources": {
+      "ytmusic": "YouTube Music",
+      "youtube": "YouTube",
+      "archive": "Internet Archive",
+      "jamendo": "Jamendo"
+    },
+    "noResults": {
+      "title": "Nothing found",
+      "description": "Try other words or paste the track link."
+    },
+    "resultsLabel": "Search results",
+    "openPreview": "Open the preview of {{title}}",
+    "downloadItem": "Download {{title}}",
+    "download": "Download"
   },
   "shortcuts": {
     "commandBar": "Open the command bar",
@@ -77,15 +98,106 @@
     "empty": {
       "title": "Nothing downloading right now",
       "description": "Paste a link in the bar above or search for a song to get started."
-    }
+    },
+    "quickActions": "Quick actions",
+    "actions": {
+      "pasteAndDownload": "Paste and download",
+      "analyzePlaylist": "Analyze playlist",
+      "editTags": "Edit a file's tags",
+      "openMusicFolder": "Open music folder"
+    },
+    "analyzePlaylistHint": "Paste the playlist link in the bar and press Enter.",
+    "clipboardEmpty": "The clipboard is empty.",
+    "recent": "Recent",
+    "revealRecent": "Show {{title}} in folder"
   },
   "preview": {
     "title": "Preview",
-    "subtitle": "Check the track before downloading."
+    "subtitle": "Check the track before downloading.",
+    "addToQueue": "Add to queue",
+    "downloadNow": "Download now",
+    "kindMusic": "Music",
+    "kindOther": "Other",
+    "sourceQuality": "Source: {{codec}} {{abr}} kbps",
+    "alreadyDownloaded": "Already downloaded",
+    "profile": "Output format",
+    "options": "Options",
+    "option": {
+      "fetchMetadata": "Fetch metadata",
+      "fetchLyrics": "Fetch lyrics",
+      "fetchArtwork": "Download cover art",
+      "sponsorblock": "Remove non-music segments (SponsorBlock)",
+      "autoOrganize": "Organize into folders"
+    },
+    "folder": "Destination folder",
+    "defaultFolder": "Default folder (Music/Reverb)",
+    "chooseFolder": "Choose…",
+    "duplicate": {
+      "title": "Download again?",
+      "message": "This track was already downloaded or is already in the queue with this format. Download it again?",
+      "confirm": "Download again"
+    },
+    "official": {
+      "title": "Official version available",
+      "reason": "Studio audio, complete metadata.",
+      "toggle": "Download the official version"
+    },
+    "metadata": {
+      "title": "Metadata",
+      "preview": "Preview metadata",
+      "confidence": "{{percent}}% confidence",
+      "notMusic": "Doesn't look like music: the video title and channel will be used.",
+      "edited": "Your edits will be applied and override the automatic identification.",
+      "bucket": {
+        "auto": "Applied automatically.",
+        "review": "Medium confidence: goes to review.",
+        "none": "No reliable match: the video data is kept."
+      },
+      "source": {
+        "youtube_music": "Official YouTube Music track",
+        "youtube": "Video data",
+        "deezer": "Deezer",
+        "itunes": "iTunes",
+        "musicbrainz": "MusicBrainz",
+        "user": "Your edit"
+      },
+      "field": {
+        "title": "Title",
+        "artist": "Artist",
+        "album": "Album",
+        "year": "Year",
+        "genre": "Genre",
+        "trackNo": "Track no."
+      }
+    }
   },
   "collection": {
     "title": "Collection",
-    "subtitle": "Choose which tracks of the playlist or album to download."
+    "subtitle": "Choose which tracks of the playlist or album to download.",
+    "empty": {
+      "title": "No collection open",
+      "description": "Paste a playlist, album or channel link in the Home bar.",
+      "action": "Go to Home"
+    },
+    "summary": "{{channel}} · {{count}} tracks · {{duration}}",
+    "filter": "Filter tracks",
+    "selectAll": "Select all",
+    "selectNone": "Clear selection",
+    "selectNew": "Select only new",
+    "downloadSelected": "Download selected ({{count}})",
+    "selectTrack": "Select {{title}}",
+    "columns": {
+      "title": "Track",
+      "duration": "Duration",
+      "state": "Status"
+    },
+    "alreadyDownloaded": "Downloaded",
+    "tableLabel": "Collection tracks",
+    "queueNearLimit": "The queue is almost full ({{count}}/{{limit}}).",
+    "queued_one": "{{count}} track added to the queue",
+    "queued_other": "{{count}} tracks added to the queue",
+    "queuedWithExisting_one": "{{count}} track added; {{existing}} was already queued",
+    "queuedWithExisting_other": "{{count}} tracks added; {{existing}} were already queued"
   },
   "activity": {
     "title": "Activity",
@@ -110,7 +222,33 @@
         "title": "No failures",
         "description": "If something goes wrong, you can retry it from here."
       }
-    }
+    },
+    "eta": "{{eta}} left",
+    "attempt": "Attempt {{attempt}}/{{max}}",
+    "status": {
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    },
+    "retryJob": "Retry {{title}}",
+    "openFolder": "Show {{title}} in folder",
+    "cancelJob": "Cancel {{title}}",
+    "removeJob": "Remove {{title}} from the list",
+    "dragJob": "Reorder {{title}}",
+    "resumeQueue": "Resume queue",
+    "pauseQueue": "Pause queue",
+    "cancelAll": "Cancel all",
+    "clearFinished": "Clear finished",
+    "queueNearLimit": "The queue is almost full ({{count}}/{{limit}}).",
+    "paused": "The queue is paused. Running downloads will finish, but no new ones will start.",
+    "cancelAllConfirm": {
+      "title": "Cancel all downloads?",
+      "message": "Running and pending downloads will be cancelled.",
+      "confirm": "Cancel all"
+    },
+    "confidence": "{{percent}}%",
+    "confidenceReview": "{{percent}}% · review",
+    "confidenceHint": "Identified by: {{source}}",
+    "openFile": "Open file"
   },
   "library": {
     "title": "Library",
@@ -118,7 +256,69 @@
     "empty": {
       "title": "Your library is empty",
       "description": "Tracks you download will show up here."
-    }
+    },
+    "search": "Search the library",
+    "format": "Format",
+    "date": "Added",
+    "all": "All",
+    "artist": "Artist",
+    "album": "Album",
+    "sort": "Sort by",
+    "needsReview": "Needs review",
+    "missing": "Missing file",
+    "clear": "Clear library",
+    "remove": "Remove records",
+    "trash": "Move files to trash",
+    "redownload": "Download again",
+    "selectPage": "Select this page",
+    "selectTrack": "Select {{title}}",
+    "track": "Track",
+    "actions": "Actions",
+    "open": "Open",
+    "folder": "Folder",
+    "openTrack": "Open {{title}}",
+    "revealTrack": "Show {{title}} in folder",
+    "page": "{{start}}–{{end}} of {{total}} tracks",
+    "previous": "Previous",
+    "next": "Next",
+    "dates": {
+      "all": "All dates",
+      "today": "Today",
+      "week": "This week",
+      "month": "This month"
+    },
+    "sorts": {
+      "added_desc": "Newest first",
+      "title": "Title",
+      "artist": "Artist",
+      "album": "Album"
+    },
+    "confirm": {
+      "clear": {
+        "title": "Clear library?",
+        "message": "Remove all library records. Your audio files will remain on disk."
+      },
+      "remove": {
+        "title": "Remove selected records?",
+        "message": "Remove the selected tracks from the library. Your audio files will remain on disk."
+      },
+      "trash": {
+        "title": "Move selected files to trash?",
+        "message": "Move the selected audio files and their lyrics to the system trash and remove their library records."
+      }
+    },
+    "selection": "Select",
+    "cover": "Cover",
+    "importFile": "Import file",
+    "importFolder": "Import folder",
+    "rescan": "Rescan folder",
+    "importResult": "{{imported}} imported · {{skipped}} already registered · {{failed}} failed",
+    "editTrack": "Edit tags of {{title}}",
+    "view": "View",
+    "listView": "List",
+    "albumView": "Albums",
+    "importProgress": "Importing {{processed}} of {{total}} files…",
+    "addedAt": "Date added"
   },
   "review": {
     "title": "Review",
@@ -126,7 +326,18 @@
     "empty": {
       "title": "Nothing to review",
       "description": "When Reverb is unsure about a track, it shows up here."
-    }
+    },
+    "shortcuts": "J/K: navigate · 1–5: choose · Enter: apply · M: keep",
+    "candidates": "Candidates",
+    "choose": "Choose {{number}}: {{title}}",
+    "noCandidates": "No candidates. Edit the metadata manually.",
+    "apply": "Apply candidate",
+    "keep": "Keep current metadata",
+    "manual": "Edit manually",
+    "position": "{{index}} of {{total}} to review",
+    "nextPage": "Next page",
+    "current": "Current metadata",
+    "duration": "{{seconds}} seconds"
   },
   "tagEditor": {
     "title": "Tag editor",
@@ -134,6 +345,30 @@
     "empty": {
       "title": "No file open",
       "description": "Open a file from the Library to edit its tags."
+    },
+    "open": "Open audio file…",
+    "saved": "Tags saved.",
+    "cover": "Album cover",
+    "pickCover": "Choose cover file…",
+    "coverUrl": "Cover URL",
+    "fetchCover": "Load cover URL",
+    "removeCover": "Remove cover",
+    "search": "Search metadata",
+    "apply": "Use metadata",
+    "reorganize": "Reorganize this library file",
+    "synced": "Synchronized lyrics",
+    "plain": "Plain lyrics",
+    "fields": {
+      "title": "Title",
+      "artist": "Artist",
+      "album": "Album",
+      "albumArtist": "Album artist",
+      "genre": "Genre",
+      "year": "Year",
+      "trackNo": "Track number",
+      "trackTotal": "Total tracks",
+      "discNo": "Disc",
+      "lyrics": "Lyrics"
     }
   },
   "playlists": {
@@ -218,11 +453,113 @@
         "title": "Advanced",
         "description": "JS runtime, diagnostics and backup are coming soon."
       }
+    },
+    "postprocess": {
+      "autoOrganize": "Organize downloads into folders",
+      "fetchMetadata": "Identify music",
+      "preferOfficialAudio": "Prefer official audio",
+      "offlineMode": "Offline mode",
+      "fetchArtwork": "Fetch artwork",
+      "writeFolderCover": "Write cover.jpg in the album folder",
+      "fetchLyrics": "Fetch lyrics from LRCLIB",
+      "writeLrcFile": "Write synchronized lyrics as .lrc",
+      "normalizeVolume": "Analyze ReplayGain",
+      "replayGainHint": "Stores volume adjustment tags without changing the audio.",
+      "template": "File naming template",
+      "variables": "Variables: {artist}, {albumartist}, {album}, {title}, {track:02}, {disc}, {year}, {genre}, {channel}, {source_id}, {playlist}, {playlist_index}.",
+      "invalidTemplate": "Check the variables and braces in your template.",
+      "preview": "Example path",
+      "previewPending": "Updating preview…",
+      "watchLibrary": "Watch library folder",
+      "trimSilence": "Remove silence at start and end",
+      "verifyLosslessOnImport": "Verify FLAC and WAV on import"
+    },
+    "desktop": {
+      "title": "Desktop behavior",
+      "launchAtStartup": "Launch at startup",
+      "startMinimized": "Start minimized",
+      "minimizeToTray": "Minimize to tray",
+      "closeToTray": "Close to tray",
+      "completionNotifications": "Download completion notifications"
+    },
+    "advanced": {
+      "tools": "Download tools",
+      "weekly": "Run weekly diagnostics",
+      "diagnostics": "Diagnostics",
+      "run": "Run now",
+      "last": "Last run: {{date}}",
+      "never": "Diagnostics have not run yet.",
+      "result": "Diagnostic results",
+      "data": "Data and backups",
+      "backupHelp": "Backups contain the database and settings. Audio, API secrets and cookies are excluded. Restoring restarts Reverb.",
+      "portable": "Portable mode",
+      "installed": "Installed mode",
+      "logs": "Export logs",
+      "backup": "Create backup",
+      "restore": "Restore backup",
+      "open": "Open data folder",
+      "reset": "Restore defaults",
+      "failed": "The operation failed. Check your tools, connection and selected file, then try again.",
+      "exported": "Archive saved",
+      "restarting": "Backup restored. Restarting Reverb…",
+      "restoreConfirm": "Replace the current database and settings with this backup? Reverb will save a backup of the current data, stop downloads and restart.",
+      "resetConfirm": "Restore default settings? API secrets are kept. The setup wizard will open again.",
+      "levels": {
+        "ok": "OK",
+        "warning": "Warning",
+        "error": "Error"
+      },
+      "items": {
+        "ytdlp": "yt-dlp executable",
+        "ffmpeg": "FFmpeg executable",
+        "ffprobe": "ffprobe executable",
+        "runtime": "JavaScript runtime",
+        "ytdlpVersion": "Latest yt-dlp version",
+        "simulate": "YouTube extraction test",
+        "outputWrite": "Output folder access",
+        "diskSpace": "Available disk space",
+        "database": "Database integrity",
+        "pot": "PO token provider"
+      }
     }
   },
   "onboarding": {
     "title": "Welcome to Reverb",
-    "subtitle": "Let's get everything ready so you can download your favorite music."
+    "subtitle": "Let's get everything ready so you can download your favorite music.",
+    "install": "Install tools",
+    "finish": "Start using Reverb",
+    "back": "Back",
+    "stepsLabel": "Setup steps",
+    "folder": "Music folder",
+    "missing": "Not installed",
+    "installed": "Installed",
+    "next": "Continue",
+    "runtime": "JavaScript runtime",
+    "runtimes": {
+      "auto": "Automatic",
+      "system-deno": "System Deno",
+      "system-node": "System Node",
+      "managed-deno": "Managed Deno"
+    },
+    "installFailed": "Installation failed. Check your connection and try again.",
+    "toolsRequired": "Install the required tools before finishing",
+    "readyHelp": "You are ready to download. You can change these choices in Settings.",
+    "metadataHelp": "Artwork, lyrics and metadata work without API keys. You can configure optional services later.",
+    "toolsReady": "Tools ready",
+    "folderInvalid": "Choose an absolute folder path",
+    "clipboardWatch": "Watch copied links",
+    "steps": {
+      "ready": "Ready",
+      "tools": "Tools",
+      "welcome": "Welcome",
+      "integration": "Integration",
+      "folder": "Music folder",
+      "metadata": "Metadata"
+    },
+    "chooseFolder": "Choose folder",
+    "welcomeHelp": "Download tracks and playlists with organized artwork, lyrics and metadata.",
+    "toolsHelp": "yt-dlp and FFmpeg are required. Use system Node or Deno, or install managed Deno.",
+    "launchAtStartup": "Start with the system"
   },
   "updater": {
     "idle": "Idle",
@@ -247,10 +584,286 @@
     "missing": "Not installed"
   },
   "errors": {
-    "extractorPersistent": "YouTube changed and even the latest yt-dlp could not keep up. Try again later."
+    "extractorPersistent": "YouTube changed and even the latest yt-dlp could not keep up. Try again later.",
+    "cancelled": "Cancelled.",
+    "unavailable": "This video is unavailable.",
+    "age_restricted": "This video is age-restricted and requires a login.",
+    "bot_check": "YouTube asked for verification. Try again in a moment.",
+    "geo_blocked": "This video is not available in your region.",
+    "disk": "Could not write to disk. Check the free space and the destination folder.",
+    "ffmpeg": "Failed to convert the audio.",
+    "extractor": "YouTube changed and yt-dlp could not keep up.",
+    "network": "Network failure. Check your connection.",
+    "unknown": "Something went wrong.",
+    "tool_missing": "A required tool is not installed yet.",
+    "file_missing": "The file was not found.",
+    "duplicate": "This track was already downloaded or is already queued.",
+    "queue_full": "The queue is full.",
+    "browser_not_found": "Browser or cookie profile not found. Install Firefox or select a cookies file.",
+    "cookies_locked": "The cookie database is locked. Close the browser and try again, or use Firefox.",
+    "cookies_decrypt": "Could not decrypt Chrome/Edge cookies. Use Firefox or a cookies file.",
+    "provider_api": "The provider rejected the request. Check credentials and API access restrictions.",
+    "provider_key": "Configure the provider key first.",
+    "bandcamp_restricted": "This release requires a purchase or email. Open it in your browser.",
+    "jamendo_key": "Configure your Jamendo Client ID in Settings › Metadata.",
+    "spotify_credentials_missing": "Configure Spotify credentials in Settings › Metadata.",
+    "spotify_playlist_restricted": "Spotify restricted this playlist. Access depends on your application permissions and mode; some endpoints require owner or collaborator authentication.",
+    "spotify_auth": "Spotify denied access. Check credentials and permissions.",
+    "spotify_not_found": "Album or track not found on Spotify.",
+    "deezer_not_found": "Deezer collection not found. It may be private or removed.",
+    "import_response": "The source returned an invalid response.",
+    "import_api": "Could not query the source.",
+    "import_expired": "Analyze the collection again before downloading.",
+    "import_url": "The short link does not point to a valid collection."
   },
   "notices": {
     "potEnabled": "YouTube asked for verification: Reverb enabled the PO token provider.",
     "ytdlpNightly": "We switched yt-dlp to the nightly channel to keep downloads working."
+  },
+  "toasts": {
+    "queued": "Added to the queue"
+  },
+  "warnings": {
+    "artwork": "Artwork could not be fetched.",
+    "lyrics": "Lyrics could not be fetched.",
+    "loudness": "ReplayGain could not be analyzed.",
+    "other": "Some additional information could not be saved.",
+    "trimReencode": "Silence trimming reencodes original audio.",
+    "fingerprint": "Audio fingerprint lookup failed.",
+    "originalUnavailable": "Original file unavailable; using the best free stream."
+  },
+  "sync": {
+    "thisCollection": "Synchronize this playlist",
+    "create": "Create synchronization",
+    "edit": "Edit synchronization",
+    "url": "Playlist, album or channel URL",
+    "name": "Playlist name",
+    "nameHint": "Optional: leave blank to follow the source title.",
+    "interval": "Synchronization interval",
+    "manual": "Manual only",
+    "weekly": "Weekly",
+    "hours_one": "Every {{count}} hour",
+    "hours_other": "Every {{count}} hours",
+    "profile": "Audio profile",
+    "folder": "Output folder",
+    "defaultFolder": "Default download folder",
+    "browse": "Browse…",
+    "limit": "Limit to the first tracks",
+    "limitHint": "Leave blank to synchronize the entire collection.",
+    "removeDeleted": "Remove files that left the playlist",
+    "removeHint": "Audio and lyrics go to Trash. Off by default.",
+    "writeM3u": "Generate .m3u8 playlist",
+    "analyzing": "Analyzing collection… this may take a few minutes.",
+    "run": "Synchronize now",
+    "enabledFor": "Enable synchronization for {{title}}",
+    "trackCount_one": "{{count}} track",
+    "trackCount_other": "{{count}} tracks",
+    "last": "Last synchronization",
+    "next": "Next synchronization",
+    "never": "Not synchronized yet",
+    "disabled": "Disabled",
+    "due": "At the next check",
+    "running": "Synchronizing",
+    "partial": "With failures",
+    "pending": "Awaiting synchronization",
+    "upToDate": "Up to date",
+    "itemRemoved": "Removed from playlist",
+    "itemMissing": "File missing",
+    "itemDownloaded": "Downloaded",
+    "itemFailed": "Failed",
+    "itemRunning": "Downloading",
+    "itemQueued": "Queued",
+    "back": "Back to playlists",
+    "state": "State",
+    "position": "No.",
+    "tableLabel": "Synchronized tracks",
+    "show": "Folder",
+    "duplicates_one": "{{count}} duplicate track: kept the first occurrence.",
+    "duplicates_other": "{{count}} duplicate tracks: kept the first occurrence of each.",
+    "unavailable_one": "{{count}} unavailable track ignored.",
+    "unavailable_other": "{{count}} unavailable tracks ignored.",
+    "deleteTitle": "Delete synchronization?",
+    "deleteDescription": "Deleting “{{title}}” stops its synchronization.",
+    "deleteFiles": "Also send audio and lyrics to Trash",
+    "completed_one": "Playlist {{title}}: {{count}} new track · {{failed}} failures",
+    "completed_other": "Playlist {{title}}: {{count}} new tracks · {{failed}} failures",
+    "summary_one": "{{count}} synchronized playlist",
+    "summary_other": "{{count}} synchronized playlists",
+    "nextHours_one": "Next in {{count}} hour",
+    "nextHours_other": "Next in {{count}} hours",
+    "pacing": "Pause between playlist track starts (seconds)"
+  },
+  "integration": {
+    "linkAdded": "Link added to the queue",
+    "linkFailed": "Could not add the link to the queue",
+    "bookmarkletCode": "Bookmarklet code",
+    "bookmarkletCopied": "Bookmarklet copied",
+    "copyBookmarklet": "Copy bookmarklet",
+    "bookmarkletTitle": "Download from your browser",
+    "bookmarkletHelp": "Copy the code and save it as the address of a bookmark, or drag the Reverb bookmark to your bookmarks bar. Use it on a YouTube page to add audio to the Reverb queue.",
+    "autostartFailed": "Could not change startup with the system",
+    "clipboardWatch": "Watch copied links",
+    "analyzeCopied": "Analyze",
+    "clipboardDetected": "Copied link detected",
+    "downloadCopied": "Download",
+    "shortcutInvalid": "Use a valid combination, such as Ctrl+Shift+D",
+    "shortcutDisable": "Disable shortcut",
+    "shortcutHelp": "Click the field and press a combination with Ctrl, Alt or Shift.",
+    "wayland": "Global shortcuts may not work on Linux with Wayland.",
+    "shortcut": "Global shortcut",
+    "shortcutConflict": "Shortcut is already in use or unavailable",
+    "shortcutEmpty": "None",
+    "shortcutRecording": "Press the keys…",
+    "testLink": "Deep link to test",
+    "test": "Test link",
+    "testSuccess": "Link received",
+    "testFailed": "Invalid or unsupported deep link"
+  },
+  "quality": {
+    "cookies": "Cookies and YouTube Premium",
+    "source": "Cookie source",
+    "file": "Cookies file (full path)",
+    "useFile": "Use file",
+    "hint": "Use Firefox to avoid Chrome/Edge locks and decryption failures. Cookies are excluded from logs and backups.",
+    "test": "Test cookies",
+    "testing": "Testing…",
+    "premium": "Premium available",
+    "standard": "Standard quality",
+    "sources": {
+      "none": "No cookies",
+      "firefox": "Firefox",
+      "chrome": "Chrome",
+      "edge": "Edge",
+      "brave": "Brave",
+      "file": "File"
+    },
+    "split": "Split into tracks",
+    "splitMode": "Videos with chapters",
+    "splitModes": {
+      "ask": "Ask in preview",
+      "always": "Always split",
+      "never": "Never split"
+    },
+    "trim": "Trim audio",
+    "waveform": "Audio waveform",
+    "start": "Start (mm:ss.s)",
+    "end": "End (mm:ss.s)",
+    "trimHint": "Adjust the markers and save. The previous audio is moved to the recycle bin and tags are preserved.",
+    "upgrade": "Improve quality",
+    "scanAll": "Check entire library quality",
+    "enqueue": "Queue improvements",
+    "queued": "Improvements queued",
+    "found": "{{count}} improvements available",
+    "sourceQuality": "Source",
+    "apis": "Optional providers",
+    "providers": {
+      "spotify": "Spotify",
+      "discogs": "Discogs",
+      "acoustid": "AcoustID",
+      "jamendo": "Jamendo"
+    },
+    "fields": {
+      "spotifyClientId": "Spotify Client ID",
+      "spotifyClientSecret": "Spotify Client Secret",
+      "discogsToken": "Discogs token",
+      "acoustidKey": "AcoustID key",
+      "jamendoClientId": "Jamendo Client ID"
+    },
+    "configured": "Configured",
+    "notConfigured": "Not configured",
+    "apiOk": "Connection valid",
+    "testApi": "Test connection",
+    "clearKey": "Remove key"
+  },
+  "sources": {
+    "youtube": "YouTube",
+    "soundcloud": "SoundCloud",
+    "bandcamp": "Bandcamp",
+    "archive": "Internet Archive",
+    "jamendo": "Jamendo"
+  },
+  "lossless": {
+    "title": "Verify lossless",
+    "heuristic": "Approximate spectral analysis. The result suggests a probable origin and cannot guarantee recording quality.",
+    "spectrogram": "Audio spectrogram",
+    "checking": "Analyzing spectrum…",
+    "flac": "FLAC",
+    "verifyOnImport": "Verify FLAC and WAV on import",
+    "verdicts": {
+      "lossless": "Probably lossless",
+      "lossy_16k": "Probably lossy source (16 kHz cutoff)",
+      "lossy_19k": "Probably lossy source (19 kHz cutoff)",
+      "inconclusive": "Inconclusive result"
+    }
+  },
+  "sourcesOpen": "Open in browser",
+  "imports": {
+    "summary": "{{provider}} import · {{count}} tracks",
+    "hint": "Matched tracks are selected. Select uncertain matches only after reviewing.",
+    "filter": "Filter matches",
+    "all": "All",
+    "ok": "Matched",
+    "review": "Review",
+    "none": "Not found",
+    "selectOk": "Select matched",
+    "match": "Match",
+    "synced": "Synchronization created",
+    "spotifyGuide": "How to configure Spotify",
+    "spotifyDashboard": "Open Spotify dashboard",
+    "step1": "Sign in to the Spotify developer dashboard with your account.",
+    "step2": "Create an application and enable Web API.",
+    "step3": "Copy your Client ID and Client Secret into the fields above and save.",
+    "step4": "Test the connection. Access depends on application permissions; restricted playlists may be unavailable.",
+    "selection": "Selection"
+  },
+  "artists": {
+    "views": "Library views",
+    "tabs": {
+      "library": "Library",
+      "artists": "Followed artists",
+      "missing": "Missing"
+    },
+    "follow": "Follow artist",
+    "check": "Check now",
+    "empty": "No followed artists. Search for an artist to track their discography.",
+    "counts": "{{total}} releases · {{complete}} complete",
+    "edit": "Edit monitoring",
+    "unfollow": "Unfollow",
+    "downloadMissing": "Download missing",
+    "search": "Search artist",
+    "fans": "{{count}} fans",
+    "existing": "Download now",
+    "new": "New releases",
+    "existingOptions": {
+      "all": "Full discography",
+      "latest": "Latest release",
+      "none": "Monitor only"
+    },
+    "newOptions": {
+      "all": "Download automatically",
+      "notify": "Notify and show as missing",
+      "none": "Do not monitor"
+    },
+    "types": "Release types",
+    "releaseTypes": {
+      "album": "Albums",
+      "ep": "EPs",
+      "single": "Singles"
+    },
+    "excludeVariants": "Exclude live, remix and duplicate editions",
+    "states": {
+      "complete": "Complete · {{present}} of {{total}}",
+      "incomplete": "Incomplete · {{present}} of {{total}}",
+      "absent": "Absent · 0 of {{total}}",
+      "unmonitored": "Not monitored"
+    },
+    "newRelease": "New release by {{artist}}: {{title}}",
+    "qualityTarget": "Source quality target",
+    "targetOff": "Off",
+    "autoUpgrade": "Improve quality automatically",
+    "interval": "Check artists every (hours)",
+    "incomplete": "{{count}} incomplete",
+    "nextCheck": "Next check: {{date}}",
+    "pendingCheck": "pending"
   }
 }

@@ -21,7 +21,7 @@ pub struct Thumbnail {
     pub height: Option<u32>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, TS)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct Chapter {
@@ -38,7 +38,7 @@ struct RawChapter {
 }
 
 /// Formato só de áudio (sem vídeo e com codec de áudio conhecido).
-#[derive(Debug, Clone, PartialEq, Serialize, TS)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct AudioFormat {
@@ -48,7 +48,7 @@ pub struct AudioFormat {
     pub ext: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, TS)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct VideoInfo {
@@ -197,6 +197,7 @@ pub struct CollectionInfo {
     pub id: Option<String>,
     pub title: Option<String>,
     pub channel: Option<String>,
+    pub thumbnail: Option<String>,
     pub entries: Vec<CollectionEntry>,
 }
 
@@ -214,6 +215,9 @@ struct RawCollection {
     title: Option<String>,
     channel: Option<String>,
     uploader: Option<String>,
+    thumbnail: Option<String>,
+    #[serde(default, deserialize_with = "null_default")]
+    thumbnails: Vec<Thumbnail>,
     #[serde(default, deserialize_with = "null_default")]
     entries: Vec<Option<RawEntry>>,
 }
@@ -239,6 +243,9 @@ impl CollectionInfo {
             id: raw.id,
             title: raw.title,
             channel: raw.channel.or(raw.uploader),
+            thumbnail: raw
+                .thumbnail
+                .or_else(|| raw.thumbnails.last().map(|image| image.url.clone())),
             entries,
         })
     }

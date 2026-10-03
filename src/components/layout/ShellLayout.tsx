@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Outlet } from "react-router";
 import { CommandBarOverlay } from "@/components/CommandBarOverlay";
+import { PreviewSheet } from "@/components/preview/PreviewSheet";
 import { ToastHost } from "@/components/ui/Toast";
 import { useGlobalShortcuts } from "@/hooks/useGlobalShortcuts";
 import { BottomNav } from "./BottomNav";
@@ -33,6 +34,7 @@ export function ShellLayout() {
         <BottomNav />
       </div>
       <CommandBarOverlay />
+      <PreviewSheet />
       <ToastHost />
     </div>
   );

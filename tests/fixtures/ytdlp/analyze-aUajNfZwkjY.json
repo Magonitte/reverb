@@ -1,0 +1,2113 @@
+{
+ "id": "aUajNfZwkjY",
+ "title": "(When You Gonna) Give It Up to Me [Radio Version]",
+ "formats": [
+  {
+   "format_id": "sb3",
+   "format_note": "storyboard",
+   "ext": "mhtml",
+   "protocol": "mhtml",
+   "acodec": "none",
+   "vcodec": "none",
+   "width": 48,
+   "height": 27,
+   "fps": 0.4098360655737705,
+   "rows": 10,
+   "columns": 10,
+   "audio_ext": "none",
+   "video_ext": "none",
+   "vbr": 0,
+   "abr": 0,
+   "tbr": null,
+   "resolution": "48x27",
+   "aspect_ratio": 1.78,
+   "filesize_approx": null,
+   "format": "sb3 - 48x27 (storyboard)"
+  },
+  {
+   "format_id": "sb2",
+   "format_note": "storyboard",
+   "ext": "mhtml",
+   "protocol": "mhtml",
+   "acodec": "none",
+   "vcodec": "none",
+   "width": 45,
+   "height": 45,
+   "fps": 0.5040983606557377,
+   "rows": 10,
+   "columns": 10,
+   "audio_ext": "none",
+   "video_ext": "none",
+   "vbr": 0,
+   "abr": 0,
+   "tbr": null,
+   "resolution": "45x45",
+   "aspect_ratio": 1,
+   "filesize_approx": null,
+   "format": "sb2 - 45x45 (storyboard)"
+  },
+  {
+   "format_id": "sb1",
+   "format_note": "storyboard",
+   "ext": "mhtml",
+   "protocol": "mhtml",
+   "acodec": "none",
+   "vcodec": "none",
+   "width": 90,
+   "height": 90,
+   "fps": 0.5040983606557377,
+   "rows": 5,
+   "columns": 5,
+   "audio_ext": "none",
+   "video_ext": "none",
+   "vbr": 0,
+   "abr": 0,
+   "tbr": null,
+   "resolution": "90x90",
+   "aspect_ratio": 1,
+   "filesize_approx": null,
+   "format": "sb1 - 90x90 (storyboard)"
+  },
+  {
+   "format_id": "sb0",
+   "format_note": "storyboard",
+   "ext": "mhtml",
+   "protocol": "mhtml",
+   "acodec": "none",
+   "vcodec": "none",
+   "width": 180,
+   "height": 180,
+   "fps": 0.5040983606557377,
+   "rows": 3,
+   "columns": 3,
+   "audio_ext": "none",
+   "video_ext": "none",
+   "vbr": 0,
+   "abr": 0,
+   "tbr": null,
+   "resolution": "180x180",
+   "aspect_ratio": 1,
+   "filesize_approx": null,
+   "format": "sb0 - 180x180 (storyboard)"
+  },
+  {
+   "format_id": "233",
+   "format_note": "Default, low",
+   "format_index": null,
+   "language": null,
+   "ext": "mp4",
+   "protocol": "m3u8_native",
+   "preference": null,
+   "quality": -1,
+   "has_drm": false,
+   "vcodec": "none",
+   "source_preference": 0,
+   "available_at": 1790905380,
+   "audio_ext": "mp4",
+   "video_ext": "none",
+   "vbr": 0,
+   "abr": null,
+   "tbr": null,
+   "resolution": "audio only",
+   "aspect_ratio": null,
+   "format": "233 - audio only (Default, low)"
+  },
+  {
+   "format_id": "234",
+   "format_note": "Default, high",
+   "format_index": null,
+   "language": null,
+   "ext": "mp4",
+   "protocol": "m3u8_native",
+   "preference": null,
+   "quality": -1,
+   "has_drm": false,
+   "vcodec": "none",
+   "source_preference": 1,
+   "available_at": 1790905380,
+   "audio_ext": "mp4",
+   "video_ext": "none",
+   "vbr": 0,
+   "abr": null,
+   "tbr": null,
+   "resolution": "audio only",
+   "aspect_ratio": null,
+   "format": "234 - audio only (Default, high)"
+  },
+  {
+   "asr": 22050,
+   "filesize": 1489059,
+   "format_id": "139",
+   "format_note": "low",
+   "source_preference": -1,
+   "fps": null,
+   "audio_channels": 2,
+   "height": null,
+   "quality": 2,
+   "has_drm": false,
+   "tbr": 48.845,
+   "filesize_approx": 1489033,
+   "width": null,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "m4a",
+   "vcodec": "none",
+   "acodec": "mp4a.40.5",
+   "dynamic_range": null,
+   "container": "m4a_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "audio_ext": "m4a",
+   "video_ext": "none",
+   "vbr": 0,
+   "abr": 48.845,
+   "resolution": "audio only",
+   "aspect_ratio": null,
+   "format": "139 - audio only (low)"
+  },
+  {
+   "asr": 48000,
+   "filesize": 1624597,
+   "format_id": "249",
+   "format_note": "low",
+   "source_preference": -1,
+   "fps": null,
+   "audio_channels": 2,
+   "height": null,
+   "quality": 2,
+   "has_drm": false,
+   "tbr": 53.287,
+   "filesize_approx": 1624594,
+   "width": null,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "webm",
+   "vcodec": "none",
+   "acodec": "opus",
+   "dynamic_range": null,
+   "container": "webm_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "audio_ext": "webm",
+   "video_ext": "none",
+   "vbr": 0,
+   "abr": 53.287,
+   "resolution": "audio only",
+   "aspect_ratio": null,
+   "format": "249 - audio only (low)"
+  },
+  {
+   "asr": 48000,
+   "filesize": 2114775,
+   "format_id": "250",
+   "format_note": "low",
+   "source_preference": -1,
+   "fps": null,
+   "audio_channels": 2,
+   "height": null,
+   "quality": 2,
+   "has_drm": false,
+   "tbr": 69.365,
+   "filesize_approx": 2114774,
+   "width": null,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "webm",
+   "vcodec": "none",
+   "acodec": "opus",
+   "dynamic_range": null,
+   "container": "webm_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "audio_ext": "webm",
+   "video_ext": "none",
+   "vbr": 0,
+   "abr": 69.365,
+   "resolution": "audio only",
+   "aspect_ratio": null,
+   "format": "250 - audio only (low)"
+  },
+  {
+   "asr": 44100,
+   "filesize": 3949256,
+   "format_id": "140",
+   "format_note": "medium",
+   "source_preference": -1,
+   "fps": null,
+   "audio_channels": 2,
+   "height": null,
+   "quality": 3,
+   "has_drm": false,
+   "tbr": 129.548,
+   "filesize_approx": 3949254,
+   "width": null,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "m4a",
+   "vcodec": "none",
+   "acodec": "mp4a.40.2",
+   "dynamic_range": null,
+   "container": "m4a_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "audio_ext": "m4a",
+   "video_ext": "none",
+   "vbr": 0,
+   "abr": 129.548,
+   "resolution": "audio only",
+   "aspect_ratio": null,
+   "format": "140 - audio only (medium)"
+  },
+  {
+   "asr": 48000,
+   "filesize": 4094964,
+   "format_id": "251",
+   "format_note": "medium",
+   "source_preference": -1,
+   "fps": null,
+   "audio_channels": 2,
+   "height": null,
+   "quality": 3,
+   "has_drm": false,
+   "tbr": 134.315,
+   "filesize_approx": 4094945,
+   "width": null,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "webm",
+   "vcodec": "none",
+   "acodec": "opus",
+   "dynamic_range": null,
+   "container": "webm_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "audio_ext": "webm",
+   "video_ext": "none",
+   "vbr": 0,
+   "abr": 134.315,
+   "resolution": "audio only",
+   "aspect_ratio": null,
+   "format": "251 - audio only (medium)"
+  },
+  {
+   "format_id": "269",
+   "format_index": null,
+   "tbr": 65.394,
+   "ext": "mp4",
+   "fps": 25,
+   "protocol": "m3u8_native",
+   "preference": null,
+   "quality": 0,
+   "has_drm": false,
+   "width": 144,
+   "height": 144,
+   "vcodec": "avc1.4D400B",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "available_at": 1790905380,
+   "source_preference": -1,
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 65.394,
+   "resolution": "144x144",
+   "aspect_ratio": 1,
+   "format": "269 - 144x144"
+  },
+  {
+   "asr": null,
+   "filesize": 321049,
+   "format_id": "160",
+   "format_note": "144p",
+   "source_preference": -1,
+   "fps": 25,
+   "audio_channels": null,
+   "height": 144,
+   "quality": 0,
+   "has_drm": false,
+   "tbr": 10.531,
+   "filesize_approx": 321037,
+   "width": 144,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "mp4",
+   "vcodec": "avc1.4d400b",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "container": "mp4_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 10.531,
+   "resolution": "144x144",
+   "aspect_ratio": 1,
+   "format": "160 - 144x144 (144p)"
+  },
+  {
+   "format_id": "603",
+   "format_index": null,
+   "tbr": 76.573,
+   "ext": "mp4",
+   "fps": 25,
+   "protocol": "m3u8_native",
+   "preference": null,
+   "quality": 0,
+   "has_drm": false,
+   "width": 144,
+   "height": 144,
+   "vcodec": "vp09.00.11.08",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "available_at": 1790905380,
+   "source_preference": -1,
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 76.573,
+   "resolution": "144x144",
+   "aspect_ratio": 1,
+   "format": "603 - 144x144"
+  },
+  {
+   "asr": null,
+   "filesize": 602192,
+   "format_id": "278",
+   "format_note": "144p",
+   "source_preference": -1,
+   "fps": 25,
+   "audio_channels": null,
+   "height": 144,
+   "quality": 0,
+   "has_drm": false,
+   "tbr": 19.753,
+   "filesize_approx": 602170,
+   "width": 144,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "webm",
+   "vcodec": "vp9",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "container": "webm_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "video_ext": "webm",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 19.753,
+   "resolution": "144x144",
+   "aspect_ratio": 1,
+   "format": "278 - 144x144 (144p)"
+  },
+  {
+   "asr": null,
+   "filesize": 629686,
+   "format_id": "394",
+   "format_note": "144p",
+   "source_preference": -1,
+   "fps": 25,
+   "audio_channels": null,
+   "height": 144,
+   "quality": 0,
+   "has_drm": false,
+   "tbr": 20.655,
+   "filesize_approx": 629667,
+   "width": 144,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "mp4",
+   "vcodec": "av01.0.00M.08",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "container": "mp4_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 20.655,
+   "resolution": "144x144",
+   "aspect_ratio": 1,
+   "format": "394 - 144x144 (144p)"
+  },
+  {
+   "format_id": "229",
+   "format_index": null,
+   "tbr": 74.079,
+   "ext": "mp4",
+   "fps": 25,
+   "protocol": "m3u8_native",
+   "preference": null,
+   "quality": 5,
+   "has_drm": false,
+   "width": 240,
+   "height": 240,
+   "vcodec": "avc1.4D400C",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "available_at": 1790905380,
+   "source_preference": -1,
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 74.079,
+   "resolution": "240x240",
+   "aspect_ratio": 1,
+   "format": "229 - 240x240"
+  },
+  {
+   "asr": null,
+   "filesize": 531396,
+   "format_id": "133",
+   "format_note": "240p",
+   "source_preference": -1,
+   "fps": 25,
+   "audio_channels": null,
+   "height": 240,
+   "quality": 5,
+   "has_drm": false,
+   "tbr": 17.431,
+   "filesize_approx": 531384,
+   "width": 240,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "mp4",
+   "vcodec": "avc1.4d400c",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "container": "mp4_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 17.431,
+   "resolution": "240x240",
+   "aspect_ratio": 1,
+   "format": "133 - 240x240 (240p)"
+  },
+  {
+   "format_id": "604",
+   "format_index": null,
+   "tbr": 94.313,
+   "ext": "mp4",
+   "fps": 25,
+   "protocol": "m3u8_native",
+   "preference": null,
+   "quality": 5,
+   "has_drm": false,
+   "width": 240,
+   "height": 240,
+   "vcodec": "vp09.00.20.08",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "available_at": 1790905380,
+   "source_preference": -1,
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 94.313,
+   "resolution": "240x240",
+   "aspect_ratio": 1,
+   "format": "604 - 240x240"
+  },
+  {
+   "asr": null,
+   "filesize": 1035401,
+   "format_id": "242",
+   "format_note": "240p",
+   "source_preference": -1,
+   "fps": 25,
+   "audio_channels": null,
+   "height": 240,
+   "quality": 5,
+   "has_drm": false,
+   "tbr": 33.964,
+   "filesize_approx": 1035392,
+   "width": 240,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "webm",
+   "vcodec": "vp9",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "container": "webm_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "video_ext": "webm",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 33.964,
+   "resolution": "240x240",
+   "aspect_ratio": 1,
+   "format": "242 - 240x240 (240p)"
+  },
+  {
+   "asr": null,
+   "filesize": 1078508,
+   "format_id": "395",
+   "format_note": "240p",
+   "source_preference": -1,
+   "fps": 25,
+   "audio_channels": null,
+   "height": 240,
+   "quality": 5,
+   "has_drm": false,
+   "tbr": 35.378,
+   "filesize_approx": 1078498,
+   "width": 240,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "mp4",
+   "vcodec": "av01.0.00M.08",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "container": "mp4_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 35.378,
+   "resolution": "240x240",
+   "aspect_ratio": 1,
+   "format": "395 - 240x240 (240p)"
+  },
+  {
+   "format_id": "230",
+   "format_index": null,
+   "tbr": 173.756,
+   "ext": "mp4",
+   "fps": 25,
+   "protocol": "m3u8_native",
+   "preference": null,
+   "quality": 6,
+   "has_drm": false,
+   "width": 360,
+   "height": 360,
+   "vcodec": "avc1.4D4015",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "available_at": 1790905380,
+   "source_preference": -1,
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 173.756,
+   "resolution": "360x360",
+   "aspect_ratio": 1,
+   "format": "230 - 360x360"
+  },
+  {
+   "asr": null,
+   "filesize": 894630,
+   "format_id": "134",
+   "format_note": "360p",
+   "source_preference": -1,
+   "fps": 25,
+   "audio_channels": null,
+   "height": 360,
+   "quality": 6,
+   "has_drm": false,
+   "tbr": 29.346,
+   "filesize_approx": 894612,
+   "width": 360,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "mp4",
+   "vcodec": "avc1.4d4015",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "container": "mp4_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 29.346,
+   "resolution": "360x360",
+   "aspect_ratio": 1,
+   "format": "134 - 360x360 (360p)"
+  },
+  {
+   "format_id": "605",
+   "format_index": null,
+   "tbr": 224.966,
+   "ext": "mp4",
+   "fps": 25,
+   "protocol": "m3u8_native",
+   "preference": null,
+   "quality": 6,
+   "has_drm": false,
+   "width": 360,
+   "height": 360,
+   "vcodec": "vp09.00.21.08",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "available_at": 1790905380,
+   "source_preference": -1,
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 224.966,
+   "resolution": "360x360",
+   "aspect_ratio": 1,
+   "format": "605 - 360x360"
+  },
+  {
+   "asr": null,
+   "filesize": 2159967,
+   "format_id": "243",
+   "format_note": "360p",
+   "source_preference": -1,
+   "fps": 25,
+   "audio_channels": null,
+   "height": 360,
+   "quality": 6,
+   "has_drm": false,
+   "tbr": 70.853,
+   "filesize_approx": 2159953,
+   "width": 360,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "webm",
+   "vcodec": "vp9",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "container": "webm_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "video_ext": "webm",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 70.853,
+   "resolution": "360x360",
+   "aspect_ratio": 1,
+   "format": "243 - 360x360 (360p)"
+  },
+  {
+   "asr": null,
+   "filesize": 1934100,
+   "format_id": "396",
+   "format_note": "360p",
+   "source_preference": -1,
+   "fps": 25,
+   "audio_channels": null,
+   "height": 360,
+   "quality": 6,
+   "has_drm": false,
+   "tbr": 63.444,
+   "filesize_approx": 1934090,
+   "width": 360,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "mp4",
+   "vcodec": "av01.0.00M.08",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "container": "mp4_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 63.444,
+   "resolution": "360x360",
+   "aspect_ratio": 1,
+   "format": "396 - 360x360 (360p)"
+  },
+  {
+   "format_id": "231",
+   "format_index": null,
+   "tbr": 190.779,
+   "ext": "mp4",
+   "fps": 25,
+   "protocol": "m3u8_native",
+   "preference": null,
+   "quality": 7,
+   "has_drm": false,
+   "width": 480,
+   "height": 480,
+   "vcodec": "avc1.4D401E",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "available_at": 1790905380,
+   "source_preference": -1,
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 190.779,
+   "resolution": "480x480",
+   "aspect_ratio": 1,
+   "format": "231 - 480x480"
+  },
+  {
+   "asr": null,
+   "filesize": 1326999,
+   "format_id": "135",
+   "format_note": "480p",
+   "source_preference": -1,
+   "fps": 25,
+   "audio_channels": null,
+   "height": 480,
+   "quality": 7,
+   "has_drm": false,
+   "tbr": 43.529,
+   "filesize_approx": 1326981,
+   "width": 480,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "mp4",
+   "vcodec": "avc1.4d401e",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "container": "mp4_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 43.529,
+   "resolution": "480x480",
+   "aspect_ratio": 1,
+   "format": "135 - 480x480 (480p)"
+  },
+  {
+   "format_id": "606",
+   "format_index": null,
+   "tbr": 274.3,
+   "ext": "mp4",
+   "fps": 25,
+   "protocol": "m3u8_native",
+   "preference": null,
+   "quality": 7,
+   "has_drm": false,
+   "width": 480,
+   "height": 480,
+   "vcodec": "vp09.00.30.08",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "available_at": 1790905380,
+   "source_preference": -1,
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 274.3,
+   "resolution": "480x480",
+   "aspect_ratio": 1,
+   "format": "606 - 480x480"
+  },
+  {
+   "asr": null,
+   "filesize": 3374208,
+   "format_id": "244",
+   "format_note": "480p",
+   "source_preference": -1,
+   "fps": 25,
+   "audio_channels": null,
+   "height": 480,
+   "quality": 7,
+   "has_drm": false,
+   "tbr": 110.684,
+   "filesize_approx": 3374201,
+   "width": 480,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "webm",
+   "vcodec": "vp9",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "container": "webm_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "video_ext": "webm",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 110.684,
+   "resolution": "480x480",
+   "aspect_ratio": 1,
+   "format": "244 - 480x480 (480p)"
+  },
+  {
+   "asr": null,
+   "filesize": 3520702,
+   "format_id": "397",
+   "format_note": "480p",
+   "source_preference": -1,
+   "fps": 25,
+   "audio_channels": null,
+   "height": 480,
+   "quality": 7,
+   "has_drm": false,
+   "tbr": 115.489,
+   "filesize_approx": 3520682,
+   "width": 480,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "mp4",
+   "vcodec": "av01.0.01M.08",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "container": "mp4_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 115.489,
+   "resolution": "480x480",
+   "aspect_ratio": 1,
+   "format": "397 - 480x480 (480p)"
+  },
+  {
+   "format_id": "232",
+   "format_index": null,
+   "tbr": 223.136,
+   "ext": "mp4",
+   "fps": 25,
+   "protocol": "m3u8_native",
+   "preference": null,
+   "quality": 8,
+   "has_drm": false,
+   "width": 720,
+   "height": 720,
+   "vcodec": "avc1.4D401F",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "available_at": 1790905380,
+   "source_preference": -1,
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 223.136,
+   "resolution": "720x720",
+   "aspect_ratio": 1,
+   "format": "232 - 720x720"
+  },
+  {
+   "asr": null,
+   "filesize": 2121418,
+   "format_id": "136",
+   "format_note": "720p",
+   "source_preference": -1,
+   "fps": 25,
+   "audio_channels": null,
+   "height": 720,
+   "quality": 8,
+   "has_drm": false,
+   "tbr": 69.588,
+   "filesize_approx": 2121390,
+   "width": 720,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "mp4",
+   "vcodec": "avc1.4d401f",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "container": "mp4_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 69.588,
+   "resolution": "720x720",
+   "aspect_ratio": 1,
+   "format": "136 - 720x720 (720p)"
+  },
+  {
+   "format_id": "609",
+   "format_index": null,
+   "tbr": 422.54,
+   "ext": "mp4",
+   "fps": 25,
+   "protocol": "m3u8_native",
+   "preference": null,
+   "quality": 8,
+   "has_drm": false,
+   "width": 720,
+   "height": 720,
+   "vcodec": "vp09.00.31.08",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "available_at": 1790905380,
+   "source_preference": -1,
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 422.54,
+   "resolution": "720x720",
+   "aspect_ratio": 1,
+   "format": "609 - 720x720"
+  },
+  {
+   "asr": null,
+   "filesize": 7045414,
+   "format_id": "247",
+   "format_note": "720p",
+   "source_preference": -1,
+   "fps": 25,
+   "audio_channels": null,
+   "height": 720,
+   "quality": 8,
+   "has_drm": false,
+   "tbr": 231.11,
+   "filesize_approx": 7045388,
+   "width": 720,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "webm",
+   "vcodec": "vp9",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "container": "webm_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "video_ext": "webm",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 231.11,
+   "resolution": "720x720",
+   "aspect_ratio": 1,
+   "format": "247 - 720x720 (720p)"
+  },
+  {
+   "asr": null,
+   "filesize": 7108078,
+   "format_id": "398",
+   "format_note": "720p",
+   "source_preference": -1,
+   "fps": 25,
+   "audio_channels": null,
+   "height": 720,
+   "quality": 8,
+   "has_drm": false,
+   "tbr": 233.166,
+   "filesize_approx": 7108065,
+   "width": 720,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "mp4",
+   "vcodec": "av01.0.04M.08",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "container": "mp4_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 233.166,
+   "resolution": "720x720",
+   "aspect_ratio": 1,
+   "format": "398 - 720x720 (720p)"
+  },
+  {
+   "format_id": "270",
+   "format_index": null,
+   "tbr": 416.462,
+   "ext": "mp4",
+   "fps": 25,
+   "protocol": "m3u8_native",
+   "preference": null,
+   "quality": 9,
+   "has_drm": false,
+   "width": 1080,
+   "height": 1080,
+   "vcodec": "avc1.640020",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "available_at": 1790905380,
+   "source_preference": -1,
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 416.462,
+   "resolution": "1080x1080",
+   "aspect_ratio": 1,
+   "format": "270 - 1080x1080"
+  },
+  {
+   "asr": null,
+   "filesize": 6882012,
+   "format_id": "137",
+   "format_note": "1080p",
+   "source_preference": -1,
+   "fps": 25,
+   "audio_channels": null,
+   "height": 1080,
+   "quality": 9,
+   "has_drm": false,
+   "tbr": 225.75,
+   "filesize_approx": 6881988,
+   "width": 1080,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "mp4",
+   "vcodec": "avc1.640020",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "container": "mp4_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 225.75,
+   "resolution": "1080x1080",
+   "aspect_ratio": 1,
+   "format": "137 - 1080x1080 (1080p)"
+  },
+  {
+   "format_id": "614",
+   "format_index": null,
+   "tbr": 780.267,
+   "ext": "mp4",
+   "fps": 25,
+   "protocol": "m3u8_native",
+   "preference": null,
+   "quality": 9,
+   "has_drm": false,
+   "width": 1080,
+   "height": 1080,
+   "vcodec": "vp09.00.40.08",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "available_at": 1790905380,
+   "source_preference": -1,
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 780.267,
+   "resolution": "1080x1080",
+   "aspect_ratio": 1,
+   "format": "614 - 1080x1080"
+  },
+  {
+   "asr": null,
+   "filesize": 14012808,
+   "format_id": "248",
+   "format_note": "1080p",
+   "source_preference": -1,
+   "fps": 25,
+   "audio_channels": null,
+   "height": 1080,
+   "quality": 9,
+   "has_drm": false,
+   "tbr": 459.662,
+   "filesize_approx": 14012796,
+   "width": 1080,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "webm",
+   "vcodec": "vp9",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "container": "webm_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "video_ext": "webm",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 459.662,
+   "resolution": "1080x1080",
+   "aspect_ratio": 1,
+   "format": "248 - 1080x1080 (1080p)"
+  },
+  {
+   "asr": null,
+   "filesize": 15495147,
+   "format_id": "399",
+   "format_note": "1080p",
+   "source_preference": -1,
+   "fps": 25,
+   "audio_channels": null,
+   "height": 1080,
+   "quality": 9,
+   "has_drm": false,
+   "tbr": 508.287,
+   "filesize_approx": 15495129,
+   "width": 1080,
+   "language": null,
+   "language_preference": -1,
+   "preference": null,
+   "ext": "mp4",
+   "vcodec": "av01.0.08M.08",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "container": "mp4_dash",
+   "available_at": 1790905380,
+   "downloader_options": {
+    "http_chunk_size": 10485760
+   },
+   "protocol": "https",
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 508.287,
+   "resolution": "1080x1080",
+   "aspect_ratio": 1,
+   "format": "399 - 1080x1080 (1080p)"
+  },
+  {
+   "format_id": "616",
+   "format_index": null,
+   "tbr": 1098.663,
+   "ext": "mp4",
+   "fps": 25,
+   "protocol": "m3u8_native",
+   "preference": null,
+   "quality": 9,
+   "has_drm": false,
+   "width": 1080,
+   "height": 1080,
+   "vcodec": "vp09.00.40.08",
+   "acodec": "none",
+   "dynamic_range": "SDR",
+   "available_at": 1790905380,
+   "source_preference": 99,
+   "format_note": "Premium",
+   "video_ext": "mp4",
+   "audio_ext": "none",
+   "abr": 0,
+   "vbr": 1098.663,
+   "resolution": "1080x1080",
+   "aspect_ratio": 1,
+   "format": "616 - 1080x1080 (Premium)"
+  }
+ ],
+ "thumbnails": [
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/3.jpg",
+   "preference": -37,
+   "id": "0"
+  },
+  {
+   "url": "https://i.ytimg.com/vi_webp/aUajNfZwkjY/3.webp",
+   "preference": -36,
+   "id": "1"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/2.jpg",
+   "preference": -35,
+   "id": "2"
+  },
+  {
+   "url": "https://i.ytimg.com/vi_webp/aUajNfZwkjY/2.webp",
+   "preference": -34,
+   "id": "3"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/1.jpg",
+   "preference": -33,
+   "id": "4"
+  },
+  {
+   "url": "https://i.ytimg.com/vi_webp/aUajNfZwkjY/1.webp",
+   "preference": -32,
+   "id": "5"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/mq3.jpg",
+   "preference": -31,
+   "id": "6"
+  },
+  {
+   "url": "https://i.ytimg.com/vi_webp/aUajNfZwkjY/mq3.webp",
+   "preference": -30,
+   "id": "7"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/mq2.jpg",
+   "preference": -29,
+   "id": "8"
+  },
+  {
+   "url": "https://i.ytimg.com/vi_webp/aUajNfZwkjY/mq2.webp",
+   "preference": -28,
+   "id": "9"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/mq1.jpg",
+   "preference": -27,
+   "id": "10"
+  },
+  {
+   "url": "https://i.ytimg.com/vi_webp/aUajNfZwkjY/mq1.webp",
+   "preference": -26,
+   "id": "11"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/hq3.jpg",
+   "preference": -25,
+   "id": "12"
+  },
+  {
+   "url": "https://i.ytimg.com/vi_webp/aUajNfZwkjY/hq3.webp",
+   "preference": -24,
+   "id": "13"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/hq2.jpg",
+   "preference": -23,
+   "id": "14"
+  },
+  {
+   "url": "https://i.ytimg.com/vi_webp/aUajNfZwkjY/hq2.webp",
+   "preference": -22,
+   "id": "15"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/hq1.jpg",
+   "preference": -21,
+   "id": "16"
+  },
+  {
+   "url": "https://i.ytimg.com/vi_webp/aUajNfZwkjY/hq1.webp",
+   "preference": -20,
+   "id": "17"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/sd3.jpg",
+   "preference": -19,
+   "id": "18"
+  },
+  {
+   "url": "https://i.ytimg.com/vi_webp/aUajNfZwkjY/sd3.webp",
+   "preference": -18,
+   "id": "19"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/sd2.jpg",
+   "preference": -17,
+   "id": "20"
+  },
+  {
+   "url": "https://i.ytimg.com/vi_webp/aUajNfZwkjY/sd2.webp",
+   "preference": -16,
+   "id": "21"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/sd1.jpg",
+   "preference": -15,
+   "id": "22"
+  },
+  {
+   "url": "https://i.ytimg.com/vi_webp/aUajNfZwkjY/sd1.webp",
+   "preference": -14,
+   "id": "23"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/default.jpg",
+   "preference": -13,
+   "id": "24"
+  },
+  {
+   "url": "https://i.ytimg.com/vi_webp/aUajNfZwkjY/default.webp",
+   "preference": -12,
+   "id": "25"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/mqdefault.jpg",
+   "height": 180,
+   "width": 320,
+   "preference": -11,
+   "id": "26",
+   "resolution": "320x180"
+  },
+  {
+   "url": "https://i.ytimg.com/vi_webp/aUajNfZwkjY/mqdefault.webp",
+   "preference": -10,
+   "id": "27"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/0.jpg",
+   "preference": -9,
+   "id": "28"
+  },
+  {
+   "url": "https://i.ytimg.com/vi_webp/aUajNfZwkjY/0.webp",
+   "preference": -8,
+   "id": "29"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/hqdefault.jpg",
+   "preference": -7,
+   "id": "30"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG&rs=AOn4CLASZBxVbTgYR_06qnjnnJ3oUBf8hw",
+   "height": 94,
+   "width": 168,
+   "preference": -7,
+   "id": "31",
+   "resolution": "168x94"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/hqdefault.jpg?sqp=-oaymwEbCMQBEG5IVfKriqkDDggBFQAAiEIYAXABwAEG&rs=AOn4CLA2NjFxDTQm5OfMhcTrEmYqJR78IQ",
+   "height": 110,
+   "width": 196,
+   "preference": -7,
+   "id": "32",
+   "resolution": "196x110"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/hqdefault.jpg?sqp=-oaymwEcCPYBEIoBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLCnYAhGqDoJNrYWlqaFoMs28PgMmw",
+   "height": 138,
+   "width": 246,
+   "preference": -7,
+   "id": "33",
+   "resolution": "246x138"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/hqdefault.jpg?sqp=-oaymwEcCNACELwBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLBzUhH9RapifNiUZjZQYKi97wyJiw",
+   "height": 188,
+   "width": 336,
+   "preference": -7,
+   "id": "34",
+   "resolution": "336x188"
+  },
+  {
+   "url": "https://i.ytimg.com/vi_webp/aUajNfZwkjY/hqdefault.webp",
+   "preference": -6,
+   "id": "35"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/sddefault.jpg",
+   "preference": -5,
+   "id": "36"
+  },
+  {
+   "url": "https://i.ytimg.com/vi_webp/aUajNfZwkjY/sddefault.webp",
+   "preference": -4,
+   "id": "37"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/hq720.jpg",
+   "height": 720,
+   "width": 1280,
+   "preference": -3,
+   "id": "38",
+   "resolution": "1280x720"
+  },
+  {
+   "url": "https://i.ytimg.com/vi_webp/aUajNfZwkjY/hq720.webp",
+   "preference": -2,
+   "id": "39"
+  },
+  {
+   "url": "https://i.ytimg.com/vi/aUajNfZwkjY/maxresdefault.jpg",
+   "height": 720,
+   "width": 1280,
+   "preference": -1,
+   "id": "40",
+   "resolution": "1280x720"
+  },
+  {
+   "url": "https://i.ytimg.com/vi_webp/aUajNfZwkjY/maxresdefault.webp",
+   "height": 1080,
+   "width": 1920,
+   "preference": 0,
+   "id": "41",
+   "resolution": "1920x1080"
+  }
+ ],
+ "thumbnail": "https://i.ytimg.com/vi_webp/aUajNfZwkjY/maxresdefault.webp",
+ "description": "Provided to YouTube by VP Records\n\n(When You Gonna) Give It Up to Me [Radio Version] · Sean Paul · Keyshia Cole\n\n(When You Gonna) Give It Up to Me\n\n℗ 2005 VP Records, a division of VP Music Group, Inc.\n\nProducer: Don Corleon\nComposer: Don Corleon\nComposer: Jigzagula\nComposer: Keyshia Cole\nComposer: Nigel Staff\nComposer: Ron Fair\nComposer: Sean Paul\n\nAuto-generated by YouTube.",
+ "channel_id": "UCnCNNA05VZcH8wVJYtC-6ew",
+ "channel_url": "https://www.youtube.com/channel/UCnCNNA05VZcH8wVJYtC-6ew",
+ "duration": 244,
+ "view_count": 123869459,
+ "average_rating": null,
+ "age_limit": 0,
+ "webpage_url": "https://www.youtube.com/watch?v=aUajNfZwkjY",
+ "categories": [
+  "Music"
+ ],
+ "tags": [
+  "Sean Paul",
+  "Keyshia Cole",
+  "(When You Gonna) Give It Up to Me",
+  "(When You Gonna) Give It Up to Me [Radio Version]"
+ ],
+ "playable_in_embed": true,
+ "live_status": "not_live",
+ "media_type": "video",
+ "release_timestamp": null,
+ "_format_sort_fields": [
+  "quality",
+  "res",
+  "fps",
+  "hdr:12",
+  "source",
+  "vcodec",
+  "channels",
+  "acodec",
+  "lang",
+  "proto"
+ ],
+ "automatic_captions": {},
+ "subtitles": {},
+ "album": "(When You Gonna) Give It Up to Me",
+ "artists": [
+  "Sean Paul",
+  "Keyshia Cole"
+ ],
+ "track": "(When You Gonna) Give It Up to Me [Radio Version]",
+ "release_date": null,
+ "release_year": 2005,
+ "comment_count": 2800,
+ "chapters": null,
+ "heatmap": [
+  {
+   "start_time": 0,
+   "end_time": 2.44,
+   "value": 0.5999670135506207
+  },
+  {
+   "start_time": 2.44,
+   "end_time": 4.88,
+   "value": 0.5041162719066117
+  },
+  {
+   "start_time": 4.88,
+   "end_time": 7.32,
+   "value": 0.5301222924101257
+  },
+  {
+   "start_time": 7.32,
+   "end_time": 9.76,
+   "value": 0.5432265086006339
+  },
+  {
+   "start_time": 9.76,
+   "end_time": 12.2,
+   "value": 0.5542854836899045
+  },
+  {
+   "start_time": 12.2,
+   "end_time": 14.64,
+   "value": 0.5500836405841533
+  },
+  {
+   "start_time": 14.64,
+   "end_time": 17.08,
+   "value": 0.5269705038822312
+  },
+  {
+   "start_time": 17.08,
+   "end_time": 19.52,
+   "value": 0.49158598306497187
+  },
+  {
+   "start_time": 19.52,
+   "end_time": 21.96,
+   "value": 0.47992195956632144
+  },
+  {
+   "start_time": 21.96,
+   "end_time": 24.4,
+   "value": 0.46122451390000996
+  },
+  {
+   "start_time": 24.4,
+   "end_time": 26.84,
+   "value": 0.4423452474996466
+  },
+  {
+   "start_time": 26.84,
+   "end_time": 29.28,
+   "value": 0.4298131776334594
+  },
+  {
+   "start_time": 29.28,
+   "end_time": 31.72,
+   "value": 0.4182509537484095
+  },
+  {
+   "start_time": 31.72,
+   "end_time": 34.16,
+   "value": 0.40956361594320995
+  },
+  {
+   "start_time": 34.16,
+   "end_time": 36.6,
+   "value": 0.4062234762579234
+  },
+  {
+   "start_time": 36.6,
+   "end_time": 39.04,
+   "value": 0.40438742742588607
+  },
+  {
+   "start_time": 39.04,
+   "end_time": 41.48,
+   "value": 0.4040084441498394
+  },
+  {
+   "start_time": 41.48,
+   "end_time": 43.92,
+   "value": 0.4156321914968842
+  },
+  {
+   "start_time": 43.92,
+   "end_time": 46.36,
+   "value": 0.4223467477784824
+  },
+  {
+   "start_time": 46.36,
+   "end_time": 48.8,
+   "value": 0.4275994578592524
+  },
+  {
+   "start_time": 48.8,
+   "end_time": 51.24,
+   "value": 0.44520116723037007
+  },
+  {
+   "start_time": 51.24,
+   "end_time": 53.68,
+   "value": 0.44476647225664084
+  },
+  {
+   "start_time": 53.68,
+   "end_time": 56.12,
+   "value": 0.44556049674430664
+  },
+  {
+   "start_time": 56.12,
+   "end_time": 58.56,
+   "value": 0.44041646040696897
+  },
+  {
+   "start_time": 58.56,
+   "end_time": 61,
+   "value": 0.43816871369009436
+  },
+  {
+   "start_time": 61,
+   "end_time": 63.44,
+   "value": 0.44481652842023445
+  },
+  {
+   "start_time": 63.44,
+   "end_time": 65.88,
+   "value": 0.44911354697811184
+  },
+  {
+   "start_time": 65.88,
+   "end_time": 68.32,
+   "value": 0.4554294974675979
+  },
+  {
+   "start_time": 68.32,
+   "end_time": 70.76,
+   "value": 0.47355095354609134
+  },
+  {
+   "start_time": 70.76,
+   "end_time": 73.2,
+   "value": 0.4948317596952942
+  },
+  {
+   "start_time": 73.2,
+   "end_time": 75.64,
+   "value": 0.5197435437137594
+  },
+  {
+   "start_time": 75.64,
+   "end_time": 78.08,
+   "value": 0.5719713699054174
+  },
+  {
+   "start_time": 78.08,
+   "end_time": 80.52,
+   "value": 0.6253876081608201
+  },
+  {
+   "start_time": 80.52,
+   "end_time": 82.96,
+   "value": 0.6961034065351868
+  },
+  {
+   "start_time": 82.96,
+   "end_time": 85.4,
+   "value": 0.814143464323809
+  },
+  {
+   "start_time": 85.4,
+   "end_time": 87.84,
+   "value": 0.8986913242536962
+  },
+  {
+   "start_time": 87.84,
+   "end_time": 90.28,
+   "value": 0.9603201479112765
+  },
+  {
+   "start_time": 90.28,
+   "end_time": 92.72,
+   "value": 1
+  },
+  {
+   "start_time": 92.72,
+   "end_time": 95.16,
+   "value": 0.9442931142083631
+  },
+  {
+   "start_time": 95.16,
+   "end_time": 97.6,
+   "value": 0.8893898141940673
+  },
+  {
+   "start_time": 97.6,
+   "end_time": 100.04,
+   "value": 0.8689464645346495
+  },
+  {
+   "start_time": 100.04,
+   "end_time": 102.48,
+   "value": 0.8396559223053975
+  },
+  {
+   "start_time": 102.48,
+   "end_time": 104.92,
+   "value": 0.8234968428176236
+  },
+  {
+   "start_time": 104.92,
+   "end_time": 107.36,
+   "value": 0.8240963294310487
+  },
+  {
+   "start_time": 107.36,
+   "end_time": 109.8,
+   "value": 0.7868292344212083
+  },
+  {
+   "start_time": 109.8,
+   "end_time": 112.24,
+   "value": 0.7601931686725625
+  },
+  {
+   "start_time": 112.24,
+   "end_time": 114.68,
+   "value": 0.6997425708681579
+  },
+  {
+   "start_time": 114.68,
+   "end_time": 117.12,
+   "value": 0.6413563992364311
+  },
+  {
+   "start_time": 117.12,
+   "end_time": 119.56,
+   "value": 0.5828101853638011
+  },
+  {
+   "start_time": 119.56,
+   "end_time": 122,
+   "value": 0.5427358832069094
+  },
+  {
+   "start_time": 122,
+   "end_time": 124.44,
+   "value": 0.5040047235270679
+  },
+  {
+   "start_time": 124.44,
+   "end_time": 126.88,
+   "value": 0.4741811237754021
+  },
+  {
+   "start_time": 126.88,
+   "end_time": 129.32,
+   "value": 0.44168904931510894
+  },
+  {
+   "start_time": 129.32,
+   "end_time": 131.76,
+   "value": 0.41266597322840454
+  },
+  {
+   "start_time": 131.76,
+   "end_time": 134.2,
+   "value": 0.3870110645290737
+  },
+  {
+   "start_time": 134.2,
+   "end_time": 136.64,
+   "value": 0.3554160640118345
+  },
+  {
+   "start_time": 136.64,
+   "end_time": 139.08,
+   "value": 0.3313217390145527
+  },
+  {
+   "start_time": 139.08,
+   "end_time": 141.52,
+   "value": 0.31911887747522083
+  },
+  {
+   "start_time": 141.52,
+   "end_time": 143.96,
+   "value": 0.30167608548739727
+  },
+  {
+   "start_time": 143.96,
+   "end_time": 146.4,
+   "value": 0.2882091027180364
+  },
+  {
+   "start_time": 146.4,
+   "end_time": 148.84,
+   "value": 0.2838436553222876
+  },
+  {
+   "start_time": 148.84,
+   "end_time": 151.28,
+   "value": 0.27920608612333236
+  },
+  {
+   "start_time": 151.28,
+   "end_time": 153.72,
+   "value": 0.27526595988790575
+  },
+  {
+   "start_time": 153.72,
+   "end_time": 156.16,
+   "value": 0.27854798193006863
+  },
+  {
+   "start_time": 156.16,
+   "end_time": 158.6,
+   "value": 0.275154911445077
+  },
+  {
+   "start_time": 158.6,
+   "end_time": 161.04,
+   "value": 0.27401905522850106
+  },
+  {
+   "start_time": 161.04,
+   "end_time": 163.48,
+   "value": 0.26984680212707135
+  },
+  {
+   "start_time": 163.48,
+   "end_time": 165.92,
+   "value": 0.256742085999848
+  },
+  {
+   "start_time": 165.92,
+   "end_time": 168.36,
+   "value": 0.24620213895892537
+  },
+  {
+   "start_time": 168.36,
+   "end_time": 170.8,
+   "value": 0.24865410982389471
+  },
+  {
+   "start_time": 170.8,
+   "end_time": 173.24,
+   "value": 0.23346737600083328
+  },
+  {
+   "start_time": 173.24,
+   "end_time": 175.68,
+   "value": 0.22294667652343977
+  },
+  {
+   "start_time": 175.68,
+   "end_time": 178.12,
+   "value": 0.21440594515992636
+  },
+  {
+   "start_time": 178.12,
+   "end_time": 180.56,
+   "value": 0.20548782406864544
+  },
+  {
+   "start_time": 180.56,
+   "end_time": 183,
+   "value": 0.2003309768529848
+  },
+  {
+   "start_time": 183,
+   "end_time": 185.44,
+   "value": 0.18930140429176767
+  },
+  {
+   "start_time": 185.44,
+   "end_time": 187.88,
+   "value": 0.17892229626588754
+  },
+  {
+   "start_time": 187.88,
+   "end_time": 190.32,
+   "value": 0.1725925350246484
+  },
+  {
+   "start_time": 190.32,
+   "end_time": 192.76,
+   "value": 0.16431712944962132
+  },
+  {
+   "start_time": 192.76,
+   "end_time": 195.2,
+   "value": 0.15596690522058368
+  },
+  {
+   "start_time": 195.2,
+   "end_time": 197.64,
+   "value": 0.1495331727656381
+  },
+  {
+   "start_time": 197.64,
+   "end_time": 200.08,
+   "value": 0.14127884264775453
+  },
+  {
+   "start_time": 200.08,
+   "end_time": 202.52,
+   "value": 0.13316551030653517
+  },
+  {
+   "start_time": 202.52,
+   "end_time": 204.96,
+   "value": 0.12499443527472846
+  },
+  {
+   "start_time": 204.96,
+   "end_time": 207.4,
+   "value": 0.11382406803613758
+  },
+  {
+   "start_time": 207.4,
+   "end_time": 209.84,
+   "value": 0.10338446766773735
+  },
+  {
+   "start_time": 209.84,
+   "end_time": 212.28,
+   "value": 0.09805514228538711
+  },
+  {
+   "start_time": 212.28,
+   "end_time": 214.72,
+   "value": 0.08966812583872684
+  },
+  {
+   "start_time": 214.72,
+   "end_time": 217.16,
+   "value": 0.0829416648141017
+  },
+  {
+   "start_time": 217.16,
+   "end_time": 219.6,
+   "value": 0.07493192873405252
+  },
+  {
+   "start_time": 219.6,
+   "end_time": 222.04,
+   "value": 0.06596003319985987
+  },
+  {
+   "start_time": 222.04,
+   "end_time": 224.48,
+   "value": 0.05786840123667783
+  },
+  {
+   "start_time": 224.48,
+   "end_time": 226.92,
+   "value": 0.04860019164917741
+  },
+  {
+   "start_time": 226.92,
+   "end_time": 229.36,
+   "value": 0.03950571007015417
+  },
+  {
+   "start_time": 229.36,
+   "end_time": 231.8,
+   "value": 0.03319574319822624
+  },
+  {
+   "start_time": 231.8,
+   "end_time": 234.24,
+   "value": 0.02467365791188167
+  },
+  {
+   "start_time": 234.24,
+   "end_time": 236.68,
+   "value": 0.01584342413280294
+  },
+  {
+   "start_time": 236.68,
+   "end_time": 239.12,
+   "value": 0.008547550812767037
+  },
+  {
+   "start_time": 239.12,
+   "end_time": 241.56,
+   "value": 0
+  },
+  {
+   "start_time": 241.56,
+   "end_time": 244,
+   "value": 0.0005472900957701424
+  }
+ ],
+ "like_count": 1264859,
+ "channel": "Sean Paul",
+ "channel_follower_count": 5370000,
+ "creators": [
+  "Sean Paul",
+  "Keyshia Cole"
+ ],
+ "channel_is_verified": true,
+ "uploader": "Sean Paul",
+ "uploader_id": null,
+ "uploader_url": null,
+ "upload_date": "20170423",
+ "timestamp": 1492987387,
+ "alt_title": "(When You Gonna) Give It Up to Me [Radio Version]",
+ "availability": "public",
+ "original_url": "https://music.youtube.com/watch?v=aUajNfZwkjY",
+ "webpage_url_basename": "watch",
+ "webpage_url_domain": "youtube.com",
+ "extractor": "youtube",
+ "extractor_key": "Youtube",
+ "playlist": null,
+ "playlist_index": null,
+ "display_id": "aUajNfZwkjY",
+ "fulltitle": "(When You Gonna) Give It Up to Me [Radio Version]",
+ "duration_string": "4:04",
+ "is_live": false,
+ "was_live": false,
+ "artist": "Sean Paul, Keyshia Cole",
+ "creator": "Sean Paul, Keyshia Cole",
+ "requested_subtitles": null,
+ "_has_drm": null,
+ "epoch": 1790905380,
+ "format": "616 - 1080x1080 (Premium)+251 - audio only (medium)",
+ "format_id": "616+251",
+ "ext": "webm",
+ "protocol": "m3u8_native+https",
+ "language": null,
+ "format_note": "Premium+medium",
+ "filesize_approx": 4094964,
+ "tbr": 1232.978,
+ "width": 1080,
+ "height": 1080,
+ "resolution": "1080x1080",
+ "fps": 25,
+ "dynamic_range": "SDR",
+ "vcodec": "vp09.00.40.08",
+ "vbr": 1098.663,
+ "stretched_ratio": null,
+ "aspect_ratio": 1,
+ "acodec": "opus",
+ "abr": 134.315,
+ "asr": 48000,
+ "audio_channels": 2,
+ "_type": "video",
+ "_version": {
+  "version": "2026.08.19",
+  "current_git_head": null,
+  "release_git_head": "594bd50c2c78ac432f81600d309fdc4e0a92d82c",
+  "repository": "yt-dlp/yt-dlp"
+ }
+}

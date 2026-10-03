@@ -327,7 +327,7 @@ const SHORTCUT_NAMED_KEYS: &[&str] = &[
 ];
 
 /// Validação sintática do acelerador (a F12 confere com o plugin de atalho global).
-fn validate_shortcut(shortcut: &str) -> CoreResult<()> {
+pub fn validate_shortcut(shortcut: &str) -> CoreResult<()> {
     if shortcut.is_empty() {
         return Ok(());
     }
@@ -465,6 +465,7 @@ fn load(conn: &rusqlite::Connection) -> CoreResult<Settings> {
 }
 
 fn register_secrets(settings: &Settings) {
+    logging::register_secret(&settings.cookies_file);
     for secret in settings.secret_values() {
         logging::register_secret(secret);
     }

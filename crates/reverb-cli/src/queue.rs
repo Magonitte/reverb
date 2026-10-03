@@ -5,6 +5,7 @@ use std::sync::{Arc, Mutex};
 
 use anyhow::{bail, Result};
 use reverb_core::backend::{ToolsContext, YtDlpProcessBackend};
+use reverb_core::metadata::{cache::system_clock, Endpoints, MetadataService};
 use reverb_core::queue::{
     repo, EnqueueRequest, HealCoordinator, Job, JobStatus, QueueDeps, QueueService, ToolsHeal,
     ToolsPipeline,
@@ -56,16 +57,31 @@ fn build(
             Arc::clone(&settings),
         )),
     ));
+    let backend = Arc::new(reverb_core::sources::SourcesBackend::new(
+        backend,
+        Arc::clone(&settings),
+    ));
     let heal = Arc::new(HealCoordinator::new(
         Arc::new(ToolsHeal::new(Arc::clone(&manager), Arc::clone(&settings))),
         db.clone(),
         Arc::clone(&sink),
     ));
+    let metadata = Arc::new(MetadataService::new(
+        backend.clone(),
+        settings.clone(),
+        db.clone(),
+        &Endpoints::default(),
+        system_clock(),
+    ));
     QueueDeps {
-        db,
+        db: db.clone(),
         settings,
         sink,
-        runner: Arc::new(ToolsPipeline::new(backend, manager, data_dir.clone())),
+        runner: Arc::new(
+            ToolsPipeline::new(backend, manager, data_dir.clone())
+                .with_metadata(metadata)
+                .with_database(db.clone()),
+        ),
         heal,
         data_dir,
         start_paused,

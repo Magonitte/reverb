@@ -28,6 +28,11 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Command {
+    /// Reads tags without opening the desktop app.
+    Tags {
+        #[command(subcommand)]
+        action: TagsAction,
+    },
     /// Imprime um JSON com informações do ambiente
     Doctor,
     /// Lê e altera as configurações
@@ -86,6 +91,11 @@ enum JobsAction {
         #[arg(long)]
         json: bool,
     },
+}
+
+#[derive(Subcommand)]
+enum TagsAction {
+    Read { path: PathBuf },
 }
 
 #[derive(Subcommand)]
@@ -292,6 +302,14 @@ async fn main() -> Result<()> {
     let tools_dir = cli.tools_dir.unwrap_or_else(|| paths.tools_dir());
 
     match cli.command {
+        Command::Tags {
+            action: TagsAction::Read { path },
+        } => {
+            println!(
+                "{}",
+                serde_json::to_string_pretty(&reverb_core::tagging::read_tags(&path)?)?
+            );
+        }
         Command::Doctor => {
             let report = serde_json::json!({
                 "version": env!("CARGO_PKG_VERSION"),

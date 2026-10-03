@@ -5,16 +5,19 @@ import { cn } from "@/components/ui/cn";
 import { NAV_ITEMS, type NavId } from "@/lib/nav";
 import { useUpdaterStore } from "@/stores/updater";
 import { activeCount, useJobsStore } from "@/stores/jobs";
+import { useLibraryStore } from "@/stores/library";
 import { toolsUpdateCount, useToolsStore } from "@/stores/tools";
 
 /** Contadores e pontos de aviso de cada item, vindos das stores. */
 export function useNavIndicators(): { counts: Partial<Record<NavId, number>>; dots: NavId[] } {
   const jobs = useJobsStore((s) => s.jobs);
+  const reviewCount = useLibraryStore((s) => s.reviewCount);
   const statuses = useToolsStore((s) => s.statuses);
   const appUpdate = useUpdaterStore((s) => s.available);
   const counts: Partial<Record<NavId, number>> = {};
   const active = activeCount(jobs);
   if (active > 0) counts.activity = active;
+  if (reviewCount > 0) counts.review = reviewCount;
   const dots: NavId[] = toolsUpdateCount(statuses) > 0 || appUpdate ? ["settings"] : [];
   return { counts, dots };
 }

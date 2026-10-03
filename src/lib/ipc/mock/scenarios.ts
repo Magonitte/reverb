@@ -1,13 +1,22 @@
 import type { Job } from "@/bindings/Job";
+import { mockMetadataSearch } from "./metadata";
+import { seedMockLibrary } from "./library";
 import { initialUpdaterState, useUpdaterStore } from "@/stores/updater";
 import { mockBus } from "./bus";
 import { FX1_VIDEO, FX2_MUSIC, FX3_CLIP, FX4_ALBUM } from "./fixtures";
 import { seedMockJobs, setMockHealing, startMockSimulation } from "./queue";
 import { seedMockTool } from "./tools";
+import { failMockInstall } from "./tools";
+import { mockSettingsUpdate } from "./settings";
 import { MOCK_UPDATE, setMockUpdaterMode } from "./updater";
+import { seedMockSyncs } from "./syncs";
 
 export const SCENARIOS = [
+  "onboarding",
+  "onboarding-error",
+  "playlists",
   "empty",
+  "big",
   "busy",
   "errors",
   "heal",
@@ -35,10 +44,38 @@ const fromVideo = (v: typeof FX1_VIDEO): Partial<Job> & { sourceUrl: string } =>
 /** Estado estático e determinístico para os testes visuais e E2E. */
 export function applyScenario(name: Scenario): void {
   switch (name) {
+    case "onboarding":
+    case "onboarding-error":
+      mockSettingsUpdate({ onboardingCompleted: false });
+      if (name === "onboarding-error") failMockInstall();
+      return;
+    case "playlists":
+      void seedMockSyncs();
+      return;
     case "empty":
       return;
+    case "big":
+      seedMockLibrary(
+        Array.from({ length: 5000 }, (_, index) => ({
+          addedAt: 1790942400,
+          updatedAt: 1790942400,
+          title:
+            index === 0
+              ? "Música Never Gonna Give You Up"
+              : `Track ${String(index + 1).padStart(4, "0")}`,
+          artist: index === 0 ? "Rick Astley" : `Artist ${index % 20}`,
+          album: index === 0 ? "Whenever You Need Somebody" : `Album ${index % 50}`,
+          needsReview: index % 10 === 0,
+          reviewCandidates:
+            index % 10 === 0
+              ? mockMetadataSearch("Rick Astley").map((candidate) => ({ candidate, score: 0.75 }))
+              : null,
+          missing: index % 100 === 0,
+        })),
+      );
+      return;
     case "busy": {
-      const album = FX4_ALBUM.entries.map((e) => ({
+      const album = FX4_ALBUM.entries.slice(0, 3).map((e) => ({
         sourceUrl: `https://www.youtube.com/watch?v=${e.id}`,
         sourceId: e.id,
         title: e.title,

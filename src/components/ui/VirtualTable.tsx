@@ -1,4 +1,4 @@
-import { useRef, type ReactNode } from "react";
+import { useRef, type ReactNode, type CSSProperties } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { cn } from "./cn";
 
@@ -7,6 +7,7 @@ export interface VirtualColumn<T> {
   header: string;
   /** Largura CSS da coluna (ex.: "2fr", "80px"). */
   width?: string;
+  hiddenOnMobile?: boolean;
   render: (row: T) => ReactNode;
 }
 
@@ -38,6 +39,14 @@ export function VirtualTable<T>({
     overscan: 8,
   });
   const template = columns.map((c) => c.width ?? "1fr").join(" ");
+  const mobileTemplate = columns
+    .filter((c) => !c.hiddenOnMobile)
+    .map((c) => c.width ?? "1fr")
+    .join(" ");
+  const gridStyle = {
+    "--table-columns": template,
+    "--table-mobile-columns": mobileTemplate,
+  } as CSSProperties;
 
   return (
     <div
@@ -49,11 +58,15 @@ export function VirtualTable<T>({
       <div role="rowgroup">
         <div
           role="row"
-          className="grid items-center gap-3 border-b border-glass-border px-4 py-2 text-left text-xs font-medium text-fg-muted"
-          style={{ gridTemplateColumns: template }}
+          className="grid grid-cols-[var(--table-columns)] items-center gap-3 border-b border-glass-border px-4 py-2 text-left text-xs font-medium text-fg-muted max-md:grid-cols-[var(--table-mobile-columns)]"
+          style={gridStyle}
         >
           {columns.map((c) => (
-            <div key={c.key} role="columnheader" className="text-left">
+            <div
+              key={c.key}
+              role="columnheader"
+              className={cn("truncate text-left", c.hiddenOnMobile && "max-md:hidden")}
+            >
               {c.header}
             </div>
           ))}
@@ -68,16 +81,20 @@ export function VirtualTable<T>({
                 key={rowKey(row)}
                 role="row"
                 aria-rowindex={item.index + 1}
-                className="absolute left-0 grid w-full items-center gap-3 border-b border-glass-border px-4 text-[13px] hover:bg-hover"
+                className="absolute left-0 grid w-full grid-cols-[var(--table-columns)] items-center gap-3 border-b border-glass-border px-4 text-[13px] hover:bg-hover max-md:grid-cols-[var(--table-mobile-columns)]"
                 style={{
                   top: 0,
                   height: item.size,
                   transform: `translateY(${item.start}px)`,
-                  gridTemplateColumns: template,
+                  ...gridStyle,
                 }}
               >
                 {columns.map((c) => (
-                  <div key={c.key} role="cell" className="min-w-0 truncate">
+                  <div
+                    key={c.key}
+                    role="cell"
+                    className={cn("min-w-0 truncate", c.hiddenOnMobile && "max-md:hidden")}
+                  >
                     {c.render(row)}
                   </div>
                 ))}

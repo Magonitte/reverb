@@ -2,9 +2,18 @@
 import type { JobOptions } from "./JobOptions";
 import type { JobStage } from "./JobStage";
 import type { JobStatus } from "./JobStatus";
+import type { MetadataResult } from "./MetadataResult";
 import type { PlaylistCtx } from "./PlaylistCtx";
 
-export type Job = { id: string, kind: string, provider: string, sourceUrl: string, sourceId: string | null, title: string | null, artist: string | null, thumbnail: string | null, durationS: number | null, profileId: string, options: JobOptions, metadataOverride: Record<string, unknown> | null, warnings: Array<string>, playlistCtx: PlaylistCtx | null, syncId: string | null, status: JobStatus, stage: JobStage, 
+export type Job = { id: string, kind: string, provider: string, sourceUrl: string, sourceId: string | null, title: string | null, artist: string | null, thumbnail: string | null, durationS: number | null, profileId: string, options: JobOptions, metadataOverride: Record<string, unknown> | null, 
+/**
+ * Confiança da identificação (F08); `None` antes de identificar ou quando não é música.
+ */
+confidence: number | null, 
+/**
+ * Resultado da identificação (F08), distinto da edição do usuário.
+ */
+metadataResult: MetadataResult | null, warnings: Array<string>, playlistCtx: PlaylistCtx | null, syncId: string | null, status: JobStatus, stage: JobStage, 
 /**
  * Progresso do estágio atual (0–1).
  */

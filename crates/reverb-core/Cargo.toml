@@ -8,33 +8,41 @@ publish.workspace = true
 
 [dependencies]
 async-trait = "0.1.92"
+base64 = "0.23.1"
 dirs.workspace = true
 futures-util = "0.3.34"
+fs2 = "0.4.3"
 hex = "0.4.3"
+image = { version = "0.25.10", default-features = false, features = ["jpeg", "png", "webp"] }
+lofty = "0.25.4"
+notify = "8.2.0"
 process-wrap = { version = "10.0.1", features = ["tokio1"] }
 regex.workspace = true
-reqwest = { version = "0.13.5", features = ["json", "stream"] }
-rusqlite.workspace = true
+reqwest = { version = "0.13.5", features = ["json", "query", "stream"] }
+rusqlite = { workspace = true, features = ["backup"] }
 semver = "1.0.28"
 serde.workspace = true
 serde_json.workspace = true
 sha2 = "0.11.0"
+strsim = "0.11.1"
+tempfile.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
 tokio-util = "0.7.19"
 tracing.workspace = true
 tracing-appender.workspace = true
 tracing-subscriber.workspace = true
+trash = "5.2.9"
 ts-rs.workspace = true
 unicode-normalization = "0.1.25"
 url = "2.5.8"
 uuid = { version = "1.26.1", features = ["v4"] }
 zip = "8.6.0"
+chrono = "0.4.45"
 
 [dev-dependencies]
 insta = "1.48.0"
 sysinfo = "0.39.6"
-tempfile.workspace = true
 wiremock = "0.6.5"
 tokio = { workspace = true, features = ["test-util"] }
 

@@ -42,6 +42,11 @@ fn job(job_id: &str, out_dir: &Path) -> PipelineJob {
         profile: profile("original").unwrap(),
         out_dir: out_dir.to_path_buf(),
         sponsorblock: None,
+        metadata_override: None,
+        fetch_metadata: None,
+        settings: None,
+        options: Default::default(),
+        playlist_ctx: None,
     }
 }
 

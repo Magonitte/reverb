@@ -1,11 +1,20 @@
 mod commands;
+mod diagnostics;
 mod headless;
+mod integration;
+mod notifications;
+mod shortcut;
+mod startup;
 mod state;
+mod tray;
 mod updater;
+mod window;
 
 use std::sync::Arc;
 
-use reverb_core::backend::{ToolsContext, YtDlpProcessBackend};
+use reverb_core::backend::{DownloadBackend, ToolsContext, YtDlpProcessBackend};
+use reverb_core::metadata::cache::system_clock;
+use reverb_core::metadata::{Endpoints, MetadataService};
 use reverb_core::queue::{HealCoordinator, QueueDeps, QueueService, ToolsHeal, ToolsPipeline};
 use reverb_core::ytdlp::YtDlpRunner;
 use reverb_core::{logging, Db, EventSink, SettingsService, ToolsConfig, ToolsManager};
@@ -20,9 +29,45 @@ pub fn run() {
         Err(code) => std::process::exit(code),
     };
 
-    tauri::Builder::default()
+    let builder = tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            // The deep-link feature forwards the arguments through on_open_url.
+            integration::show_window(app);
+        }))
+        .plugin(tauri_plugin_deep_link::init())
+        .plugin(tauri_plugin_notification::init())
+        .plugin(
+            tauri_plugin_global_shortcut::Builder::new()
+                .with_handler(shortcut::handler)
+                .build(),
+        )
+        .plugin(
+            tauri_plugin_autostart::Builder::new()
+                .arg("--minimized")
+                .app_name(startup::app_name())
+                .build(),
+        )
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_clipboard_manager::init());
+    // The plugin always creates app_config_dir when saving. Isolated debug test
+    // runs must never write to the installed application's user data directory.
+    let builder = if cfg!(debug_assertions) && std::env::var_os("REVERB_DATA_DIR").is_some() {
+        builder
+    } else {
+        builder.plugin(
+            tauri_plugin_window_state::Builder::default()
+                .with_state_flags(
+                    tauri_plugin_window_state::StateFlags::SIZE
+                        | tauri_plugin_window_state::StateFlags::POSITION
+                        | tauri_plugin_window_state::StateFlags::MAXIMIZED,
+                )
+                .build(),
+        )
+    };
+    builder
         .setup(move |app| {
             if let Some(mode) = &headless_update {
                 let code =
@@ -60,10 +105,22 @@ pub fn run() {
                 Arc::clone(&sink),
             )?);
             // Ferramentas faltantes e atualizações automáticas, em segundo plano (§16).
-            tauri::async_runtime::spawn(Arc::clone(&tools).background_startup());
-            let backend = Arc::new(YtDlpProcessBackend::new(
+            let tools_startup =
+                tauri::async_runtime::spawn(Arc::clone(&tools).background_startup());
+            let backend: Arc<dyn DownloadBackend> = Arc::new(YtDlpProcessBackend::new(
                 YtDlpRunner::new(Some(Arc::clone(&tools))),
                 Arc::new(ToolsContext::new(Arc::clone(&tools), Arc::clone(&settings))),
+            ));
+            let backend: Arc<dyn DownloadBackend> = Arc::new(
+                reverb_core::sources::SourcesBackend::new(backend, Arc::clone(&settings)),
+            );
+            // Um só serviço por processo: os limitadores de taxa dos provedores são dele.
+            let metadata = Arc::new(MetadataService::new(
+                Arc::clone(&backend),
+                Arc::clone(&settings),
+                db.clone(),
+                &Endpoints::default(),
+                system_clock(),
             ));
             let heal = Arc::new(HealCoordinator::new(
                 Arc::new(ToolsHeal::new(Arc::clone(&tools), Arc::clone(&settings))),
@@ -75,21 +132,63 @@ pub fn run() {
                 db: db.clone(),
                 settings: Arc::clone(&settings),
                 sink: Arc::clone(&sink),
-                runner: Arc::new(ToolsPipeline::new(
-                    backend,
-                    Arc::clone(&tools),
-                    paths.data_dir.clone(),
-                )),
+                runner: Arc::new(
+                    ToolsPipeline::new(
+                        Arc::clone(&backend),
+                        Arc::clone(&tools),
+                        paths.data_dir.clone(),
+                    )
+                    .with_metadata(Arc::clone(&metadata))
+                    .with_database(db.clone()),
+                ),
                 heal,
                 data_dir: paths.data_dir.clone(),
                 start_paused: false,
             }))?;
+            let watch_tools = Arc::clone(&tools);
+            let background_cancel = tokio_util::sync::CancellationToken::new();
+            let syncs = reverb_core::sync::SyncService::new(
+                db.clone(),
+                settings.clone(),
+                backend.clone(),
+                queue.clone(),
+                sink.clone(),
+            );
+            // Core background services require the Tauri Tokio runtime during startup.
+            let imports = reverb_core::import::ImportService::new(
+                db.clone(),
+                settings.clone(),
+                backend.clone(),
+                queue.clone(),
+                sink.clone(),
+            );
+            syncs.with_imports(imports.clone());
+            let artists =
+                reverb_core::artists::ArtistService::new(db.clone(), imports.clone(), sink.clone());
+            tauri::async_runtime::block_on(async {
+                syncs.start(background_cancel.clone());
+                artists.start(background_cancel.clone(), backend.clone());
+            });
+            tauri::async_runtime::spawn(reverb_core::library::watch::run(
+                db.clone(),
+                Arc::clone(&settings),
+                Arc::clone(&sink),
+                Arc::new(move || watch_tools.resolve_ffprobe()),
+                background_cancel.clone(),
+            ));
             app.manage(AppState {
                 paths,
                 db,
                 settings,
                 tools,
+                tools_startup: tokio::sync::Mutex::new(Some(tools_startup)),
                 queue,
+                syncs,
+                imports,
+                artists,
+                background_cancel,
+                backend,
+                metadata,
                 sink,
             });
             updater::spawn_auto_check(app.handle().clone());
@@ -97,6 +196,11 @@ pub fn run() {
             // Janela por plataforma (design §1): Windows transparente com Mica; Linux opaca
             // (WebKitGTK é lento com transparência; a UI usa `data-transparency="reduced"`).
             let builder = WebviewWindowBuilder::new(app, "main", WebviewUrl::default())
+                .visible(
+                    !(args.iter().any(|arg| arg == "--minimized")
+                        && app.state::<AppState>().settings.get().start_minimized),
+                )
+                .data_directory(app.state::<AppState>().paths.data_dir.join("webview"))
                 .title("Reverb")
                 .inner_size(1200.0, 800.0)
                 .min_inner_size(900.0, 600.0)
@@ -110,18 +214,103 @@ pub fn run() {
             #[cfg(not(windows))]
             let builder = builder.transparent(false);
             builder.build()?;
+            tray::initialize(app.handle())?;
+            window::initialize(app.handle());
+            notifications::initialize(app.handle())?;
+            diagnostics::initialize(app.handle());
+            integration::initialize(app.handle())?;
+            let accelerator = app.state::<AppState>().settings.get().global_shortcut;
+            if let Err(error) = shortcut::apply(app.handle(), "", &accelerator) {
+                tracing::warn!(kind = error.kind(), "global shortcut registration failed");
+                app.state::<AppState>().sink.emit(
+                    "notice",
+                    serde_json::json!({"level":"error","i18nKey":"integration.shortcutConflict"}),
+                );
+            }
+            let launch = app.state::<AppState>().settings.get().launch_at_startup;
+            if let Err(error) = startup::apply(app.handle(), launch) {
+                tracing::warn!(kind = error.kind(), "autostart synchronization failed");
+            }
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            commands::collection::import_analyze,
+            commands::collection::import_enqueue,
+            commands::collection::artists_search,
+            commands::collection::artist_follow,
+            commands::collection::artist_update,
+            commands::collection::artist_unfollow,
+            commands::collection::artists_followed,
+            commands::collection::artist_releases,
+            commands::collection::artists_check_now,
+            commands::collection::missing_list,
+            commands::collection::missing_download,
             commands::app_info,
+            commands::quality::upgrade_scan,
+            commands::quality::upgrade_enqueue,
+            commands::quality::provider_test,
+            commands::quality::waveform,
+            commands::quality::audio_duration,
+            commands::quality::trim_audio,
+            commands::sources::verify_lossless,
+            commands::sources::open_source_url,
+            commands::diagnostics::diagnostics_run,
+            commands::diagnostics::diagnostics_last,
+            commands::backup::logs_export,
+            commands::backup::data_export,
+            commands::backup::data_import,
+            commands::backup::open_data_dir,
+            commands::backup::data_paths,
+            commands::backup::pick_backup_path,
+            commands::integration::bookmarklet_code,
+            commands::integration::bookmarklet_copy,
+            commands::integration::deeplink_test,
             commands::settings::settings_get,
             commands::settings::settings_update,
             commands::settings::settings_reset,
             commands::tools::tools_status,
+            commands::tools::runtime_choices,
             commands::tools::tools_install_missing,
             commands::tools::tools_check_updates,
             commands::tools::tools_update,
             commands::tools::tools_rollback,
+            commands::media::url_classify,
+            commands::media::analyze,
+            commands::media::cookies_test,
+            commands::media::search,
+            commands::media::pick_folder,
+            commands::media::open_output_dir,
+            commands::media::clipboard_read_text,
+            commands::media::library_reveal,
+            commands::media::library_open_file,
+            commands::postprocess::library_cover,
+            commands::postprocess::template_preview,
+            commands::library::library_list,
+            commands::library::library_import,
+            commands::library::library_rescan,
+            commands::library::tags_read,
+            commands::library::tags_write,
+            commands::library::pick_audio_file,
+            commands::library::pick_image_file,
+            commands::library::artwork_read,
+            commands::library::artwork_fetch,
+            commands::library::library_get,
+            commands::library::library_artists,
+            commands::library::library_albums,
+            commands::library::library_delete,
+            commands::library::library_clear,
+            commands::library::review_dismiss,
+            commands::library::review_list,
+            commands::library::review_apply,
+            commands::metadata::find_official_version,
+            commands::metadata::metadata_preview,
+            commands::metadata::metadata_search,
+            commands::sync::syncs_list,
+            commands::sync::sync_create,
+            commands::sync::sync_update,
+            commands::sync::sync_delete,
+            commands::sync::sync_run,
+            commands::sync::sync_items,
             commands::queue::enqueue,
             commands::queue::check_duplicates,
             commands::queue::jobs_list,
@@ -145,6 +334,8 @@ pub fn run() {
             if let tauri::RunEvent::Exit = event {
                 if let Some(state) = handle.try_state::<AppState>() {
                     tauri::async_runtime::block_on(async {
+                        state.background_cancel.cancel();
+                        state.syncs.stop();
                         // Jobs em execução voltam para a fila; depois o servidor de PO token cai.
                         state.queue.shutdown().await;
                         state.tools.shutdown().await;

@@ -111,19 +111,19 @@ export function Dialog({
           className,
         )}
       >
-        <header className="flex items-center gap-3 border-b border-glass-border px-6 py-4">
+        <div className="flex items-center gap-3 border-b border-glass-border px-6 py-4">
           <h2 id={titleId} className="flex-1 font-display text-base font-semibold">
             {title}
           </h2>
           <IconButton label={closeLabel} size="sm" onClick={onClose}>
             <X />
           </IconButton>
-        </header>
+        </div>
         <div className="flex-1 overflow-y-auto px-6 py-5">{children}</div>
         {footer && (
-          <footer className="flex justify-end gap-2 border-t border-glass-border px-6 py-4">
+          <div className="flex justify-end gap-2 border-t border-glass-border px-6 py-4">
             {footer}
-          </footer>
+          </div>
         )}
       </div>
     </div>,

@@ -5,6 +5,7 @@ use std::path::{Path, PathBuf};
 use unicode_normalization::UnicodeNormalization;
 
 pub const MAX_COMPONENT_CHARS: usize = 120;
+pub const MAX_COMPONENT_BYTES: usize = 255;
 pub const MAX_PATH_CHARS: usize = 240;
 
 const RESERVED: &[&str] = &[
@@ -18,7 +19,19 @@ fn trim_edges(text: &str) -> &str {
 
 /// Corta em `max` caracteres Unicode (nunca no meio de um) e limpa as pontas de novo.
 fn truncate_chars(text: &str, max: usize) -> String {
-    let cut: String = text.chars().take(max).collect();
+    truncate_name(text, max, MAX_COMPONENT_BYTES)
+}
+
+fn truncate_name(text: &str, max_chars: usize, max_bytes: usize) -> String {
+    let mut bytes = 0;
+    let cut: String = text
+        .chars()
+        .take(max_chars)
+        .take_while(|c| {
+            bytes += c.len_utf8();
+            bytes <= max_bytes
+        })
+        .collect();
     trim_edges(&cut).to_string()
 }
 
@@ -45,6 +58,7 @@ pub fn sanitize_component(input: &str) -> String {
     }
     if is_reserved(&name) {
         name.insert(0, '_');
+        name = truncate_chars(&name, MAX_COMPONENT_CHARS);
     }
     name
 }
@@ -77,7 +91,14 @@ pub fn sanitize_path(base: &Path, parts: &[&str], ext: &str) -> PathBuf {
         format!(".{ext}")
     };
 
-    let mut stem = sanitize_component(file);
+    let mut stem = truncate_name(
+        &sanitize_component(file),
+        MAX_COMPONENT_CHARS - suffix.chars().count(),
+        MAX_COMPONENT_BYTES - suffix.len(),
+    );
+    if stem.is_empty() {
+        stem.push('_');
+    }
     loop {
         let candidate = dir.join(format!("{stem}{suffix}"));
         let excess = char_len(&candidate).saturating_sub(MAX_PATH_CHARS);
@@ -91,12 +112,22 @@ pub fn sanitize_path(base: &Path, parts: &[&str], ext: &str) -> PathBuf {
         } else {
             shortened
         };
+        // Cortar pode transformar `CONcert` em `CON`, por exemplo.
+        if is_reserved(&stem) {
+            stem.insert(0, '_');
+        }
     }
 }
 
 /// Se `path` já existe, acrescenta ` (2)`, ` (3)`… antes da extensão até achar um nome livre.
 pub fn unique_path(path: &Path) -> PathBuf {
-    if !path.exists() {
+    unique_path_for(path, |candidate| {
+        std::fs::symlink_metadata(candidate).is_ok()
+    })
+}
+
+pub(crate) fn unique_path_for(path: &Path, occupied: impl Fn(&Path) -> bool) -> PathBuf {
+    if !occupied(path) {
         return path.to_path_buf();
     }
     let stem = path
@@ -106,11 +137,28 @@ pub fn unique_path(path: &Path) -> PathBuf {
     let ext = path.extension().map(|e| e.to_string_lossy().into_owned());
     let parent = path.parent().unwrap_or_else(|| Path::new(""));
     (2u32..)
-        .map(|n| match &ext {
-            Some(ext) => parent.join(format!("{stem} ({n}).{ext}")),
-            None => parent.join(format!("{stem} ({n})")),
+        .map(|n| {
+            let suffix = match &ext {
+                Some(ext) => format!(" ({n}).{ext}"),
+                None => format!(" ({n})"),
+            };
+            let limit =
+                MAX_COMPONENT_CHARS.min(MAX_PATH_CHARS.saturating_sub(char_len(parent) + 1));
+            let shortened = truncate_name(
+                &stem,
+                limit.saturating_sub(suffix.chars().count()).max(1),
+                MAX_COMPONENT_BYTES.saturating_sub(suffix.len()),
+            );
+            parent.join(format!(
+                "{}{suffix}",
+                if shortened.is_empty() {
+                    "_"
+                } else {
+                    &shortened
+                }
+            ))
         })
-        .find(|candidate| !candidate.exists())
+        .find(|candidate| !occupied(candidate))
         .expect("sempre existe um sufixo livre")
 }
 

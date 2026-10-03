@@ -1,5 +1,8 @@
 # Reverb 3 — Plano de Implementação (ponto de entrada)
 
+> **Para usuários e contribuidores:** comece pelo [README](README.md) e pelo
+> [índice de documentação](docs/README.md). Este arquivo continua sendo a entrada do plano.
+
 > **Para a LLM executora:** este arquivo é o seu ponto de partida. Leia-o inteiro antes de
 > qualquer ação. Ele diz em que ordem ler o resto e como trabalhar.
 
@@ -10,10 +13,12 @@ para baixar áudio do YouTube/YouTube Music — faixas individuais e playlists �
 corretos, capas, letras, organização automática da biblioteca e **atualização automática
 obrigatória** (do app e das ferramentas externas).
 
-É uma **reconstrução do zero** do projeto antigo em `D:\Documentos\4 - Pessoal\Reverb`
-(Tauri + React + sidecar Python). O antigo serve **somente como referência de leitura**:
-nunca modifique nada lá. Todo o código novo é criado **nesta pasta**
-(`D:\Documentos\4 - Pessoal\Reverb_claude`).
+É uma **reconstrução do zero** do projeto antigo (Tauri + React + sidecar Python).
+O código novo está na raiz deste repositório, atualmente
+`D:\Documentos\4 - Pessoal\Reverb`; o projeto antigo foi movido para `Reverb_old`,
+conforme decisão registrada no PROGRESS. O antigo serve **somente como referência de
+leitura**: nunca modifique nada lá. `Reverb_claude` era o nome proposto no plano inicial,
+mas não é o diretório de execução atual. A reconstrução usa Rust, sem o sidecar Python.
 
 ## Ordem de leitura obrigatória
 
@@ -58,10 +63,10 @@ leia este arquivo, o protocolo (`00`), e o `PROGRESS.md`. Continue de onde parou
 As fases são **estritamente sequenciais**. Nunca comece uma fase antes de a anterior estar
 marcada como `CONCLUÍDA` no `PROGRESS.md` com todos os testes do portão passando.
 
-## Estrutura desta pasta antes de começar
+## Estrutura do planejamento inicial
 
 ```
-Reverb_claude/
+Reverb/
 ├── LEIA-ME_PRIMEIRO.md          ← você está aqui
 ├── PROGRESS.md                  ← registro vivo do andamento (você atualiza)
 ├── plano/                       ← o plano (NÃO altere o conteúdo técnico sem registrar no PROGRESS)

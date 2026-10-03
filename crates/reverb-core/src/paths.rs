@@ -8,7 +8,9 @@ use crate::settings::Settings;
 pub const APP_IDENTIFIER: &str = "com.reverb.desktop";
 pub const PORTABLE_MARKER: &str = "portable.txt";
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, ts_rs::TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct DataPaths {
     pub data_dir: PathBuf,
     pub portable: bool,

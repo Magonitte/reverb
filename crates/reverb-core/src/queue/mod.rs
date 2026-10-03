@@ -7,7 +7,7 @@ pub mod runner;
 pub mod scheduler;
 
 #[cfg(test)]
-mod fake;
+pub(crate) mod fake;
 #[cfg(test)]
 mod tests;
 

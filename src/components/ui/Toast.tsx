@@ -49,6 +49,18 @@ function ToastItem({ toast }: { toast: ToastData }) {
           {toast.actionLabel}
         </button>
       )}
+      {toast.secondaryActionLabel && (
+        <button
+          type="button"
+          className="text-xs font-semibold text-accent hover:text-accent-hover"
+          onClick={() => {
+            toast.onSecondaryAction?.();
+            dismiss(toast.id);
+          }}
+        >
+          {toast.secondaryActionLabel}
+        </button>
+      )}
       <button
         type="button"
         aria-label={t("common.close")}

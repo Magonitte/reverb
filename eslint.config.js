@@ -42,6 +42,20 @@ export default tseslint.config(
     languageOptions: { globals: { ...globals.node } },
   },
   {
+    // Specs do app real (WebdriverIO): globais do WDIO/Mocha; `window` roda dentro da página.
+    files: ["tests/e2e-app/**"],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.mocha,
+        $: "readonly",
+        $$: "readonly",
+        browser: "readonly",
+        expect: "readonly",
+      },
+    },
+  },
+  {
     files: ["**/*.test.{ts,tsx}", "src/lib/ipc/mock/**", "tests/**", "scripts/**"],
     rules: { "i18next/no-literal-string": "off" },
   },

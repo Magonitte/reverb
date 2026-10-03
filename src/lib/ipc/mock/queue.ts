@@ -4,6 +4,10 @@ import type { Job } from "@/bindings/Job";
 import type { MoveTarget } from "@/bindings/MoveTarget";
 import type { QueueState } from "@/bindings/QueueState";
 import { mockBus } from "./bus";
+import { mockAnalyze } from "./media";
+import { mockMetadataFor } from "./metadata";
+import { mockPublishJob } from "./library";
+import { syncJobUpdated } from "./syncs";
 
 let jobs: Job[] = [];
 let paused = false;
@@ -19,6 +23,7 @@ export function resetMockQueue(): void {
 }
 
 function emitJob(job: Job): void {
+  syncJobUpdated(job);
   mockBus.emit("job://updated", job);
 }
 
@@ -67,8 +72,22 @@ export function mockEnqueue(request: EnqueueRequest): Job {
   const position = request.priority ? Math.min(0, ...positions) - 1 : Math.max(0, ...positions) + 1;
   const job: Job = {
     id: `mock-job-${counter}`,
-    kind: request.playlistCtx ? "playlist_item" : "single",
-    provider: "youtube",
+    kind: request.options?.upgradeLibraryId
+      ? "upgrade"
+      : request.options?.splitChapters
+        ? "chapters"
+        : request.playlistCtx
+          ? "playlist_item"
+          : "single",
+    provider: new URL(url).hostname.includes("archive.org")
+      ? "archive"
+      : new URL(url).hostname.endsWith(".bandcamp.com")
+        ? "bandcamp"
+        : new URL(url).hostname.includes("soundcloud.com")
+          ? "soundcloud"
+          : new URL(url).hostname.includes("jamendo.com")
+            ? "jamendo"
+            : "youtube",
     sourceUrl: url,
     sourceId,
     title: request.title ?? null,
@@ -78,6 +97,8 @@ export function mockEnqueue(request: EnqueueRequest): Job {
     profileId,
     options: request.options ?? {},
     metadataOverride: request.metadataOverride ?? null,
+    confidence: null,
+    metadataResult: null,
     warnings: [],
     playlistCtx: request.playlistCtx ?? null,
     syncId: request.playlistCtx?.syncId ?? null,
@@ -222,6 +243,8 @@ export function seedMockJobs(seeds: Array<Partial<Job> & { sourceUrl: string }>)
       profileId: "original",
       options: {},
       metadataOverride: null,
+      confidence: null,
+      metadataResult: null,
       warnings: [],
       playlistCtx: null,
       syncId: null,
@@ -243,6 +266,7 @@ export function seedMockJobs(seeds: Array<Partial<Job> & { sourceUrl: string }>)
       ...seed,
     };
     jobs.push(job);
+    if (job.status === "done") job.libraryId = mockPublishJob(job);
     return job;
   });
   created.forEach(emitJob);
@@ -250,8 +274,36 @@ export function seedMockJobs(seeds: Array<Partial<Job> & { sourceUrl: string }>)
   return created;
 }
 
+/** O passo `identify` simulado: grava o resultado, a confiança e o título/artista identificados. */
+function identify(job: Job): void {
+  try {
+    const analysis = mockAnalyze(job.sourceUrl);
+    if (analysis.type !== "video") return;
+    const result = mockMetadataFor(analysis.info, {
+      useOfficial: false,
+      override: job.metadataOverride,
+    });
+    job.title = result.fields.title;
+    job.artist = result.fields.artist;
+    job.confidence = result.contentType === "music" ? result.confidence : null;
+    job.metadataResult = result;
+  } catch {
+    // URL sem análise no mock: o job segue sem resultado de metadados.
+  }
+}
+
 /** Estágios simulados, na ordem do pipeline (arquitetura §10). */
-const SIM_STAGES: Job["stage"][] = ["analyzing", "downloading", "converting", "metadata", "moving"];
+const SIM_STAGES: Job["stage"][] = [
+  "analyzing",
+  "downloading",
+  "converting",
+  "metadata",
+  "artwork",
+  "lyrics",
+  "loudness",
+  "tagging",
+  "moving",
+];
 const SIM_STEP = 0.34;
 
 /**
@@ -268,11 +320,14 @@ export function mockSimulationStep(parallelism = 2): void {
         job.status = "running";
         job.stage = SIM_STAGES[0]!;
         job.attempts += 1;
+        job.warnings = [];
         emitJob(job);
       });
   }
   for (const job of jobs.filter((j) => j.status === "running")) {
-    job.progress = Math.min(1, job.progress + SIM_STEP);
+    // Estes passos só emitem início/fim no core; não simulam progresso em porcentagem.
+    const discrete = ["artwork", "lyrics", "loudness", "tagging"].includes(job.stage);
+    job.progress = discrete ? 1 : Math.min(1, job.progress + SIM_STEP);
     const index = SIM_STAGES.indexOf(job.stage);
     if (job.progress >= 1) {
       if (index + 1 >= SIM_STAGES.length) {
@@ -283,9 +338,13 @@ export function mockSimulationStep(parallelism = 2): void {
         job.speedBps = null;
         job.etaS = null;
         job.finishedAt = job.updatedAt + 1;
+        job.outputPath = `C:/Musicas/Reverb/${job.title ?? job.sourceId ?? job.id}.opus`;
+        job.libraryId = mockPublishJob(job);
+        mockBus.emit("library://changed", { ids: [job.libraryId] });
       } else {
         job.stage = SIM_STAGES[index + 1]!;
         job.progress = 0;
+        if (job.stage === "metadata") identify(job);
       }
     }
     if (job.status === "running") {

@@ -1,5 +1,7 @@
 use std::sync::Arc;
 
+use reverb_core::backend::DownloadBackend;
+use reverb_core::metadata::MetadataService;
 use reverb_core::queue::QueueService;
 use reverb_core::{DataPaths, Db, EventSink, SettingsService, ToolsManager};
 use tauri::{AppHandle, Emitter};
@@ -12,7 +14,16 @@ pub struct AppState {
     pub db: Db,
     pub settings: Arc<SettingsService>,
     pub tools: Arc<ToolsManager>,
+    pub tools_startup: tokio::sync::Mutex<Option<tauri::async_runtime::JoinHandle<()>>>,
     pub queue: QueueService,
+    pub syncs: Arc<reverb_core::sync::SyncService>,
+    pub imports: Arc<reverb_core::import::ImportService>,
+    pub artists: Arc<reverb_core::artists::ArtistService>,
+    pub background_cancel: tokio_util::sync::CancellationToken,
+    /// Análise e busca (F07) usam o mesmo backend dos downloads.
+    pub backend: Arc<dyn DownloadBackend>,
+    /// Versão oficial, pré-visualização e busca de metadados (F08); o mesmo serviço do pipeline.
+    pub metadata: Arc<MetadataService>,
     #[allow(dead_code)] // F02+: ferramentas e fila emitem eventos pelo sink.
     pub sink: Arc<dyn EventSink>,
 }

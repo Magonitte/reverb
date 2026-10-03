@@ -30,9 +30,18 @@ fn failure(error: DownloadError) -> anyhow::Error {
     anyhow::anyhow!("{} ({})", error.message, error.kind.as_str())
 }
 
-fn backend(manager: Arc<ToolsManager>, settings: Arc<SettingsService>) -> YtDlpProcessBackend {
-    let context = Arc::new(ToolsContext::new(Arc::clone(&manager), settings));
-    YtDlpProcessBackend::new(YtDlpRunner::new(Some(manager)), context)
+fn backend(
+    manager: Arc<ToolsManager>,
+    settings: Arc<SettingsService>,
+) -> reverb_core::sources::SourcesBackend {
+    let context = Arc::new(ToolsContext::new(Arc::clone(&manager), settings.clone()));
+    reverb_core::sources::SourcesBackend::new(
+        Arc::new(YtDlpProcessBackend::new(
+            YtDlpRunner::new(Some(manager)),
+            context,
+        )),
+        settings,
+    )
 }
 
 fn minutes(seconds: f64) -> String {
@@ -104,6 +113,14 @@ impl ProgressPrinter {
                 ("baixando", percent, rate)
             }
             PipelineEvent::Convert(percent) => ("convertendo", i64::from(percent), String::new()),
+            PipelineEvent::Analyzing => ("analisando", -1, String::new()),
+            PipelineEvent::Identifying => ("identificando", -1, String::new()),
+            PipelineEvent::Stage(stage) => (stage.as_str(), -1, String::new()),
+            PipelineEvent::Warning(warning) => {
+                eprintln!("{warning}");
+                return;
+            }
+            PipelineEvent::SourceSwitched { .. } | PipelineEvent::Identified(_) => return,
         };
         let bucket = if percent < 0 { -1 } else { percent / 10 };
         let mut last = self.last.lock().expect("progresso");
@@ -196,6 +213,11 @@ pub async fn download(
         out_dir: std::path::absolute(out)
             .with_context(|| format!("caminho inválido: {}", out.display()))?,
         sponsorblock: None,
+        metadata_override: None,
+        fetch_metadata: None,
+        settings: None,
+        options: Default::default(),
+        playlist_ctx: None,
     };
     let printer = ProgressPrinter::new();
     let output = pipeline
