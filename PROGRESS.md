@@ -6,9 +6,9 @@
 ## Situação atual
 
 - **Fase atual:** F15 — CONCLUÍDA (F00–F15 concluídas; F16 não iniciada).
-- **Último ponto de parada:** F15/0.1.3 passou os quatro portões: 624 Rust, 239 Vitest, 79 Playwright, 29 rede e 9 testes no app real. Código e documentação prontos para publicação. A instalação do PC ainda está em 0.1.2 até a publicação da nova versão.
+- **Último ponto de parada:** F15/0.1.3 passou os quatro portões: 624 Rust, 239 Vitest, 79 Playwright, 29 rede e 9 testes no app real. Commit dff41eb, tags fase-15-ok/v0.1.3 e PR #6. Release Windows/Linux publicada; Reverb do PC atualizado para 0.1.3, autoteste verde e hashes das sete tabelas idênticos antes/depois.
 - **Pendências humanas abertas:** nenhuma impeditiva; Jamendo Client ID e credenciais Spotify opcionais não fornecidos. Spotify T12 N/A autorizado, sem acesso real de conta validado.
-- **Pendência técnica:** publicar 0.1.3, atualizar main no GitHub e conferir a atualização da instalação do PC.
+- **Pendência técnica:** nenhuma na F15. Próximo trabalho de implementação: F16, mediante nova solicitação.
 
 ## Ambiente (preenchido na F00, 2026-10-01)
 
@@ -72,6 +72,12 @@
 
 - **Documentação autorizada (2026-10-03):** README público, CONTRIBUTING, índice docs e guias de instalação/configuração/uso/desenvolvimento/arquitetura/diagnóstico criados; modelos GitHub de issue/PR incluídos. 50 links locais válidos, formatação conferida. LEIA-ME corrigido para o diretório real já registrado na F00; contratos técnicos do plano preservados.
 - **Diagnóstico T11/T13:** T11 refazia buscas após enfileirar, medindo resultados novos; importMatch/importSourceTrackId agora persistem no job, e o teste confere os três casamentos efetivamente enfileirados (ISRC e confiança mantidos). Primeiro T13 recebeu bot_check na primeira gravação do chart; teste passa a selecionar outra faixa da mesma coleção, preservando download/ISRC/asserts. Descoberto paralelismo aninhado de até 15 candidatos: consultas de importação agora compartilham três vagas, com teste de pico e cancelamento. Portões completos repetidos nessa revisão; nenhuma fase marcada concluída antecipadamente.
+
+- **Commit/tag:** dff41eb — feat(F15): importação, artistas e documentação completa; branch codex/f15-collection; tags fase-15-ok e v0.1.3; PR #6, https://github.com/Magonitte/reverb/pull/6, base main para incorporar também F07–F14 já publicadas nas branches anteriores.
+- **Publicação:** workflow Release 37094693736 verde em Windows e Ubuntu; https://github.com/Magonitte/reverb/releases/tag/v0.1.3 com NSIS, AppImage, DEB, assinaturas e latest.json. Versões anteriores mantidas.
+- **Integração na principal:** PR #6 integrada em main em 2026-10-03, merge 02df035. A principal passa a incluir F07–F15 e os guias públicos completos. CI 37094724935 passou os passos de verificação Windows/Linux, incluindo Playwright Windows, build e autoteste headless; as fontes publicadas continuam as mesmas da tag dff41eb.
+- **Instalação verificada:** atualizador confirmou 0.1.2 → 0.1.3, verificou assinatura e instalou com código 0. Autoteste do executável em C:/Users/Jean Carlos de Souza/AppData/Local/Reverb/reverb.exe: version=0.1.3, ok=true, portable=false. SHA-256 F2F8250381462B6FCB9A8532343B542859AE9ECB6691A1F271EA437AAAE449A7. Hashes/counts idênticos para library, jobs, kv, syncs, sync_items, followed_artists e followed_releases (0 itens de biblioteca, 3 jobs, 8 kv, demais tabelas vazias). Banco fechado copiado para backup privado local, ignorado pelo Git. Relatórios .f15-installed-selftest.log, .f15-install-report.log e .f15-before/after-install.log; banco do usuário não usado nos testes.
+- **Continuidade:** próxima fase F16, não iniciada. Credenciais opcionais não impedem esta entrega, mas funcionamento real Spotify continua sem comprovação.
 
 ### F14 — Provedores extras e verificador lossless
 
