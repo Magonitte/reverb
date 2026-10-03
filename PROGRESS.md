@@ -6,7 +6,7 @@
 ## Situação atual
 
 - **Fase atual:** F15 — CONCLUÍDA (F00–F15 concluídas; F16 não iniciada).
-- **Último ponto de parada:** revisão da Biblioteca concluída na branch `codex/library-ux-import-details`: 627 Rust, 256 Vitest, 84 Playwright e 12 testes no app real aprovados. Importação de arquivo/pasta, detalhes dos catálogos com imagem e persistência de tags confirmados. Versão instalada/release anterior: 0.1.4; esta revisão não cria release. F16 não iniciada.
+- **Último ponto de parada:** revisão da Biblioteca concluída na branch `codex/library-ux-import-details`: 627 Rust, 256 Vitest, 84 Playwright e 12 testes no app real aprovados. Importação de arquivo/pasta, detalhes dos catálogos com imagem e persistência de tags confirmados. Release 0.1.5 em preparação para entrega pelo atualizador; instalada anteriormente: 0.1.4. F16 não iniciada.
 - **Pendências humanas abertas:** nenhuma impeditiva; Jamendo Client ID e credenciais Spotify opcionais não fornecidos. Spotify T12 N/A autorizado, sem acesso real de conta validado.
 - **Pendência técnica:** nenhuma nas correções pós-F15. F16 não iniciada.
 
@@ -22,6 +22,15 @@
 - Validação final: `npm run verify` aprovado em todos os portões (627 Rust); 256 Vitest; 84 Playwright, incluindo acessibilidade e revisão visual, mais 3 testes do editor repetidos após o ajuste final da busca. Typecheck/lint e build Tauri final aprovados.
 - Suíte nativa: 12 testes em 8 arquivos aprovados. Importação de música individual e pasta com subpasta/duplicata; consulta real de catálogos, detalhes com imagem carregada e tags gravadas; regressões de artistas, downloads, importação Deezer, integração desktop, playlists, lossless e atualizador aprovadas.
 - Dados da instalação pessoal preservados; testes usam áudio sintético e pastas temporárias.
+
+## Entrega instalável da Biblioteca — 0.1.5
+
+- **Status:** EM ANDAMENTO (2026-10-03).
+- Diagnóstico: PR #8 com CI Windows/Linux aprovada, mas sem release; aplicativo instalado e manifesto `latest.json` ainda em 0.1.4. O atualizador não podia oferecer as mudanças da branch.
+- Consulta no aplicativo instalado confirmou "Atualizado", sem erro. Manifesto anterior com plataforma Windows e assinatura presentes. A opção automática apenas verifica/avisa, conforme o texto da interface; instalar exige a ação de atualização.
+- Preparação da release 0.1.5 e validação da atualização assinada de 0.1.4 para 0.1.5, preservando dados e conferindo a Biblioteca instalada.
+- Backup SQLite consistente dos dados locais criado antes da atualização. Revalidação com compilação limitada a um processo após esgotamento de memória ao executar compilação e testes de interface simultaneamente.
+- Portões finais da 0.1.5: 627 Rust, 256 Vitest, 84 Playwright aprovados; tipos, lint, i18n, IPC, build, fmt, clippy, bindings e segredos aprovados. Teste de logs repetido com `RUST_LOG=info`, pois a sessão herdava `warn` e ocultava o evento esperado.
 
 ## Ambiente (preenchido na F00, 2026-10-01)
 

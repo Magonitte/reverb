@@ -1,6 +1,6 @@
 # Changelog
 
-## Não publicado
+## 0.1.5
 
 - Biblioteca reorganizada com importação em destaque, filtros agrupados, seleção contextual e detalhes das faixas.
 - Importações exibem preparação, progresso, falhas e pastas sem áudio; filtros são limpos para mostrar as músicas importadas.
