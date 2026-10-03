@@ -21,6 +21,12 @@ const SEARCH_LIMIT: u32 = 15;
 
 /// Erro do motor ⇒ erro de comando com o `kind` do `ErrorKind` (a UI traduz `errors.<kind>`).
 pub(crate) fn engine_error(error: DownloadError) -> CoreError {
+    if error.message == "errors.bandcampRestricted" {
+        return CoreError::coded("bandcamp_restricted", error.message);
+    }
+    if error.message == "Jamendo client ID required" {
+        return CoreError::coded("jamendo_key", error.message);
+    }
     let kind = error.kind.as_str();
     CoreError::coded(kind, error.message)
 }

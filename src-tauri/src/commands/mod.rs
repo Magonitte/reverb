@@ -20,3 +20,4 @@ pub fn app_info(app: AppHandle) -> AppInfo {
 }
 
 pub mod quality;
+pub mod sources;

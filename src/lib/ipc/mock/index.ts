@@ -94,6 +94,20 @@ export { resetMockTools, seedMockTool, seedMockToolVersions } from "./tools";
 export { resetMockUpdater, setMockUpdaterMode } from "./updater";
 
 const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
+  verify_lossless: (args) => {
+    mockCalls.push({ cmd: "verify_lossless", args });
+    return {
+      verdict: "lossless",
+      details: "44100 Hz; RMS -12.0 dB; >16.5 kHz -20.0 dB; >19.5 kHz -25.0 dB",
+      spectrogramPngBase64: mockWaveform("mock.flac").replace(/^data:image\/png;base64,/, ""),
+      rmsDb: -12,
+      high16Db: -20,
+      high19Db: -25,
+    };
+  },
+  open_source_url: (args) => {
+    mockCalls.push({ cmd: "open_source_url", args });
+  },
   cookies_test: () => {
     mockCalls.push({ cmd: "cookies_test" });
     const s = mockSettingsGet();

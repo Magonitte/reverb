@@ -19,6 +19,8 @@ export function SearchResults({ bar }: { bar: CommandBarController }) {
       tabs={[
         { id: "ytmusic", label: t("commandBar.sources.ytmusic") },
         { id: "youtube", label: t("commandBar.sources.youtube") },
+        { id: "archive", label: t("commandBar.sources.archive") },
+        { id: "jamendo", label: t("commandBar.sources.jamendo") },
       ]}
     >
       {bar.results.length === 0 ? (
@@ -42,12 +44,14 @@ export function SearchResults({ bar }: { bar: CommandBarController }) {
                 aria-label={t("commandBar.openPreview", { title: r.title })}
                 className="flex min-w-0 flex-1 items-center gap-3 rounded-md text-left"
               >
-                <img
-                  src={thumbnailFor(r.id)}
-                  alt=""
-                  loading="lazy"
-                  className="size-12 shrink-0 rounded-md bg-field object-cover"
-                />
+                {(bar.source === "ytmusic" || bar.source === "youtube") && (
+                  <img
+                    src={thumbnailFor(r.id)}
+                    alt=""
+                    loading="lazy"
+                    className="size-12 shrink-0 rounded-md bg-field object-cover"
+                  />
+                )}
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[13px] font-medium text-fg">{r.title}</span>
                   <span className="block truncate text-xs text-fg-muted">

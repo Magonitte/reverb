@@ -37,9 +37,9 @@ export function mockUpgradeEnqueue(ids: number[]) {
 }
 export function mockProviderTest(provider: string) {
   mockCalls.push({ cmd: "provider_test", args: { provider } });
-  if (!["spotify", "discogs", "acoustid"].includes(provider))
+  if (!["spotify", "discogs", "acoustid", "jamendo"].includes(provider))
     throw { kind: "invalid", message: "Unknown provider" };
-  if (!mockSettingsGet().secretsStatus[provider as "spotify" | "discogs" | "acoustid"])
+  if (!mockSettingsGet().secretsStatus[provider as "spotify" | "discogs" | "acoustid" | "jamendo"])
     throw { kind: "provider_key" };
 }
 export function mockWaveform(path: string) {

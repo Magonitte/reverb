@@ -5,10 +5,10 @@
 
 ## Situação atual
 
-- **Fase atual:** F13 — CONCLUÍDA (F00–F13 concluídas; F14 não iniciada).
-- **Último ponto de parada:** F13 aprovada nos quatro portões em 2026-10-02 e publicada no PR #4; Reverb do PC atualizado e reaberto. CI Windows/Linux em execução no momento do registro final.
-- **Pendências humanas abertas:** nenhuma.
-- **Pendência técnica:** nenhuma (F02/T13 resolvida: job Linux do CI verde).
+- **Fase atual:** F14 — CONCLUÍDA (F00–F14 concluídas); publicação e atualização do PC em execução.
+- **Último ponto de parada:** F14/0.1.2 passou todos os portões: 602 Rust, 237 Vitest, 75 Playwright, 27 rede e 8 app real. Preparando commit/tag, PR e release. App F13 permanece instalado até concluir a atualização.
+- **Pendências humanas abertas:** nenhuma impeditiva; Jamendo Client ID opcional não fornecido, integração real pode ser configurada depois.
+- **Pendência técnica:** publicar versão 0.1.2 e instalar a atualização autorizada; próxima fase de implementação é F15.
 
 ## Ambiente (preenchido na F00, 2026-10-01)
 
@@ -45,6 +45,38 @@
 ---
 
 ## Registro das fases
+
+### F14 — Provedores extras e verificador lossless
+
+- **Status:** CONCLUÍDA
+- **Início / fim:** 2026-10-02 / 2026-10-02
+- **Tarefas:** [x] fontes · [x] SoundCloud · [x] Bandcamp · [x] Internet Archive · [x] Jamendo · [x] verificador · [x] UI · [x] perfis · [x] fixtures
+- **Autorizações:** usuário solicitou continuar após F13, enviar ao GitHub e atualizar o app instalado ao concluir.
+- **Decisões:** protocolo §7.8b prevalece sobre a referência de código de terceiros da F14/3: implementar Bandcamp pelo contrato e páginas públicas, sem consultar o código do projeto citado. Mantida a pasta atual conforme decisão da F00.
+- **Pendências:** nenhuma impeditiva. T9 Jamendo N/A sem Client ID, conforme opção de prosseguir explicitada ao usuário; configuração e parsers de permissão implementados.
+- **Verificações intermediárias:** geração de 76 bindings verde; três testes Vitest e dois Playwright da F14 verdes; teste espectral com ruído estéreo real distingue FLAC original, MP3 128/320 transcodificados e 22,05 kHz. Fixture Archive contém 31 faixas FLAC na resposta gravada; teste usa a contagem efetiva, sem mudar requisito do plano. SoundCloud Icarus CC-BY baixado como hls_aac_160k, original indisponível.
+- **Falhas/correções:** primeira exportação compilou muitos binários em paralelo e excedeu paginação Windows (1455); CARGO_BUILD_JOBS=1/CARGO_INCREMENTAL=0 resolveu. Ruído mono a 128 kbps preserva banda maior; fonte sintética corrigida para estéreo independente, conforme os testes reais anteriores de perfis; mantidas as asserções da fase. Alto RMS relativo calibrado em -25 dB (ruído FLAC -8/-12 dB; MP3 128 -29/-34; MP3 320 -12/-28). Seletores novos de Playwright corrigidos para o campo e nome acessível existentes. Bandcamp retorna links expirados; consulta pública statdownload fornece retry_url válido (download direto manual de teste em pasta do projeto: 16.182.641 bytes). Backend Rust ainda em diagnóstico de transporte e status JSONP.
+- **Bloqueio externo (2026-10-02):** F14/T6 `f14_archive_real_flac_tags_and_lossless`, em `.f14-net-sources4.log`: `error sending request: client error (Connect): operation timed out`. Metadados e busca públicos funcionam; o download redireciona para o servidor do item `dn601704.us.archive.org` e excede conexão de 20 s. Falha repetida nas quatro rodadas de desenvolvimento; HTTP/1 não alterou o resultado. Download direto PowerShell também não recebeu arquivo. Sem afrouxar ou ignorar o teste, solicitada escolha do usuário entre fixture equivalente e retomar quando o serviço responder. Bandcamp real passou após aceitar status legado `{ result: 'ok' }`, sem executar JavaScript; SoundCloud real passou. Verificação offline concluída para preservar resultado revisável. GitHub e instalação ainda não executados porque a fase não passou o portão.
+- **Portão offline inicial:** typecheck/lint/i18n/IPC/build/fmt e 237 Vitest passaram; clippy parou em double_ended_iterator_last no parser RMS. Corrigido para next_back, sem alterar resultado nem asserções. Repetição completa iniciada.
+- **Navegador offline inicial:** 68 passaram, sete falharam. Cinco falhas de estado/navegação coincidiram com alterações em módulos durante o servidor Vite de testes (HMR reinicializou estado e perdeu conexão); repetir com fontes estáveis. Duas diferenças visuais eram a ação nova do verificador na biblioteca. Imagens dark/light e diff inspecionados: apenas ícones da coluna Ações mudaram, conteúdo/layout estáveis; atualizadas exclusivamente library-populated-dark/light Windows, conforme protocolo §3. Nenhuma asserção relaxada.
+- **Repetição offline:** 75 Playwright passaram (2,3 min), 237 Vitest e clippy verdes. Cargo test (recompilação nativa completa: 478,8 s) passou 548 casos do core, falhou somente urlkind::tests::nao_suportadas da F03, que proibia SoundCloud. A F14 tarefas 1/7 e T1 passam a exigir suporte: caso movido para teste positivo explícito, mantendo no teste negativo soundcloud.com.evil.example. Nenhuma tolerância reduzida; nova rodada completa iniciada.
+- **Terceira rodada verify:** 550 testes do core verdes; teste isolado logging_init/F01 falhou com log vazio. RUST_LOG herdado do host = warn, suprimindo o tracing::info do teste. Repetir portão com RUST_LOG=info somente nos processos de teste, como nas rodadas F09/F13; código de logs/teste/asserções preservados.
+
+- **Quarta rodada verify:** OK em 214,4 s, com RUST_LOG=info: 600 testes Rust e 237 Vitest verdes; typecheck, lint, i18n, IPC, build, fmt, clippy, bindings e scan de segredos verdes. Os 27 testes de rede permanecem separados deste portão. Navegador offline: 75 Playwright verdes. Fase continua bloqueada pelo Archive; verify:net completo e e2e:app ainda pendentes, sem commit/publicação/instalação F14.
+
+- **Retomada autorizada:** usuário autorizou substituir a fixture Archive por outra gratuita equivalente. Selecionado Bach: Well-Tempered Clavier, Book 1, da mesma pianista Kimiko Ishizaka, CC0, 48 faixas em 24bit Flac; metadados e download da primeira faixa disponíveis. Respostas reais adicionais gravadas, preservando as anteriores. T6 ampliado para busca, pipeline original, organização, tags, limpeza e análise espectral.
+- **Correção espectral:** o limiar de RMS alto isolado confundia o decaimento natural do piano com fonte com perdas. Produção passa a exigir também queda abrupta entre bandas adjacentes (15/17,5 kHz e 18,5/20,5 kHz), mantendo RMS acima de 16,5/19,5 kHz, limiar anterior e asserções originais de MP3. Novo teste de regressão e teste nativo de importação automática/persistência/espectrograma.
+
+- **T6 após substituição:** verde (25,4 s). FLAC 96 kHz, RMS -33,8 dB; altas bandas -98,9/-99,5 dB; quedas adjacentes -1,8/-1,2 dB: provável lossless, sem corte abrupto. Tags título/artista/álbum/ano/faixa, organização e limpeza verificadas. Primeiro teste novo comparou alias 8.3 de TEMP ao caminho canônico publicado; corrigida identidade da asserção conforme F10, sem alterar contenção esperada.
+
+- **Rodada final 0.1.2 — offline:** npm run verify OK em 979,4 s: 602 testes Rust, 237 Vitest, typecheck/lint/i18n/IPC/build/fmt/clippy/bindings/segredos verdes. Checagem adicional ESLint do teste nativo após inclusão do WAV float. Suíte de navegador completa em execução; rede e app real em sequência. Importação automática inclui todos os codecs PCM de WAV, inclusive pcm_f32le, além de FLAC.
+
+- **Rodada final 0.1.2 — navegador:** npm run e2e OK, 75 Playwright em 1,2 min, incluindo abas Archive/Jamendo, coleção e verificador. Fontes estáveis; sem novas alterações de bases. verify:net completo em execução.
+
+- **Rodada final 0.1.2 — rede:** npm run verify:net OK, 27 testes reais, aproximadamente 172.6 s (log completo). Archive/Bandcamp/SoundCloud verdes, incluindo T6 pelo pipeline e provável lossless. Jamendo T9 N/A: Client ID não fornecido; usuário confirmou prosseguir com a etapa que explicitava Jamendo opcional sem chave. App real em execução com dados isolados.
+
+- **Portão final:** verify 979,4 s (602 Rust/237 Vitest), navegador 75 em 1,2 min, rede 27, app real 8 testes/5 specs em 454,3 s incluindo builds; sessão nativa 151 s. Todos verdes nas fontes finais 0.1.2. App confirma FLAC lossless, WAV pcm_f32le/22,05 kHz inconclusivo, persistência e PNG 800×300. FFmpeg foi atualizado automaticamente para 20261002T225919Z durante o app; testes espectrais de ruído original e MP3 128/320 repetidos e verdes com essa versão, sem alterações de código ou asserções.
+- **Commit/tag:** feat(F14): fontes gratuitas e verificador lossless; branch codex/f14-sources; tags fase-14-ok e v0.1.2. Publicação/instalação em execução.
 
 ### F13 — Qualidade avançada
 

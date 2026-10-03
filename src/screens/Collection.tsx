@@ -32,9 +32,9 @@ const WARN_RATIO = 0.9;
 
 export default function Collection() {
   const { t } = useTranslation();
-  const navigate=useNavigate();
-  const collectionUrl=useFlowStore((state)=>state.collectionUrl);
-  const [syncDialog,setSyncDialog]=useState(false);
+  const navigate = useNavigate();
+  const collectionUrl = useFlowStore((state) => state.collectionUrl);
+  const [syncDialog, setSyncDialog] = useState(false);
   const collection = useFlowStore((s) => s.collection);
   const settings = useSettingsStore((s) => s.settings);
   const jobs = useJobsStore((s) => s.jobs);
@@ -204,7 +204,13 @@ export default function Collection() {
   return (
     <section aria-labelledby="screen-title" className="flex h-full flex-col">
       <ScreenHeader
-        actions={<Button variant="secondary" onClick={()=>setSyncDialog(true)}>{t("sync.thisCollection")}</Button>}
+        actions={
+          !collectionUrl || /youtube\.com|youtu\.be/.test(new URL(collectionUrl).hostname) ? (
+            <Button variant="secondary" onClick={() => setSyncDialog(true)}>
+              {t("sync.thisCollection")}
+            </Button>
+          ) : undefined
+        }
         title={collection.title ?? t("collection.title")}
         subtitle={t("collection.summary", {
           channel: collection.channel ?? "—",
@@ -258,7 +264,16 @@ export default function Collection() {
         rowKey={(r) => `${r.index}-${r.entry.id}`}
         columns={columns}
       />
-      {syncDialog && <SyncDialog url={collectionUrl ?? `https://www.youtube.com/playlist?list=${collection.id ?? ""}`} onClose={()=>setSyncDialog(false)} onSaved={(sync)=>{setSyncDialog(false);navigate(`/playlists/${sync.id}`);}}/>}
+      {syncDialog && (
+        <SyncDialog
+          url={collectionUrl ?? `https://www.youtube.com/playlist?list=${collection.id ?? ""}`}
+          onClose={() => setSyncDialog(false)}
+          onSaved={(sync) => {
+            setSyncDialog(false);
+            navigate(`/playlists/${sync.id}`);
+          }}
+        />
+      )}
     </section>
   );
 }

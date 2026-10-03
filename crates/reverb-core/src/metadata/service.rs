@@ -170,6 +170,9 @@ impl MetadataService {
         let Analysis::Video { info } = analysis else {
             return Ok(SourcePlan::unknown(url));
         };
+        if crate::sources::provider_id(url) != "youtube" {
+            return self.plan_source(url, *info, false, false, cancel).await;
+        }
         // Preserve the timeline of full albums before dividing their chapters.
         let chapter_album = info.chapters.len() >= 2 && info.duration.is_some_and(|d| d > 600.0);
         let prefer =
@@ -331,6 +334,23 @@ impl MetadataService {
             result.confidence = 1.0;
             result.source = SOURCE_USER.to_string();
             result.bucket = Bucket::Auto;
+            return result;
+        }
+
+        let provider = crate::sources::provider_id(&plan.url);
+        if provider != "youtube" {
+            result.source = provider.into();
+            if let Some(video) = &plan.video {
+                result.fields.track_no = video
+                    .categories
+                    .iter()
+                    .find_map(|c| {
+                        c.strip_prefix("reverb-track:")
+                            .and_then(|n| n.parse::<u32>().ok())
+                    })
+                    .filter(|n| *n > 0);
+                result.fields.album_artist = video.artist.clone();
+            }
             return result;
         }
 
@@ -534,7 +554,10 @@ impl MetadataService {
                 },
             };
         let switch = use_official.unwrap_or_else(|| self.settings.get().prefer_official_audio);
-        let plan = self.plan_source(url, video, true, switch, cancel).await?;
+        let youtube = crate::sources::provider_id(url) == "youtube";
+        let plan = self
+            .plan_source(url, video, youtube, switch && youtube, cancel)
+            .await?;
         let duration = plan.video.as_ref().and_then(|v| v.duration);
         let title = plan
             .video

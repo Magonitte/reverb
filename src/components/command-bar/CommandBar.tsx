@@ -6,6 +6,8 @@ import { hintKind } from "@/lib/urlkind";
 import { useUiStore } from "@/stores/ui";
 import { SearchResults } from "./SearchResults";
 import { useCommandBar } from "./useCommandBar";
+import { api } from "@/lib/ipc/api";
+import { Button } from "@/components/ui/Button";
 
 export interface CommandBarProps {
   /** Foca ao montar (overlay e Início). */
@@ -89,6 +91,11 @@ export function CommandBar({ autoFocus, large = true, overlay = false, onDone }:
         <p role="alert" data-testid="command-error" className="mt-3 px-1 text-[13px] text-error">
           {bar.error}
         </p>
+      )}
+      {bar.status === "error" && /https?:\/\/[^/]+\.bandcamp\.com\//.test(text) && (
+        <Button variant="secondary" onClick={() => void api.openSourceUrl(text)}>
+          {t("sourcesOpen")}
+        </Button>
       )}
       {bar.status === "results" && <SearchResults bar={bar} />}
     </div>

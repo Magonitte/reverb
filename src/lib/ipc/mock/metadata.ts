@@ -128,7 +128,25 @@ export function mockMetadataFor(
   const source = swapped ?? video;
 
   let result: MetadataResult;
-  if (!music) {
+  if (
+    source.extractorKey &&
+    ["archive", "bandcamp", "jamendo", "soundcloud"].includes(source.extractorKey.toLowerCase())
+  ) {
+    result = {
+      fields: {
+        ...emptyFields(source.track ?? source.title, source.artist ?? source.uploader),
+        album: source.album,
+        year: source.releaseYear,
+      },
+      confidence: 1,
+      source: source.extractorKey.toLowerCase(),
+      bucket: "auto",
+      candidates: [],
+      contentType: "music",
+      isrc: null,
+      official: null,
+    };
+  } else if (!music) {
     result = {
       fields: emptyFields(video.title, video.channel),
       confidence: 0,

@@ -52,6 +52,19 @@ pub async fn upgrade_enqueue(
 }
 #[tauri::command]
 pub async fn provider_test(state: State<'_, AppState>, provider: String) -> Result<(), CoreError> {
+    if provider == "jamendo" {
+        state
+            .backend
+            .search(
+                reverb_core::ytdlp::SearchSource::Jamendo,
+                "piano",
+                1,
+                &tokio_util::sync::CancellationToken::new(),
+            )
+            .await
+            .map_err(super::media::engine_error)?;
+        return Ok(());
+    }
     if provider == "acoustid" {
         let key = state.settings.get().acoustid_key;
         if key.is_empty() {

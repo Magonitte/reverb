@@ -145,7 +145,7 @@ fn nao_suportadas() {
         "https://www.youtube.com/playlist",
         "https://www.youtube.com/@",
         "https://notyoutube.com/watch?v=dQw4w9WgXcQ",
-        "https://soundcloud.com/artista/faixa",
+        "https://soundcloud.com.evil.example/artista/faixa",
     ] {
         assert_eq!(classify(input), UrlKind::Unsupported, "{input:?}");
     }
@@ -157,4 +157,16 @@ fn serializa_com_kind_e_camel_case() {
     assert_eq!(json["kind"], "video");
     assert_eq!(json["sourceId"], "dQw4w9WgXcQ");
     assert_eq!(json["playlistHint"], true);
+}
+
+#[test]
+fn f14_soundcloud_e_uma_fonte_suportada() {
+    assert_eq!(
+        classify("https://soundcloud.com/artista/faixa"),
+        UrlKind::Video {
+            source_id: "soundcloud:artista/faixa".into(),
+            url: "https://soundcloud.com/artista/faixa".into(),
+            playlist_hint: false
+        }
+    );
 }

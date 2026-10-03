@@ -161,6 +161,13 @@ impl DownloadPipeline {
         }
 
         let profile = job.profile.resolve(&done.ext);
+        if crate::sources::provider_id(&job.url) == "soundcloud"
+            && done.format_id.as_deref() != Some("download")
+        {
+            on_event(PipelineEvent::Warning(
+                "warnings.originalUnavailable".into(),
+            ));
+        }
         if profile.fallback {
             tracing::warn!(ext = %done.ext, "formato de origem incomum: convertendo para Opus 160k");
         }

@@ -79,7 +79,15 @@ export function mockEnqueue(request: EnqueueRequest): Job {
         : request.playlistCtx
           ? "playlist_item"
           : "single",
-    provider: "youtube",
+    provider: new URL(url).hostname.includes("archive.org")
+      ? "archive"
+      : new URL(url).hostname.endsWith(".bandcamp.com")
+        ? "bandcamp"
+        : new URL(url).hostname.includes("soundcloud.com")
+          ? "soundcloud"
+          : new URL(url).hostname.includes("jamendo.com")
+            ? "jamendo"
+            : "youtube",
     sourceUrl: url,
     sourceId,
     title: request.title ?? null,

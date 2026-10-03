@@ -29,6 +29,8 @@ pub struct YtDlpContext {
 pub enum SearchSource {
     YtMusic,
     Youtube,
+    Archive,
+    Jamendo,
 }
 
 impl SearchSource {
@@ -36,6 +38,8 @@ impl SearchSource {
         match id {
             "ytmusic" => Some(Self::YtMusic),
             "youtube" => Some(Self::Youtube),
+            "archive" => Some(Self::Archive),
+            "jamendo" => Some(Self::Jamendo),
             _ => None,
         }
     }
@@ -120,7 +124,7 @@ pub fn search_args(
                 format!("https://music.youtube.com/search?q={encoded}#songs"),
             ]);
         }
-        SearchSource::Youtube => {
+        SearchSource::Youtube | SearchSource::Archive | SearchSource::Jamendo => {
             args.extend([
                 "-J".to_string(),
                 "--flat-playlist".to_string(),
@@ -152,6 +156,14 @@ pub fn download_args(ctx: &YtDlpContext, options: &DownloadOptions) -> Vec<Strin
         ]
         .map(String::from),
     );
+    if crate::sources::provider_id(&options.url) == "soundcloud" {
+        let index = args
+            .iter()
+            .position(|a| a == "-f")
+            .expect("format argument")
+            + 1;
+        args[index] = "download/bestaudio".into();
+    }
     if let Some(categories) = options.sponsorblock.as_ref().filter(|c| !c.is_empty()) {
         args.extend(["--sponsorblock-remove".to_string(), categories.join(",")]);
     }

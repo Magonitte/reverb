@@ -37,6 +37,7 @@ import type { SyncUpdate } from "@/bindings/SyncUpdate";
 import type { SyncItem } from "@/bindings/SyncItem";
 import type { SyncResult } from "@/bindings/SyncResult";
 import { isTauri } from "./isTauri";
+import type { LosslessReport } from "@/bindings/LosslessReport";
 
 export async function call<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {
   if (import.meta.env.VITE_REVERB_MOCK === "1" || !isTauri()) {
@@ -47,6 +48,8 @@ export async function call<T>(cmd: string, args?: Record<string, unknown>): Prom
 }
 
 export const COMMANDS = [
+  "verify_lossless",
+  "open_source_url",
   "audio_duration",
   "upgrade_scan",
   "upgrade_enqueue",
@@ -128,9 +131,11 @@ export const COMMANDS = [
   "app_restart",
 ] as const;
 
-export type SearchSource = "ytmusic" | "youtube";
+export type SearchSource = "ytmusic" | "youtube" | "archive" | "jamendo";
 
 export const api = {
+  verifyLossless: (id: number) => call<LosslessReport>("verify_lossless", { id }),
+  openSourceUrl: (url: string) => call<void>("open_source_url", { url }),
   audioDuration: (path: string) => call<number>("audio_duration", { path }),
   upgradeScan: (ids?: number[]) => call<UpgradeCandidate[]>("upgrade_scan", { ids }),
   upgradeEnqueue: (ids: number[]) => call<Job[]>("upgrade_enqueue", { ids }),

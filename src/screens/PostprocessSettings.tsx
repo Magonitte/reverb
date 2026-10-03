@@ -11,6 +11,7 @@ import { useSettingsStore } from "@/stores/settings";
 import { useUiStore } from "@/stores/ui";
 
 type Flag =
+  | "verifyLosslessOnImport"
   | "trimSilence"
   | "watchLibrary"
   | "autoOrganize"
@@ -59,7 +60,7 @@ export function PostprocessSettings({ tab }: { tab: "downloads" | "metadata" }) 
     update(patch).catch(() => toast({ message: t("settings.saveFailed"), tone: "error" }));
   const flags: Flag[] =
     tab === "downloads"
-      ? ["autoOrganize", "watchLibrary", "trimSilence"]
+      ? ["autoOrganize", "watchLibrary", "trimSilence", "verifyLosslessOnImport"]
       : [
           "fetchMetadata",
           "preferOfficialAudio",

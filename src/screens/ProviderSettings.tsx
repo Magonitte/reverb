@@ -19,6 +19,7 @@ export function ProviderSettings() {
     { provider: "acoustid", fields: ["acoustidKey"] },
     { provider: "spotify", fields: ["spotifyClientId", "spotifyClientSecret"] },
     { provider: "discogs", fields: ["discogsToken"] },
+    { provider: "jamendo", fields: ["jamendoClientId"] },
   ] as const;
   const test = async (provider: string) => {
     setBusy(provider);

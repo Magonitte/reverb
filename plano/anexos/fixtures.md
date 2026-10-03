@@ -13,7 +13,7 @@ atualize este arquivo e registre no PROGRESS.md.
 | FX5 | `https://music.youtube.com/browse/MPREb_dcYZhAh5urI` | Álbum pela URL do YouTube Music | O yt-dlp redireciona para FX4 (emite WARNING "YouTube Music is not directly supported. Redirecting…"). |
 | FX6 | `https://www.youtube.com/watch?v=OZTNn4wlegM` | Vídeo com **capítulos** (pesado) | "The Northern Hymn - Kammarheit - Full Album", 2643 s, 6 capítulos. Só para o teste de rede opcional-lento da F13. |
 | FX7 | busca YouTube Music `rick astley never gonna give you up` (`#songs`) | Busca | 1º resultado `lYBUbBu4W08`; entradas da busca **sem duração** (buscar detalhes). |
-| FX8 | `https://archive.org/details/OpenGoldbergVariations` | Internet Archive, FLAC, domínio público (CC0) | Kimiko Ishizaka — Open Goldberg Variations. Usar na F14. |
+| FX8 | `https://archive.org/details/bach-well-tempered-clavier-book-1` | Internet Archive, coleção musical, FLAC gratuito (CC0) | Kimiko Ishizaka — Bach: Well-Tempered Clavier, Book 1; 48 faixas 24bit Flac. Primeira: Prelude No. 1 in C major, BWV 846, track 1, 2015. Substituição autorizada em 2026-10-02: servidor do OpenGoldbergVariations sem resposta; mesma pianista e papel, licença CC0 explícita. |
 | FX9 | `https://archive.org/details/MusopenCollectionAsFlac` | Coleção grande em FLAC | Só listar arquivos (não baixar tudo). F14. |
 
 ## URLs para a tabela de classificação (§14 da arquitetura)
@@ -35,3 +35,9 @@ Não suportadas: `https://vimeo.com/123`, `ftp://youtube.com/watch?v=x`, `https:
 - FFmpeg-Builds `checksums.sha256`: linhas `<64 hex>  <nome>`.
 - Deno `<asset>.sha256sum`: formato pode variar; extrair o **primeiro** token de 64 hex.
 Na F02, baixe um exemplo real de cada e salve em `tests/fixtures/checksums/` para os testes offline.
+
+## Fixtures de provedores F14 (2026-10-02)
+- Archive anterior: respostas OpenGoldbergVariations preservadas para regressão offline; nova busca e metadados em tests/fixtures/http/f14/archive-replacement-*.json.
+- SoundCloud: https://soundcloud.com/scottbuckley/icarus-cc-by — Scott Buckley, Icarus, CC-BY; yt-dlp selecionou hls_aac_160k (stream, original indisponível). O seletor download/bestaudio prefere o original quando oferecido; aviso explícito no fallback e intervalo de 10 s no roteador.
+- Bandcamp: https://soundslikeanearful.bandcamp.com/album/creative-commons-vol-1, primeira faixa https://soundslikeanearful.bandcamp.com/track/mellow-harmonics — download gratuito sem cadastro/e-mail, FLAC validado; páginas reais gravadas em tests/fixtures/http/f14/bandcamp-*.html. Links temporários são renovados pelo statdownload público.
+- Jamendo: chave não fornecida; teste de rede opcional N/A. Parsers de permissão true/false e UI verificados offline; configuração pode ser feita depois pelo Client ID.

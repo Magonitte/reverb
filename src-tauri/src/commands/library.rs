@@ -28,6 +28,19 @@ pub async fn library_import(
     )
     .await?;
     let settings = state.settings.get();
+    if settings.verify_lossless_on_import {
+        let _guard = state.tools.acquire_run().await;
+        report.failures.extend(
+            reverb_core::lossless::verify_imports(
+                &state.db,
+                roots.clone(),
+                &state.tools.resolve(reverb_core::Tool::Ffmpeg)?,
+                &state.tools.resolve_ffprobe()?,
+            )
+            .await?,
+        );
+        state.sink.emit("library://changed", serde_json::json!({}));
+    }
     if !settings.acoustid_key.is_empty() && !settings.offline_mode {
         if state
             .tools
@@ -53,13 +66,29 @@ pub async fn library_import(
 
 #[tauri::command]
 pub async fn library_rescan(state: State<'_, AppState>) -> Result<ImportReport, CoreError> {
-    files::rescan(
+    let settings = state.settings.get();
+    let root = reverb_core::paths::resolve_output_dir(&settings);
+    let mut report = files::rescan(
         &state.db,
         reverb_core::paths::resolve_output_dir(&state.settings.get()),
         &state.tools.resolve_ffprobe()?,
         state.sink.clone(),
     )
-    .await
+    .await?;
+    if settings.verify_lossless_on_import {
+        let _guard = state.tools.acquire_run().await;
+        report.failures.extend(
+            reverb_core::lossless::verify_imports(
+                &state.db,
+                vec![root],
+                &state.tools.resolve(reverb_core::Tool::Ffmpeg)?,
+                &state.tools.resolve_ffprobe()?,
+            )
+            .await?,
+        );
+        state.sink.emit("library://changed", serde_json::json!({}));
+    }
+    Ok(report)
 }
 
 #[tauri::command]

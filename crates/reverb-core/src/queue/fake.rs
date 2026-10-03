@@ -229,6 +229,8 @@ fn search_key(source: SearchSource, query: &str) -> String {
     let source = match source {
         SearchSource::YtMusic => "ytmusic",
         SearchSource::Youtube => "youtube",
+        SearchSource::Archive => "archive",
+        SearchSource::Jamendo => "jamendo",
     };
     format!("{source}:{query}")
 }
