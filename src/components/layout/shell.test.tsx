@@ -40,7 +40,7 @@ beforeEach(() => {
     jobs: {},
     queue: { paused: false, running: 0, queued: 0, healing: false },
   });
-  useToolsStore.setState({ statuses: [], progress: {} });
+  useToolsStore.setState({ statuses: [], progress: {}, updating: {}, errors: {} });
   useHealStore.setState({ stage: null });
   useUpdaterStore.setState(initialUpdaterState);
   useUiStore.setState({

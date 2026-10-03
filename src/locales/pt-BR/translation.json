@@ -414,7 +414,23 @@
       "autoApp": "Verificar o app automaticamente",
       "autoTools": "Atualizar ferramentas automaticamente",
       "toVersion": "{{current}} → {{version}} disponível",
-      "percent": "{{percent}}%"
+      "percent": "{{percent}}%",
+      "updateTool": "Atualizar {{tool}}",
+      "installTool": "Instalar {{tool}}",
+      "updatingTool": "Atualizando…",
+      "toolUpdateFailed": "Não foi possível atualizar a ferramenta. Confira o erro abaixo e tente novamente.",
+      "autoToolsHint": "Ao ativar a atualização automática ou verificar versões, as atualizações encontradas são instaladas. Ao abrir o app, yt-dlp é verificado diariamente e as demais ferramentas semanalmente; atualizações já conhecidas são aplicadas. Downloads em andamento terminam antes da troca.",
+      "toolPhases": {
+        "downloading": "Baixando…",
+        "verifying": "Conferindo integridade…",
+        "extracting": "Extraindo…",
+        "installing_deps": "Preparando dependências…",
+        "testing": "Testando ferramenta…",
+        "waiting_jobs": "Aguardando downloads terminarem…"
+      },
+      "installedVersion": "Versão instalada: {{version}}",
+      "checkApp": "Verificar atualização do Reverb",
+      "appHint": "Confira novas versões e instale pelo botão Atualizar agora. A instalação fecha o Reverb; a verificação automática apenas avisa quando há uma versão disponível."
     },
     "appearance": {
       "title": "Aparência",
@@ -832,6 +848,7 @@
     "downloadMissing": "Baixar faltantes",
     "search": "Buscar artista",
     "fans": "{{count}} fãs",
+    "providerId": "Deezer #{{id}}",
     "existing": "O que baixar agora",
     "new": "Lançamentos novos",
     "existingOptions": {
@@ -864,6 +881,38 @@
     "interval": "Verificar artistas a cada (horas)",
     "incomplete": "{{count}} incompletos",
     "nextCheck": "Próxima verificação: {{date}}",
-    "pendingCheck": "pendente"
+    "pendingCheck": "pendente",
+    "intro": "Acompanhe discografias e novos lançamentos, com suas preferências de download.",
+    "missingHint": "Aqui aparecem as faixas ausentes dos lançamentos monitorados. Os tipos e filtros escolhidos no acompanhamento são respeitados.",
+    "emptyTitle": "Comece seguindo um artista",
+    "loading": "Carregando artistas…",
+    "checking": "Consultando discografias e conferindo a biblioteca… Você pode acompanhar os downloads na Atividade.",
+    "saved": "Acompanhamento salvo.",
+    "queued": "{{count}} faixas adicionadas à fila.",
+    "filter": "Filtrar por artista",
+    "allArtists": "Todos os artistas",
+    "noMissing": "Nenhuma faixa faltante nos lançamentos monitorados",
+    "viewReleases": "Ver lançamentos",
+    "noReleases": "A discografia aparecerá após a verificação.",
+    "searchPlaceholder": "Nome do artista, por exemplo Rick Astley",
+    "results": "Resultados de artistas",
+    "noResults": "Nenhum artista encontrado. Tente outro nome.",
+    "choose": "Busque e selecione o artista que deseja acompanhar.",
+    "selected": "Artista selecionado: {{name}}",
+    "monitoring": "Acompanhamento",
+    "destination": "Formato e destino",
+    "needType": "Selecione pelo menos um tipo de lançamento.",
+    "folderHint": "Deixe em branco para usar a pasta padrão das configurações.",
+    "chooseFolder": "Escolher pasta",
+    "existingHints": {
+      "all": "Na primeira verificação, as faixas faltantes de toda a discografia filtrada serão adicionadas à fila.",
+      "latest": "Na primeira verificação, serão baixadas as faixas faltantes do lançamento mais recente entre os tipos escolhidos.",
+      "none": "Registra a discografia sem baixar lançamentos existentes. Eles ficam como não monitorados."
+    },
+    "newHints": {
+      "all": "Novos lançamentos serão adicionados à fila automaticamente enquanto o app estiver aberto.",
+      "notify": "Novos lançamentos geram aviso e aparecem em Faltando. Você decide quando baixar.",
+      "none": "Novos lançamentos serão registrados sem avisos nem downloads automáticos."
+    }
   }
 }

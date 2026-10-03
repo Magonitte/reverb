@@ -414,7 +414,23 @@
       "autoApp": "Check the app automatically",
       "autoTools": "Update tools automatically",
       "toVersion": "{{current}} → {{version}} available",
-      "percent": "{{percent}}%"
+      "percent": "{{percent}}%",
+      "updateTool": "Update {{tool}}",
+      "installTool": "Install {{tool}}",
+      "updatingTool": "Updating…",
+      "toolUpdateFailed": "The tool could not be updated. Check the error below and retry.",
+      "autoToolsHint": "Enabling automatic updates or checking versions installs available updates. At startup, yt-dlp is checked daily and other tools weekly; known updates are applied. Active downloads finish before replacement.",
+      "toolPhases": {
+        "downloading": "Downloading…",
+        "verifying": "Checking integrity…",
+        "extracting": "Extracting…",
+        "installing_deps": "Preparing dependencies…",
+        "testing": "Testing tool…",
+        "waiting_jobs": "Waiting for downloads to finish…"
+      },
+      "installedVersion": "Installed version: {{version}}",
+      "checkApp": "Check for Reverb updates",
+      "appHint": "Check for new versions and install with Update now. Installation closes Reverb; automatic checking only notifies you when a new version is available."
     },
     "appearance": {
       "title": "Appearance",
@@ -832,6 +848,7 @@
     "downloadMissing": "Download missing",
     "search": "Search artist",
     "fans": "{{count}} fans",
+    "providerId": "Deezer #{{id}}",
     "existing": "Download now",
     "new": "New releases",
     "existingOptions": {
@@ -864,6 +881,38 @@
     "interval": "Check artists every (hours)",
     "incomplete": "{{count}} incomplete",
     "nextCheck": "Next check: {{date}}",
-    "pendingCheck": "pending"
+    "pendingCheck": "pending",
+    "intro": "Follow discographies and new releases with your download preferences.",
+    "missingHint": "Missing tracks from monitored releases appear here. Your selected release types and filters are respected.",
+    "emptyTitle": "Start by following an artist",
+    "loading": "Loading artists…",
+    "checking": "Checking discographies and the library… Follow downloads in Activity.",
+    "saved": "Following preferences saved.",
+    "queued": "{{count}} tracks added to the queue.",
+    "filter": "Filter by artist",
+    "allArtists": "All artists",
+    "noMissing": "No missing tracks in monitored releases",
+    "viewReleases": "View releases",
+    "noReleases": "The discography will appear after checking.",
+    "searchPlaceholder": "Artist name, for example Rick Astley",
+    "results": "Artist results",
+    "noResults": "No artists found. Try another name.",
+    "choose": "Search and select the artist you want to follow.",
+    "selected": "Selected artist: {{name}}",
+    "monitoring": "Following preferences",
+    "destination": "Format and destination",
+    "needType": "Select at least one release type.",
+    "folderHint": "Leave empty to use the default folder from settings.",
+    "chooseFolder": "Choose folder",
+    "existingHints": {
+      "all": "The first check queues missing tracks from the entire filtered discography.",
+      "latest": "The first check downloads missing tracks from the latest release among the selected types.",
+      "none": "Records existing releases without downloading them. They remain unmonitored."
+    },
+    "newHints": {
+      "all": "New releases are queued automatically while the app is open.",
+      "notify": "New releases trigger a notification and appear in Missing. You decide when to download.",
+      "none": "New releases are recorded without notifications or automatic downloads."
+    }
   }
 }

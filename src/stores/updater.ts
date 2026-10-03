@@ -4,17 +4,11 @@ import { api } from "@/lib/ipc/api";
 import { onEvent } from "@/lib/ipc/events";
 import type { AppUpdateInfo, UpdateProgress } from "@/lib/updater";
 import { useToolsStore } from "./tools";
+import { useSettingsStore } from "./settings";
 import { useUiStore } from "./ui";
 
 export type UpdaterPhase =
-  | "idle"
-  | "checking"
-  | "uptodate"
-  | "available"
-  | "downloading"
-  | "ready"
-  | "restarting"
-  | "error";
+  "idle" | "checking" | "uptodate" | "available" | "downloading" | "ready" | "restarting" | "error";
 
 interface UpdaterState {
   phase: UpdaterPhase;
@@ -26,7 +20,7 @@ interface UpdaterState {
   downloaded: number;
   total: number | null;
   error: string | null;
-  check: () => Promise<void>;
+  check: (includeTools?: boolean) => Promise<void>;
   install: () => Promise<void>;
 }
 
@@ -69,12 +63,23 @@ function showAvailable(info: AppUpdateInfo) {
 
 export const useUpdaterStore = create<UpdaterState>((set) => ({
   ...initialUpdaterState,
-  check: async () => {
+  check: async (includeTools = true) => {
     set({ phase: "checking", error: null });
     try {
       const [info] = await Promise.all([
         api.updaterCheck(),
-        api.toolsCheckUpdates(true).then(() => useToolsStore.getState().load()),
+        includeTools
+          ? api.toolsCheckUpdates(true).then(async (updates) => {
+              await useToolsStore.getState().load();
+              if (useSettingsStore.getState().settings?.autoUpdateTools) {
+                await Promise.allSettled(
+                  updates
+                    .filter((u) => u.updateAvailable)
+                    .map((u) => useToolsStore.getState().updateTool(u.tool)),
+                );
+              }
+            })
+          : Promise.resolve(),
       ]);
       if (info) showAvailable(info);
       else {
@@ -109,7 +114,8 @@ export async function initUpdaterStore(): Promise<() => void> {
     onEvent<AppUpdateInfo>("updater://available", (info) => showAvailable(info)),
     onEvent<UpdateProgress>("updater://progress", (progress) =>
       useUpdaterStore.setState((state) => ({
-        phase: state.phase === "restarting" || state.phase === "ready" ? state.phase : "downloading",
+        phase:
+          state.phase === "restarting" || state.phase === "ready" ? state.phase : "downloading",
         downloaded: progress.downloaded,
         total: progress.total,
         available: true,

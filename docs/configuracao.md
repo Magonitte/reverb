@@ -51,3 +51,15 @@ Segredos ficam nas configurações locais do app; a visão pública de configura
 Em Geral, configure início com o sistema, bandeja, notificações, área de transferência e atalho global. Em Integração ficam bookmarklet/deep links e o intervalo de verificação de artistas (padrão: 24 horas). O monitoramento de artistas e as tarefas automáticas dependem do app em execução; artistas vencidos são verificados após o atraso inicial de cinco minutos.
 
 Em Atualizações, consulte o app e as ferramentas gerenciadas. Em Avançado, execute diagnóstico, exporte/restaure dados, selecione runtime/canal do yt-dlp ou ative o modo offline. O modo offline impede recursos que precisam consultar fontes externas; ele não disponibiliza catálogos remotos sem conexão.
+
+### Atualizar ferramentas
+
+Em **Atualizações**, cada ferramenta tem seu próprio botão **Atualizar** quando há versão nova, ou **Instalar** quando está ausente. Isso funciona com **Atualizar ferramentas automaticamente** desativado. O botão **Verificar atualizações** consulta o app e as ferramentas; com a opção automática ativada, também aplica as atualizações disponíveis. Ativar essa opção inicia uma verificação.
+
+O progresso mostra download, verificação, extração e teste. Se houver downloads usando a ferramenta, a instalação aguarda sua conclusão antes de trocar o executável. Uma falha aparece na própria linha e permite tentar novamente. **Voltar versão** fica disponível quando há uma versão anterior instalada.
+
+Ao iniciar o Reverb, a verificação automática normalmente respeita um dia para yt-dlp e uma semana para as demais ferramentas. Uma atualização já conhecida é aplicada mesmo quando a última consulta é recente. O estado **Atualizado** considera a versão efetivamente instalada, evitando manter um aviso antigo após a troca.
+
+### Atualizar o Reverb
+
+Em **Configurações → Atualizações**, o primeiro cartão mostra a versão instalada do Reverb. Clique em **Verificar atualização do Reverb** mesmo com a verificação automática desligada. Quando houver nova versão, confira as notas e clique em **Atualizar agora**; o aplicativo mostra o progresso, verifica a assinatura e fecha para instalar. Falhas permitem **Tentar de novo**. A opção automática verifica e avisa; a instalação do app depende do botão. O botão exclusivo do Reverb não atualiza ferramentas. No modo offline, os botões de consulta/instalação ficam desabilitados.

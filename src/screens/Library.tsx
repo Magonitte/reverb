@@ -40,7 +40,13 @@ const LIBRARY_TABS = ["library", "artists", "missing"];
 export default function Library() {
   const { t } = useTranslation();
   const [params] = useSearchParams();
-  const [tab, setTab] = useState("library");
+  const [tab, setTab] = useState(() => (params.has("follow") ? "artists" : "library"));
+  const hasFollow = params.has("follow");
+  const [previousFollow, setPreviousFollow] = useState(hasFollow);
+  if (hasFollow !== previousFollow) {
+    setPreviousFollow(hasFollow);
+    if (hasFollow) setTab("artists");
+  }
   const active = params.has("follow") ? "artists" : tab;
   return (
     <>

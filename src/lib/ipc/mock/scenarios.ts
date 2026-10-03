@@ -23,6 +23,7 @@ export const SCENARIOS = [
   "update-available",
   "update-downloading",
   "update-error",
+  "tools-update",
 ] as const;
 export type Scenario = (typeof SCENARIOS)[number];
 
@@ -51,6 +52,10 @@ export function applyScenario(name: Scenario): void {
       return;
     case "playlists":
       void seedMockSyncs();
+      return;
+    case "tools-update":
+      seedMockTool("ffmpeg", true);
+      mockSettingsUpdate({ autoUpdateTools: false });
       return;
     case "empty":
       return;

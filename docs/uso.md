@@ -40,13 +40,15 @@ A revisão reúne itens cujos metadados precisam de conferência. No editor, con
 
 ## Seguir artistas e encontrar o que falta
 
-1. Abra **Biblioteca → Artistas seguidos → Seguir artista**, procure pelo nome e selecione o resultado. Uma URL de artista Deezer também abre o diálogo.
+1. Abra **Biblioteca → Artistas seguidos → Seguir artista**, procure pelo nome (Enter também pesquisa) e selecione o resultado. Confira foto, número de fãs e ID Deezer para distinguir artistas com nomes iguais. Uma URL de artista Deezer também abre o diálogo.
 2. Escolha o que baixar agora: discografia inteira, lançamento mais recente ou somente acompanhar.
 3. Escolha a política de lançamentos novos: download automático, notificar e mostrar em Faltando, ou não monitorar.
-4. Selecione álbum/EP/single, filtro de variantes, perfil e pasta; salve.
-5. Veja os lançamentos e os estados completo, incompleto, ausente ou não monitorado. Use **Verificar agora** para consultar o catálogo novamente.
+4. Selecione pelo menos um tipo (álbum, EP ou single), filtro de variantes, perfil e pasta; salve. Uma pasta vazia usa a pasta padrão de Downloads; o botão de pasta abre o seletor.
+5. Expanda **Ver lançamentos** no cartão do artista para ver os estados completo, incompleto, ausente ou não monitorado. Use **Verificar agora** para consultar o catálogo novamente.
 
-**Faltando** mostra lançamentos monitorados com faixas ausentes. **Baixar faltantes** cruza as gravações com a biblioteca, pelo ISRC ou por título/artista/duração, evitando baixar novamente as presentes. Quando álbum e single contêm a mesma gravação, o ISRC permite deduplicar e preferir a organização do álbum. Faixas sem casamento suficientemente confiável não são enfileiradas automaticamente.
+O cadastro e as preferências são salvos antes da consulta do catálogo. Se a consulta falhar, o artista continua cadastrado e **Verificar agora** permite repetir a consulta. **Editar** preserva as opções salvas; **Cancelar** descarta alterações do formulário.
+
+**Faltando** mostra lançamentos monitorados com faixas ausentes e permite filtrar por artista. **Baixar faltantes** cruza as gravações com a biblioteca, pelo ISRC ou por título/artista/duração, evitando baixar novamente as presentes. Quando álbum e single contêm a mesma gravação, o ISRC permite deduplicar e preferir a organização do álbum. Faixas sem casamento suficientemente confiável não são enfileiradas automaticamente.
 
 Notificações e downloads automáticos exigem o app em execução. O intervalo pode ser ajustado em Integração. Parar de seguir remove o acompanhamento; a interface usa a opção que preserva os arquivos baixados.
 

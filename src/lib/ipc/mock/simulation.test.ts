@@ -80,6 +80,7 @@ describe("cenários (?scenario=)", () => {
       "update-available",
       "update-downloading",
       "update-error",
+      "tools-update",
     ]);
   });
 

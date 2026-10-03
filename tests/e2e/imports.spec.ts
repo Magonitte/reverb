@@ -35,6 +35,61 @@ test("F15 artist dialog, followed releases and missing downloads", async ({ page
   await expect(page.getByText("Release 1", { exact: true })).not.toBeVisible();
   await page.getByRole("button", { name: "Baixar faltantes" }).first().click();
 });
+for (const theme of ["dark", "light"] as const)
+  test(`artist preferences are visible, keyboard searchable and reset after cancel (${theme})`, async ({
+    page,
+  }, info) => {
+    await page.goto("/#/settings");
+    await setTheme(page, theme);
+    await goHash(page, "/library");
+    await page.getByRole("button", { name: "Artistas seguidos", exact: true }).click();
+    await page.getByRole("button", { name: "Seguir artista", exact: true }).click();
+    const dialog = page.getByRole("dialog", { name: "Seguir artista" });
+    await dialog.getByLabel("Buscar artista").fill("Rick Astley");
+    await dialog.getByLabel("Buscar artista").press("Enter");
+    await dialog.getByRole("button", { name: /Rick Astley.*Deezer/ }).click();
+    await expect(
+      dialog.getByText("Artista selecionado: Rick Astley", { exact: true }),
+    ).toBeVisible();
+    for (const label of [
+      "Álbuns",
+      "EPs",
+      "Singles",
+      "Excluir ao vivo, remix e edições duplicadas",
+    ]) {
+      await expect(dialog.getByText(label, { exact: true })).toBeVisible();
+      await expect(dialog.getByRole("checkbox", { name: label })).toBeChecked();
+    }
+    {
+      await page.screenshot({
+        path: info.outputPath(`artist-dialog-${theme}.png`),
+        animations: "disabled",
+      });
+      expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+    }
+    await dialog.getByLabel("Formato de saída").scrollIntoViewIfNeeded();
+    await page.screenshot({
+      path: info.outputPath(`artist-destination-${theme}.png`),
+      animations: "disabled",
+    });
+    await dialog.getByLabel("O que baixar agora").selectOption("none");
+    await dialog.getByLabel("Lançamentos novos").selectOption("none");
+    await dialog.getByRole("button", { name: "Salvar", exact: true }).click();
+    await expect(dialog).not.toBeVisible();
+    await expect(page.getByText("10 lançamentos · 3 completos")).toBeVisible();
+    await page.getByRole("button", { name: "Ver lançamentos" }).click();
+    {
+      await page.screenshot({
+        path: info.outputPath(`artist-releases-${theme}.png`),
+        animations: "disabled",
+      });
+      expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+    }
+    await page.getByRole("button", { name: "Seguir artista", exact: true }).click();
+    await expect(dialog.getByLabel("Buscar artista")).toHaveValue("");
+    await expect(dialog.getByRole("button", { name: "Salvar" })).toBeDisabled();
+    await dialog.getByRole("button", { name: "Cancelar" }).click();
+  });
 test("F15 Spotify guide and quality target settings are accessible", async ({ page }) => {
   await page.goto("/#/settings");
   await page.getByRole("tab", { name: "Metadados", exact: true }).click();

@@ -31,7 +31,8 @@ export type Scenario =
   | "heal"
   | "update-available"
   | "update-downloading"
-  | "update-error";
+  | "update-error"
+  | "tools-update";
 
 /** Abre a rota (HashRouter) com um cenário do backend falso e espera o título. */
 export async function open(page: Page, path = "/", scenario: Scenario = "empty") {
