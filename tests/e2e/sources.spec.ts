@@ -14,6 +14,10 @@ test("F14 source tabs open the Archive collection", async ({ page }) => {
 test("F14 library verifier displays the spectrum and probable verdict", async ({ page }) => {
   await page.goto("/?scenario=big#/library");
   await page
+    .getByRole("button", { name: /^Detalhes e ações de/ })
+    .first()
+    .click();
+  await page
     .getByRole("button", { name: /Verificar lossless/ })
     .first()
     .click();

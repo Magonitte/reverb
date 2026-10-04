@@ -36,6 +36,12 @@ O diff usa o ID da faixa na fonte; coleções Deezer podem reutilizar um checksu
 
 Use busca e filtros de formato, artista, álbum, data e estado de revisão. A biblioteca também permite importar arquivos/pastas existentes, reexaminar uma pasta e detectar arquivos ausentes. Escolha Lista ou Álbuns para navegar.
 
+**Importar arquivo** adiciona uma música; **Importar pasta** percorre também as subpastas, nos formatos MP3, M4A, Opus, OGG, FLAC e WAV. Arquivos já registrados são ignorados. A tela mostra o progresso, o resumo e os caminhos com falha. Após importar, a busca e os filtros são limpos para exibir a coleção. Uma pasta sem áudio compatível recebe uma mensagem própria.
+
+Use **Limpar filtros** quando a busca não encontrar faixas. A visão Álbuns acompanha os filtros e a página atual. A seleção revela as ações em lote; **Detalhes e ações** de cada faixa reúne reprodução, localização, corte, análise e edição.
+
+No editor, **Buscar metadados** consulta os catálogos. **Ver detalhes** mostra capa, fonte, título, artistas, álbum, ano, gênero, duração, numeração e identificadores disponíveis. **Usar metadados** preenche o editor; **Salvar** grava no arquivo. Uma falha ao obter a capa mantém a capa atual e permite usar os demais metadados. Na tela Revisar, **Aplicar escolhido** grava a escolha diretamente.
+
 A revisão reúne itens cujos metadados precisam de conferência. No editor, confirme título, artistas, álbum, ano e numeração antes de gravar as tags. Alterações de tags/organização podem modificar o arquivo e seu caminho.
 
 ## Seguir artistas e encontrar o que falta

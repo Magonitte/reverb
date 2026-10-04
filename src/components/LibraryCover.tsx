@@ -6,18 +6,20 @@ export function LibraryCover({
   id,
   updatedAt,
   missing,
+  size = 36,
 }: {
   id: number;
   updatedAt: number;
   missing: boolean;
+  size?: number;
 }) {
   const [image, setImage] = useState<{ key: string; src: string | null } | null>(null);
-  const key = `${id}:${updatedAt}`;
+  const key = `${id}:${updatedAt}:${size}`;
   useEffect(() => {
     let active = true;
     if (!missing) {
       api
-        .libraryCover(id, 64)
+        .libraryCover(id, Math.max(64, size * 2))
         .then((src) => {
           if (active) setImage({ key, src });
         })
@@ -28,11 +30,17 @@ export function LibraryCover({
     return () => {
       active = false;
     };
-  }, [id, key, missing]);
+  }, [id, key, missing, size]);
   const src = !missing && image?.key === key ? image.src : null;
   return src ? (
-    <img src={src} alt="" className="size-9 rounded-md object-cover" />
+    <img
+      src={src}
+      alt=""
+      onError={() => setImage({ key, src: null })}
+      style={{ width: size, height: size }}
+      className="shrink-0 rounded-md object-cover"
+    />
   ) : (
-    <VinylDisc size={36} />
+    <VinylDisc size={size} />
   );
 }

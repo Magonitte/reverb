@@ -6,6 +6,8 @@ import { ScreenHeader } from "@/components/ScreenHeader";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { LibraryCover } from "@/components/LibraryCover";
+import { CandidateDetails } from "@/components/CandidateDetails";
+import type { Candidate } from "@/bindings/Candidate";
 import { api } from "@/lib/ipc/api";
 import { errorText } from "@/lib/errors";
 import { useLibraryStore } from "@/stores/library";
@@ -18,6 +20,7 @@ export default function Review() {
   const [index, setIndex] = useState(0);
   const [choice, setChoice] = useState(0);
   const [busy, setBusy] = useState(false);
+  const [details, setDetails] = useState<Candidate | null>(null);
   const pushToast = useUiStore((s) => s.pushToast);
   useEffect(() => {
     void setQuery({
@@ -62,6 +65,8 @@ export default function Review() {
       const target = event.target as HTMLElement;
       if (
         busy ||
+        details ||
+        loading ||
         event.ctrlKey ||
         event.metaKey ||
         event.altKey ||
@@ -123,7 +128,7 @@ export default function Review() {
             className="grid gap-3 md:grid-cols-2"
           >
             {candidates.map(({ candidate, score }, i) => (
-              <label
+              <div
                 key={`${candidate.provider}:${candidate.providerId}`}
                 className="glass flex gap-3 rounded-lg p-4"
               >
@@ -157,9 +162,26 @@ export default function Review() {
                       : ""}
                   </span>
                 </span>
-              </label>
+                <Button variant="ghost" disabled={busy} onClick={() => setDetails(candidate)}>
+                  {t("metadataDetails.view")}
+                </Button>
+              </div>
             ))}
           </div>
+          {details && (
+            <CandidateDetails
+              saveInEditor={false}
+              candidate={details}
+              busy={busy}
+              onClose={() => setDetails(null)}
+              onApply={() =>
+                void run(async () => {
+                  await api.reviewApply(item.id, details);
+                  setDetails(null);
+                })
+              }
+            />
+          )}
           {!candidates.length && <p>{t("review.noCandidates")}</p>}
           {item.missing && (
             <p role="alert" className="text-warning">
