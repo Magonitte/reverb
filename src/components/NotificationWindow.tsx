@@ -43,7 +43,7 @@ export function NotificationWindow() {
     if (!root) return;
     const resize = () => {
       const host = root.firstElementChild;
-      if (host) void api.notificationsResize(Math.ceil(host.getBoundingClientRect().height) + 32);
+      if (host) void api.notificationsResize(Math.ceil(host.scrollHeight) + 32);
     };
     const observer = new ResizeObserver(resize);
     if (root.firstElementChild) observer.observe(root.firstElementChild);
@@ -51,10 +51,10 @@ export function NotificationWindow() {
     return () => observer.disconnect();
   }, [toasts.length]);
   return (
-    <main>
+    <main className="p-4">
       <h1 className="sr-only">{t("notifications.regionTitle")}</h1>
       <div ref={container}>
-        <ToastHost />
+        <ToastHost floatingWindow />
       </div>
     </main>
   );

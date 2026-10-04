@@ -72,6 +72,8 @@ fn show_rich(app: &AppHandle, notice: NativeNotice) {
                 .inner_size(452.0, 420.0)
                 .decorations(false)
                 .transparent(true)
+                .background_color(tauri::window::Color(0, 0, 0, 0))
+                .shadow(false)
                 .always_on_top(true)
                 .skip_taskbar(true)
                 .resizable(false)
@@ -82,7 +84,6 @@ fn show_rich(app: &AppHandle, notice: NativeNotice) {
         match window {
             Ok(window) => {
                 let _ = window.emit("notification://pending", ());
-                let _ = notifications_resize(app.clone(), 420);
                 return;
             }
             Err(error) => tracing::warn!(%error, "notification popup unavailable"),
@@ -115,18 +116,20 @@ pub fn notifications_resize(app: AppHandle, height: u32) -> Result<(), String> {
     let Some(window) = app.get_webview_window("notification") else {
         return Ok(());
     };
-    let height = height.clamp(160, 640) as f64;
-    window
-        .set_size(tauri::LogicalSize::new(452.0, height))
-        .map_err(|e| e.to_string())?;
     if let Some(monitor) = window.current_monitor().map_err(|e| e.to_string())? {
         let scale = monitor.scale_factor();
-        let size = monitor.size();
-        let position = monitor.position();
+        let area = monitor.work_area();
+        let width = 452.0_f64.min((area.size.width as f64 / scale - 32.0).max(1.0));
+        let height =
+            (height.clamp(160, 640) as f64).min((area.size.height as f64 / scale - 32.0).max(1.0));
+        window
+            .set_size(tauri::LogicalSize::new(width, height))
+            .map_err(|e| e.to_string())?;
         window
             .set_position(tauri::PhysicalPosition::new(
-                position.x + size.width as i32 - (468.0 * scale) as i32,
-                position.y + size.height as i32 - ((height + 64.0) * scale) as i32,
+                area.position.x + area.size.width as i32 - ((width + 16.0) * scale).round() as i32,
+                area.position.y + area.size.height as i32
+                    - ((height + 16.0) * scale).round() as i32,
             ))
             .map_err(|e| e.to_string())?;
     }

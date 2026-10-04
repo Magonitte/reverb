@@ -12,6 +12,7 @@ import { App } from "@/App";
 import { bootstrap } from "@/bootstrap";
 
 const isNotificationWindow = location.hash.startsWith("#/notification");
+if (isNotificationWindow) document.documentElement.dataset.notificationWindow = "true";
 if (isNotificationWindow)
   void Promise.all([initSettingsStore(), useAppInfoStore.getState().load()]);
 else void bootstrap();

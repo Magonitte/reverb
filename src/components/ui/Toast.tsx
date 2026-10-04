@@ -82,7 +82,7 @@ function ToastItem({ toast }: { toast: ToastData }) {
       onBlurCapture={(e) => {
         if (!e.currentTarget.contains(e.relatedTarget)) setFocused(false);
       }}
-      className="glass-elevated pointer-events-auto relative w-[420px] max-w-full overflow-hidden rounded-xl border border-glass-border p-4 shadow-lg [animation:reverb-toast-in_240ms_var(--ease-out)]"
+      className="glass-elevated pointer-events-auto relative w-[420px] max-w-full shrink-0 overflow-hidden rounded-xl border border-glass-border p-4 shadow-lg [animation:reverb-toast-in_240ms_var(--ease-out)]"
     >
       <div className="flex items-start gap-3">
         <div className={cn("rounded-lg bg-field p-2", TONE_CLASS[toast.tone])}>
@@ -148,7 +148,7 @@ function ToastItem({ toast }: { toast: ToastData }) {
   );
 }
 
-export function ToastHost() {
+export function ToastHost({ floatingWindow = false }: { floatingWindow?: boolean }) {
   const { t } = useTranslation();
   const toasts = useUiStore((s) => s.toasts);
   const modalOpen = useUiStore((s) => s.modalCount > 0);
@@ -160,7 +160,12 @@ export function ToastHost() {
       aria-hidden={modalOpen || undefined}
       inert={modalOpen}
       style={{ visibility: modalOpen ? "hidden" : undefined }}
-      className="pointer-events-none fixed bottom-4 right-4 z-[200] flex max-h-[calc(100dvh-32px)] max-w-[calc(100vw-32px)] flex-col gap-3 overflow-y-auto max-sm:bottom-[calc(var(--bottomnav-h)+16px)] max-sm:left-4"
+      className={cn(
+        "pointer-events-none z-[200] flex max-h-[calc(100dvh-32px)] max-w-[calc(100vw-32px)] flex-col gap-3 overflow-y-auto",
+        floatingWindow
+          ? "relative"
+          : "fixed bottom-4 right-4 max-sm:bottom-[calc(var(--bottomnav-h)+16px)] max-sm:left-4",
+      )}
     >
       {toasts.map((toast) => (
         <ToastItem key={toast.id} toast={toast} />
