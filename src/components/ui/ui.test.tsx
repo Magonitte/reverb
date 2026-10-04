@@ -374,7 +374,7 @@ describe("Toast (T1)", () => {
     vi.useRealTimers();
   });
 
-  it("aparece e some após 4 s", () => {
+  it("aparece e some após 8 s", () => {
     render(<ToastHost />);
     act(() => {
       useUiStore.getState().pushToast({ message: "Salvo!", tone: "success" });
@@ -382,7 +382,7 @@ describe("Toast (T1)", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Salvo!");
 
     act(() => {
-      vi.advanceTimersByTime(3900);
+      vi.advanceTimersByTime(7900);
     });
     expect(screen.getByText("Salvo!")).toBeInTheDocument();
     act(() => {
@@ -391,13 +391,13 @@ describe("Toast (T1)", () => {
     expect(screen.queryByText("Salvo!")).not.toBeInTheDocument();
   });
 
-  it("executa a ação opcional e fecha", () => {
+  it("executa a ação opcional e fecha", async () => {
     const onAction = vi.fn();
     render(<ToastHost />);
     act(() => {
       useUiStore.getState().pushToast({ message: "Desfazer?", actionLabel: "Desfazer", onAction });
     });
-    act(() => {
+    await act(async () => {
       screen.getByRole("button", { name: "Desfazer" }).click();
     });
     expect(onAction).toHaveBeenCalledTimes(1);

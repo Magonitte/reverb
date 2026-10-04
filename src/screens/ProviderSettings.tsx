@@ -5,6 +5,12 @@ import { api } from "@/lib/ipc/api";
 import { errorText } from "@/lib/errors";
 import { useSettingsStore } from "@/stores/settings";
 import { useUiStore } from "@/stores/ui";
+const PROVIDER_URLS: Record<string, string> = {
+  acoustid: "https://acoustid.org/new-application",
+  spotify: "https://developer.spotify.com/dashboard",
+  discogs: "https://www.discogs.com/settings/developers",
+  jamendo: "https://devportal.jamendo.com/",
+};
 const GUIDE_STEPS = ["step1", "step2", "step3", "step4"];
 
 export function ProviderSettings() {
@@ -42,7 +48,7 @@ export function ProviderSettings() {
           key={group.provider}
           role="group"
           aria-label={t(`quality.providers.${group.provider}`)}
-          className="space-y-2"
+          className="space-y-3 border-t border-glass-border pt-5"
         >
           <h3 className="text-sm">
             {t(`quality.providers.${group.provider}`)} ·{" "}
@@ -52,25 +58,37 @@ export function ProviderSettings() {
                 : "quality.notConfigured",
             )}
           </h3>
-          {group.provider === "spotify" && (
-            <details className="text-sm text-fg-muted">
-              <summary>{t("imports.spotifyGuide")}</summary>
-              <ol className="mt-2 list-decimal space-y-2 pl-5">
-                {GUIDE_STEPS.map((key) => (
-                  <li key={key}>{t(`imports.${key}`)}</li>
-                ))}
-              </ol>
-              <Button
-                onClick={() =>
-                  void api
-                    .openSourceUrl("https://developer.spotify.com/dashboard")
-                    .catch((e) => toast({ message: errorText(t, e), tone: "error" }))
-                }
-              >
-                {t("imports.spotifyDashboard")}
-              </Button>
-            </details>
-          )}
+          <p className="text-xs leading-relaxed text-fg-muted">
+            {t(`quality.guides.${group.provider}.description`)}
+          </p>
+          <Button
+            size="sm"
+            onClick={() =>
+              void api
+                .openSourceUrl(PROVIDER_URLS[group.provider])
+                .catch((e) => toast({ message: errorText(t, e), tone: "error" }))
+            }
+          >
+            {group.provider === "spotify"
+              ? t("imports.spotifyDashboard")
+              : t("quality.openService", { provider: t(`quality.providers.${group.provider}`) })}
+          </Button>
+          <details className="rounded-md border border-glass-border p-3 text-sm text-fg-muted">
+            <summary className="cursor-pointer text-fg-secondary">
+              {t(group.provider === "spotify" ? "imports.spotifyGuide" : "quality.setupGuide")}
+            </summary>
+            <ol className="mt-3 list-decimal space-y-2 pl-5">
+              {GUIDE_STEPS.map((key) => (
+                <li key={key}>
+                  {t(
+                    group.provider === "spotify"
+                      ? `imports.${key}`
+                      : `quality.guides.${group.provider}.${key}`,
+                  )}
+                </li>
+              ))}
+            </ol>
+          </details>
           {group.fields.map((field) => (
             <Input
               key={field}
@@ -81,7 +99,7 @@ export function ProviderSettings() {
               onChange={(e) => setValues((old) => ({ ...old, [field]: e.target.value }))}
             />
           ))}
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               disabled={busy !== null || !group.fields.some((f) => values[f] !== undefined)}
               onClick={() =>
@@ -96,7 +114,7 @@ export function ProviderSettings() {
                       for (const f of group.fields) delete next[f];
                       return next;
                     });
-                    setStatus((old) => ({ ...old, [group.provider]: "" }));
+                    setStatus((old) => ({ ...old, [group.provider]: t("quality.saved") }));
                   })
                   .catch((e) => toast({ message: errorText(t, e), tone: "error" }))
               }

@@ -234,6 +234,9 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            notifications::notifications_pending,
+            notifications::notifications_resize,
+            notifications::notifications_hide,
             commands::collection::import_analyze,
             commands::collection::import_enqueue,
             commands::collection::artists_search,

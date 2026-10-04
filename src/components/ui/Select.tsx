@@ -26,6 +26,7 @@ export function Select({ label, options, hint, className, id, ...rest }: SelectP
       <div className="relative">
         <select
           id={selectId}
+          aria-describedby={hint ? `${selectId}-hint` : undefined}
           className={cn(
             "h-[38px] w-full appearance-none rounded-md border border-glass-border bg-field pl-4 pr-9 text-fg transition-all duration-[140ms] hover:border-glass-border-hover focus:border-glass-border-focus disabled:opacity-50 disabled:pointer-events-none [&>option]:bg-bg-base [&>option]:text-fg",
             className,
@@ -43,7 +44,11 @@ export function Select({ label, options, hint, className, id, ...rest }: SelectP
           aria-hidden="true"
         />
       </div>
-      {hint && <p className="text-xs text-fg-muted">{hint}</p>}
+      {hint && (
+        <p id={`${selectId}-hint`} className="text-xs text-fg-muted">
+          {hint}
+        </p>
+      )}
     </div>
   );
 }

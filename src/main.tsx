@@ -1,3 +1,6 @@
+import { NotificationWindow } from "@/components/NotificationWindow";
+import { initSettingsStore } from "@/stores/settings";
+import { useAppInfoStore } from "@/stores/appInfo";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "@fontsource-variable/inter";
@@ -8,10 +11,11 @@ import "@/styles/base.css";
 import { App } from "@/App";
 import { bootstrap } from "@/bootstrap";
 
-void bootstrap();
+const isNotificationWindow = location.hash.startsWith("#/notification");
+if (isNotificationWindow)
+  void Promise.all([initSettingsStore(), useAppInfoStore.getState().load()]);
+else void bootstrap();
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
+  <StrictMode>{isNotificationWindow ? <NotificationWindow /> : <App />}</StrictMode>,
 );

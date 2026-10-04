@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { CheckCircle2 } from "lucide-react";
 import type { Tool } from "@/bindings/Tool";
 import type { YtdlpChannel } from "@/bindings/YtdlpChannel";
 import { Button } from "@/components/ui/Button";
@@ -70,7 +71,13 @@ export function UpdatesTab() {
             <p className="mt-1 text-[13px] text-fg-muted">
               {t("settings.updates.installedVersion", { version: current || "—" })}
             </p>
-            <p data-testid="updater-phase" className="mt-1 text-[13px] text-fg-secondary">
+            <p
+              data-testid="updater-phase"
+              className="mt-1 flex items-center gap-2 text-[13px] text-fg-secondary"
+            >
+              {phase === "uptodate" && (
+                <CheckCircle2 aria-hidden="true" className="size-4 text-success" />
+              )}
               {t(PHASE_KEY[phase])}
             </p>
             {showOffer && version && (
@@ -158,12 +165,23 @@ export function UpdatesTab() {
                 aria-label={t(`tools.${tool}`)}
                 className="rounded-md border border-glass-border p-3 text-[13px]"
               >
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className="w-20 font-medium text-fg">{t(`tools.${tool}`)}</span>
-                  <span className="min-w-0 flex-1 break-all text-fg-muted">
-                    {status?.version ?? "—"}
-                  </span>
-                  <span role={working ? "status" : undefined} className="text-fg-secondary">
+                <div className="grid items-center gap-3 sm:grid-cols-[minmax(0,1fr)_130px_180px]">
+                  <div className="min-w-0">
+                    <span className="font-semibold text-fg">{t(`tools.${tool}`)}</span>
+                    {status?.version && (
+                      <span className="ml-2 break-all text-xs text-fg-muted">{status.version}</span>
+                    )}
+                    <p className="mt-1 text-xs leading-relaxed text-fg-muted">
+                      {t(`tools.descriptions.${tool}`)}
+                    </p>
+                  </div>
+                  <span
+                    role={working ? "status" : undefined}
+                    className="flex items-center gap-2 text-fg-secondary"
+                  >
+                    {status?.installed && !status.updateAvailable && !working && (
+                      <CheckCircle2 aria-hidden="true" className="size-4 shrink-0 text-success" />
+                    )}
                     {working
                       ? t(
                           progress
@@ -172,12 +190,13 @@ export function UpdatesTab() {
                         )
                       : label}
                   </span>
-                  <div className="ml-auto flex gap-2">
+                  <div className="flex flex-col gap-2">
                     {(working ||
                       !status?.installed ||
                       status.updateAvailable ||
                       toolErrors[tool]) && (
                       <Button
+                        className="w-full"
                         size="sm"
                         variant="primary"
                         loading={working}

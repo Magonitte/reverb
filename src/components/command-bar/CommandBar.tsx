@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { SearchInput } from "@/components/ui/Input";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -33,6 +33,7 @@ export function CommandBar({ autoFocus, large = true, overlay = false, onDone }:
   const ref = useRef<HTMLInputElement>(null);
   const bar = useCommandBar(onDone);
   const hint = hintKind(text);
+  const instructionsId = useId();
 
   // "Colar e baixar": o pedido chega com o texto já na store; envia na renderização seguinte.
   const submitRef = useRef(bar.submit);
@@ -63,23 +64,41 @@ export function CommandBar({ autoFocus, large = true, overlay = false, onDone }:
           void bar.submit();
         }}
       >
-        <SearchInput
-          ref={ref}
-          large={large}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder={t("commandBar.placeholder")}
-          aria-label={t("commandBar.label")}
-          autoComplete="off"
-          spellCheck={false}
-        />
+        <div className="flex items-center gap-2 max-sm:flex-col max-sm:items-stretch">
+          <SearchInput
+            ref={ref}
+            large={large}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder={t("commandBar.placeholder")}
+            aria-label={t("commandBar.label")}
+            autoComplete="off"
+            spellCheck={false}
+            aria-describedby={instructionsId}
+            wrapperClassName="min-w-0 flex-1"
+          />
+          <Button
+            type="submit"
+            variant="primary"
+            size={large ? "lg" : "md"}
+            loading={bar.status === "loading"}
+            disabled={!text.trim()}
+          >
+            {t(
+              hint === "search" || hint === "empty"
+                ? "commandBar.searchAction"
+                : "commandBar.analyzeAction",
+            )}
+          </Button>
+        </div>
       </form>
       <p
         data-testid="command-hint"
+        id={instructionsId}
         aria-live="polite"
         className="mt-2 min-h-4 px-1 text-xs text-fg-muted"
       >
-        {hint !== "empty" && t(`commandBar.hint_${hint}`)}
+        {hint !== "empty" ? t(`commandBar.hint_${hint}`) : t("commandBar.instructions")}
       </p>
       {bar.status === "loading" && (
         <div data-testid="command-loading" className="mt-3 flex flex-col gap-2" aria-busy="true">

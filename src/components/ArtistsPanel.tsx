@@ -48,6 +48,7 @@ export function ArtistsPanel({ missingOnly = false }: { missingOnly?: boolean })
   const mounted = useRef(true);
   const loadSerial = useRef(0);
   const searchSerial = useRef(0);
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const load = useCallback(async () => {
     const serial = ++loadSerial.current;
@@ -140,24 +141,36 @@ export function ArtistsPanel({ missingOnly = false }: { missingOnly?: boolean })
     setDialogError(null);
     setOpen(true);
   }
-  async function search() {
-    const serial = ++searchSerial.current;
-    setSearching(true);
-    setChoice(null);
-    setHits([]);
-    setDialogError(null);
-    try {
-      const result = await api.artistsSearch(name.trim());
-      if (mounted.current && serial === searchSerial.current) {
-        setHits(result);
-        setSearched(true);
+  const search = useCallback(
+    async (query: string) => {
+      if (searchTimer.current !== null) clearTimeout(searchTimer.current);
+      const serial = ++searchSerial.current;
+      setSearching(true);
+      setChoice(null);
+      setHits([]);
+      setDialogError(null);
+      try {
+        const result = await api.artistsSearch(query.trim());
+        if (mounted.current && serial === searchSerial.current) {
+          setHits(result);
+          setSearched(true);
+        }
+      } catch (e) {
+        if (mounted.current && serial === searchSerial.current) setDialogError(errorText(t, e));
+      } finally {
+        if (mounted.current && serial === searchSerial.current) setSearching(false);
       }
-    } catch (e) {
-      if (mounted.current && serial === searchSerial.current) setDialogError(errorText(t, e));
-    } finally {
-      if (mounted.current && serial === searchSerial.current) setSearching(false);
-    }
-  }
+    },
+    [t],
+  );
+  useEffect(() => {
+    if (!open || editing || choice || busy || settings?.offlineMode || name.trim().length < 2)
+      return;
+    searchTimer.current = setTimeout(() => void search(name), 350);
+    return () => {
+      if (searchTimer.current !== null) clearTimeout(searchTimer.current);
+    };
+  }, [open, editing, choice, busy, settings?.offlineMode, name, search]);
   async function save() {
     setAction("save");
     setDialogError(null);
@@ -396,7 +409,7 @@ export function ArtistsPanel({ missingOnly = false }: { missingOnly?: boolean })
                 className="flex items-end gap-2"
                 onSubmit={(e) => {
                   e.preventDefault();
-                  if (name.trim() && !searching && !busy) void search();
+                  if (name.trim() && !searching && !busy) void search(name);
                 }}
               >
                 <div className="min-w-0 flex-1">
@@ -426,6 +439,9 @@ export function ArtistsPanel({ missingOnly = false }: { missingOnly?: boolean })
                   {t("artists.search")}
                 </Button>
               </form>
+              <p role={searching ? "status" : undefined} className="text-xs text-fg-muted">
+                {t(searching ? "artists.searching" : "artists.autoSearchHint")}
+              </p>
               {!!hits.length && (
                 <div
                   className="max-h-48 space-y-2 overflow-y-auto"

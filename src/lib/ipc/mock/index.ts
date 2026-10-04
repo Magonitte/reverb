@@ -109,6 +109,9 @@ export { resetMockTools, seedMockTool, seedMockToolVersions } from "./tools";
 export { resetMockUpdater, setMockUpdaterMode } from "./updater";
 
 const handlers: Record<string, (args?: Record<string, unknown>) => unknown> = {
+  notifications_pending: () => [],
+  notifications_resize: () => {},
+  notifications_hide: () => {},
   import_analyze: (a) => mockImportAnalyze(a?.url as string),
   import_enqueue: (a) => mockImportEnqueue(a?.selection as ImportSelection),
   artists_search: () => [{ id: "6160", name: "Rick Astley", picture: null, fans: 100000 }],

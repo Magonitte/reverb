@@ -43,15 +43,23 @@ export function QualitySettings() {
           )
         }
       />
-      <Toggle
-        label={t("artists.autoUpgrade")}
-        checked={settings.autoUpgrade}
-        onChange={(autoUpgrade) =>
-          void update({ autoUpgrade }).catch((e) =>
-            toast({ message: errorText(t, e), tone: "error" }),
-          )
-        }
-      />
+      <div className="flex items-start justify-between gap-4 rounded-md bg-field p-3">
+        <div>
+          <p className="text-sm font-medium">{t("artists.autoUpgrade")}</p>
+          <p className="mt-1 text-xs leading-relaxed text-fg-muted">
+            {t("quality.autoUpgradeHint")}
+          </p>
+        </div>
+        <Toggle
+          label={t("artists.autoUpgrade")}
+          checked={settings.autoUpgrade}
+          onChange={(autoUpgrade) =>
+            void update({ autoUpgrade }).catch((e) =>
+              toast({ message: errorText(t, e), tone: "error" }),
+            )
+          }
+        />
+      </div>
       <h2 className="text-sm font-semibold">{t("quality.cookies")}</h2>
       <Select
         label={t("quality.source")}

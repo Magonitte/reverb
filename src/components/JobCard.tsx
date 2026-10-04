@@ -51,9 +51,16 @@ export function JobCard({
     let active = true;
     if (job.status === "done" && job.libraryId !== null) {
       const id = job.libraryId;
-      api.libraryCover(id).then((cover) => { if (active) setEmbedded({ id, cover }); }).catch(() => {});
+      api
+        .libraryCover(id)
+        .then((cover) => {
+          if (active) setEmbedded({ id, cover });
+        })
+        .catch(() => {});
     }
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [job.status, job.libraryId]);
   const cover = embedded?.id === job.libraryId ? embedded?.cover : null;
   const running = job.status === "running";
@@ -90,7 +97,9 @@ export function JobCard({
       {...rootProps}
     >
       {handle}
-      {cover || job.thumbnail ? (
+      {running ? (
+        <VinylDisc spinning size={40} />
+      ) : cover || job.thumbnail ? (
         <img
           src={cover ?? job.thumbnail ?? undefined}
           data-testid={cover ? "job-cover" : undefined}
@@ -127,9 +136,13 @@ export function JobCard({
             {jobErrorText(t, job)}
           </p>
         )}
-        {job.warnings.length > 0 && <ul data-testid="job-warnings" className="mt-1 space-y-1 text-xs text-warning">
-          {job.warnings.map((warning) => <li key={warning}>{t(warning, { defaultValue: t("warnings.other") })}</li>)}
-        </ul>}
+        {job.warnings.length > 0 && (
+          <ul data-testid="job-warnings" className="mt-1 space-y-1 text-xs text-warning">
+            {job.warnings.map((warning) => (
+              <li key={warning}>{t(warning, { defaultValue: t("warnings.other") })}</li>
+            ))}
+          </ul>
+        )}
       </div>
       <div className="flex shrink-0 items-center gap-1">
         {confidence}
@@ -139,7 +152,9 @@ export function JobCard({
           </IconButton>
         )}
         {job.status === "done" && job.outputPath && (
-          <IconButton size="sm" label={label("activity.openFile")} onClick={() => onOpen?.(job)}><FileAudio /></IconButton>
+          <IconButton size="sm" label={label("activity.openFile")} onClick={() => onOpen?.(job)}>
+            <FileAudio />
+          </IconButton>
         )}
         {job.status === "done" && job.outputPath && (
           <IconButton size="sm" label={label("activity.openFolder")} onClick={() => onReveal(job)}>

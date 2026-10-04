@@ -62,58 +62,83 @@ export function IntegrationTab() {
         />
       )}
       {settings && (
-        <div className="flex items-center justify-between gap-4">
-          <span className="text-sm">{t("integration.clipboardWatch")}</span>
-          <Toggle
-            label={t("integration.clipboardWatch")}
-            checked={settings.clipboardWatch}
-            onChange={(clipboardWatch) => {
-              void update({ clipboardWatch }).catch(() =>
-                toast({ message: t("settings.saveFailed"), tone: "error" }),
-              );
-            }}
-          />
-        </div>
+        <section className="rounded-lg border border-glass-border bg-field p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h2 className="text-sm font-semibold">{t("integration.easyTitle")}</h2>
+              <p className="mt-1 text-sm text-fg-muted">{t("integration.easyHelp")}</p>
+            </div>
+            <Toggle
+              label={t("integration.clipboardWatch")}
+              checked={settings.clipboardWatch}
+              onChange={(clipboardWatch) => {
+                void update({ clipboardWatch }).catch(() =>
+                  toast({ message: t("settings.saveFailed"), tone: "error" }),
+                );
+              }}
+            />
+          </div>
+          <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm text-fg-secondary">
+            {[1, 2, 3].map((step) => (
+              <li key={step}>{t(`integration.easyStep${step}`)}</li>
+            ))}
+          </ol>
+          <p className="mt-3 text-xs text-fg-muted">{t("integration.easyPrivacy")}</p>
+        </section>
       )}
-      <h2 className="text-sm font-semibold">{t("integration.bookmarkletTitle")}</h2>
-      <p className="text-sm text-fg-muted">{t("integration.bookmarkletHelp")}</p>
-      <Input label={t("integration.bookmarkletCode")} value={code} readOnly />
-      <a
-        href="reverb://open"
-        draggable
-        className="inline-block text-accent underline"
-        onDragStart={(event) => {
-          event.dataTransfer.setData("text/uri-list", code);
-          event.dataTransfer.setData("text/plain", code);
-        }}
-      >
-        {t("app.name")}
-      </a>
-      <Button disabled={!code} onClick={() => void copy()}>
-        {t("integration.copyBookmarklet")}
-      </Button>
-      <Input
-        label={t("integration.testLink")}
-        value={testLink}
-        onChange={(event) => setTestLink(event.target.value)}
-      />
-      <Button
-        variant="secondary"
-        loading={testing}
-        disabled={!testLink.trim()}
-        onClick={() => {
-          setTesting(true);
-          void api
-            .deeplinkTest(testLink.trim())
-            .then(
-              () => toast({ message: t("integration.testSuccess"), tone: "success" }),
-              () => toast({ message: t("integration.testFailed"), tone: "error" }),
-            )
-            .finally(() => setTesting(false));
-        }}
-      >
-        {t("integration.test")}
-      </Button>
+      <details className="rounded-lg border border-glass-border p-4">
+        <summary className="cursor-pointer text-sm font-semibold text-fg">
+          {t("integration.advancedTitle")}
+        </summary>
+        <div className="mt-4 space-y-4">
+          <h2 className="text-sm font-semibold">{t("integration.bookmarkletTitle")}</h2>
+          <p className="text-sm text-fg-muted">{t("integration.bookmarkletHelp")}</p>
+          <ol className="list-decimal space-y-2 pl-5 text-sm text-fg-secondary">
+            {[1, 2, 3, 4].map((step) => (
+              <li key={step}>{t(`integration.bookmarkletStep${step}`)}</li>
+            ))}
+          </ol>
+          <Input label={t("integration.bookmarkletCode")} value={code} readOnly />
+          <div className="flex flex-wrap items-center gap-4">
+            <a
+              href="reverb://open"
+              draggable
+              className="inline-block text-accent underline"
+              onDragStart={(event) => {
+                event.dataTransfer.setData("text/uri-list", code);
+                event.dataTransfer.setData("text/plain", code);
+              }}
+            >
+              {t("app.name")}
+            </a>
+            <Button disabled={!code} onClick={() => void copy()}>
+              {t("integration.copyBookmarklet")}
+            </Button>
+          </div>
+          <Input
+            label={t("integration.testLink")}
+            value={testLink}
+            onChange={(event) => setTestLink(event.target.value)}
+          />
+          <Button
+            variant="secondary"
+            loading={testing}
+            disabled={!testLink.trim()}
+            onClick={() => {
+              setTesting(true);
+              void api
+                .deeplinkTest(testLink.trim())
+                .then(
+                  () => toast({ message: t("integration.testSuccess"), tone: "success" }),
+                  () => toast({ message: t("integration.testFailed"), tone: "error" }),
+                )
+                .finally(() => setTesting(false));
+            }}
+          >
+            {t("integration.test")}
+          </Button>
+        </div>
+      </details>
     </Card>
   );
 }

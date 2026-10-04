@@ -148,7 +148,13 @@ export default function Playlists() {
       <ScreenHeader
         title={selected?.title ?? t(id ? "playlistDetail.title" : "playlists.title")}
         subtitle={t(id ? "playlistDetail.subtitle" : "playlists.subtitle")}
-        actions={!id && <Button onClick={() => setEdit("new")}>{t("sync.create")}</Button>}
+        actions={
+          !id && (
+            <Button variant="primary" onClick={() => setEdit("new")}>
+              {t("sync.create")}
+            </Button>
+          )
+        }
       />
       {error !== null && (
         <p role="alert" className="mb-4 text-sm text-error">
@@ -168,7 +174,11 @@ export default function Playlists() {
           icon={<ListMusic aria-hidden="true" />}
           title={t("playlists.empty.title")}
           description={t("playlists.empty.description")}
-          action={<Button onClick={() => setEdit("new")}>{t("sync.create")}</Button>}
+          action={
+            <Button variant="primary" onClick={() => setEdit("new")}>
+              {t("sync.create")}
+            </Button>
+          }
         />
       )}
       {!id && (

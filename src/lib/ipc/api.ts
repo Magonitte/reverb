@@ -1,3 +1,4 @@
+import type { NativeNotice } from "@/stores/nativeNotices";
 import type { ImportAnalysis } from "@/bindings/ImportAnalysis";
 import type { ImportSelection } from "@/bindings/ImportSelection";
 import type { ArtistHit } from "@/bindings/ArtistHit";
@@ -54,6 +55,9 @@ export async function call<T>(cmd: string, args?: Record<string, unknown>): Prom
 }
 
 export const COMMANDS = [
+  "notifications_pending",
+  "notifications_resize",
+  "notifications_hide",
   "import_analyze",
   "import_enqueue",
   "artists_search",
@@ -151,6 +155,9 @@ export const COMMANDS = [
 export type SearchSource = "ytmusic" | "youtube" | "archive" | "jamendo";
 
 export const api = {
+  notificationsPending: () => call<NativeNotice[]>("notifications_pending"),
+  notificationsResize: (height: number) => call<void>("notifications_resize", { height }),
+  notificationsHide: () => call<void>("notifications_hide"),
   importAnalyze: (url: string) => call<ImportAnalysis>("import_analyze", { url }),
   importEnqueue: (selection: ImportSelection) => call<Job[]>("import_enqueue", { selection }),
   artistsSearch: (name: string) => call<ArtistHit[]>("artists_search", { name }),

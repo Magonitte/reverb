@@ -26,7 +26,9 @@
     "activity": "Atividade",
     "review": "Revisar",
     "settings": "Configurações",
-    "more": "Mais"
+    "more": "Mais",
+    "collapse": "Recolher menu",
+    "expand": "Expandir menu"
   },
   "commandBar": {
     "placeholder": "Cole um link ou pesquise uma música…",
@@ -51,7 +53,10 @@
     "resultsLabel": "Resultados da busca",
     "openPreview": "Abrir a pré-visualização de {{title}}",
     "downloadItem": "Baixar {{title}}",
-    "download": "Baixar"
+    "download": "Baixar",
+    "searchAction": "Pesquisar",
+    "analyzeAction": "Analisar link",
+    "instructions": "Cole um link ou digite o nome da música. Pressione Enter para continuar."
   },
   "shortcuts": {
     "commandBar": "Abrir a barra de comando",
@@ -109,7 +114,14 @@
     "analyzePlaylistHint": "Cole o link da playlist na barra e aperte Enter.",
     "clipboardEmpty": "A área de transferência está vazia.",
     "recent": "Recentes",
-    "revealRecent": "Mostrar {{title}} na pasta"
+    "revealRecent": "Mostrar {{title}} na pasta",
+    "startTitle": "Sua próxima música começa aqui",
+    "actionHints": {
+      "paste": "Confira o link copiado antes de baixar.",
+      "playlist": "Escolha as faixas de uma playlist ou álbum.",
+      "tags": "Ajuste informações, capa e letra.",
+      "folder": "Encontre seus arquivos de áudio."
+    }
   },
   "preview": {
     "title": "Pré-visualização",
@@ -356,7 +368,7 @@
     "subtitle": "Ajuste título, artista, álbum, capa e letra de um arquivo.",
     "empty": {
       "title": "Nenhum arquivo aberto",
-      "description": "Abra um arquivo pela Biblioteca para editar as tags."
+      "description": "Use “Abrir arquivo de áudio…” ou escolha uma faixa na Biblioteca para editar título, artista, capa e letra."
     },
     "open": "Abrir arquivo de áudio…",
     "saved": "Tags salvas.",
@@ -609,7 +621,14 @@
     "bgutil": "bgutil",
     "upToDate": "Atualizado",
     "updateAvailable": "Atualização disponível",
-    "missing": "Não instalado"
+    "missing": "Não instalado",
+    "descriptions": {
+      "ytdlp": "Baixa o áudio dos links do YouTube e de outros sites compatíveis.",
+      "deno": "Executa os scripts que ajudam o Reverb a acessar vídeos do YouTube.",
+      "ffmpeg": "Converte arquivos de áudio e aplica o formato escolhido para sua música.",
+      "fpcalc": "Cria uma impressão digital do áudio para identificar músicas pelo AcoustID. Opcional.",
+      "bgutil": "Ajuda a acessar o YouTube quando ele exige uma verificação adicional."
+    }
   },
   "errors": {
     "extractorPersistent": "O YouTube mudou e nem o yt-dlp mais recente conseguiu acompanhar. Tente de novo mais tarde.",
@@ -728,7 +747,7 @@
     "bookmarkletCopied": "Bookmarklet copiado",
     "copyBookmarklet": "Copiar bookmarklet",
     "bookmarkletTitle": "Baixar do navegador",
-    "bookmarkletHelp": "Copie o código e salve como endereço de um favorito, ou arraste o favorito Reverb para a barra de favoritos. Ao usá-lo em uma página do YouTube, o Reverb adiciona o áudio à fila.",
+    "bookmarkletHelp": "Crie um favorito no seu navegador para enviar a página aberta ao Reverb.",
     "autostartFailed": "Não foi possível alterar a inicialização com o sistema",
     "clipboardWatch": "Observar links copiados",
     "analyzeCopied": "Analisar",
@@ -745,7 +764,18 @@
     "testLink": "Link para testar",
     "test": "Testar link",
     "testSuccess": "Link recebido",
-    "testFailed": "Link inválido ou não suportado"
+    "testFailed": "Link inválido ou não suportado",
+    "bookmarkletStep1": "Mostre a barra de favoritos do navegador (Ctrl + Shift + B no Chrome, Edge ou Firefox).",
+    "bookmarkletStep2": "Arraste o link Reverb abaixo para essa barra. Você terá um novo favorito chamado Reverb.",
+    "bookmarkletStep3": "Abra uma página de vídeo ou playlist compatível e clique nesse favorito. Se o navegador pedir, permita abrir o Reverb; o áudio será adicionado à fila.",
+    "bookmarkletStep4": "Se não conseguir arrastar: clique em Copiar bookmarklet, crie um favorito e edite seu endereço (URL) para colar o código copiado.",
+    "easyTitle": "Copiar link e escolher se quer baixar",
+    "easyHelp": "A maneira mais simples. Ative a chave ao lado; não precisa configurar o navegador.",
+    "easyStep1": "Abra o vídeo ou a playlist no YouTube e copie o endereço (Ctrl + C).",
+    "easyStep2": "Com o Reverb aberto, aguarde o aviso com o link copiado.",
+    "easyStep3": "Clique em Baixar para adicionar à fila ou em Cancelar para ignorar.",
+    "easyPrivacy": "Nada é baixado sem sua confirmação. Se preferir manter esta opção desligada, cole o link na busca do Início.",
+    "advancedTitle": "Outra opção: criar um favorito no navegador (avançado)"
   },
   "quality": {
     "cookies": "Cookies e YouTube Premium",
@@ -801,7 +831,37 @@
     "notConfigured": "Não configurado",
     "apiOk": "Conexão válida",
     "testApi": "Testar conexão",
-    "clearKey": "Remover chave"
+    "clearKey": "Remover chave",
+    "openService": "Abrir {{provider}} ↗",
+    "setupGuide": "Como configurar: passo a passo",
+    "saved": "Dados salvos. Teste a conexão para conferir.",
+    "guides": {
+      "acoustid": {
+        "description": "Identifica músicas pelo som, mesmo quando o arquivo não tem título ou artista.",
+        "step1": "Abra o AcoustID pelo botão acima e entre com sua conta.",
+        "step2": "Na página de registro de aplicativo, informe um nome, como Reverb pessoal, e os dados solicitados.",
+        "step3": "Copie a chave de API do aplicativo (Application API key). A chave de usuário usada para enviar músicas não serve para esta consulta.",
+        "step4": "Cole em Chave AcoustID, clique em Salvar e depois em Testar conexão. A identificação pelo som também precisa da ferramenta fpcalc."
+      },
+      "spotify": {
+        "description": "Consulta títulos, artistas, álbuns e capas no catálogo do Spotify. O acesso depende das regras da plataforma."
+      },
+      "discogs": {
+        "description": "Complementa os dados dos álbuns com informações sobre suas edições e lançamentos.",
+        "step1": "Abra o Discogs pelo botão acima e entre ou crie sua conta.",
+        "step2": "Nas configurações da conta, abra Developers (Desenvolvedores).",
+        "step3": "Gere um token pessoal em Generate new token e copie o valor.",
+        "step4": "Cole em Token Discogs, clique em Salvar e depois em Testar conexão."
+      },
+      "jamendo": {
+        "description": "Consulta músicas e informações de artistas independentes no catálogo do Jamendo.",
+        "step1": "Abra o portal de desenvolvedores do Jamendo pelo botão acima e entre ou crie sua conta.",
+        "step2": "Cadastre um aplicativo, usando um nome como Reverb pessoal, e preencha os dados solicitados.",
+        "step3": "Abra o aplicativo cadastrado e copie seu Client ID.",
+        "step4": "Cole em Jamendo Client ID, clique em Salvar e depois em Testar conexão."
+      }
+    },
+    "autoUpgradeHint": "Ao verificar artistas seguidos, procura uma versão melhor para músicas abaixo da qualidade-alvo escolhida. Só substitui o arquivo quando encontra uma fonte melhor; não aumenta artificialmente a qualidade do áudio. Escolha 160 ou 256 kbps acima para usar este recurso."
   },
   "sources": {
     "youtube": "YouTube",
@@ -840,7 +900,7 @@
     "spotifyDashboard": "Abrir painel do Spotify",
     "step1": "Entre no painel de desenvolvedores do Spotify com sua conta.",
     "step2": "Crie um aplicativo e habilite Web API.",
-    "step3": "Copie seu Client ID e Client Secret para os campos acima e salve.",
+    "step3": "Copie seu Client ID e Client Secret para os campos abaixo e clique em Salvar.",
     "step4": "Teste a conexão. O acesso depende das permissões do aplicativo; playlists restritas podem estar indisponíveis.",
     "selection": "Seleção"
   },
@@ -925,7 +985,9 @@
       "all": "Novos lançamentos serão adicionados à fila automaticamente enquanto o app estiver aberto.",
       "notify": "Novos lançamentos geram aviso e aparecem em Faltando. Você decide quando baixar.",
       "none": "Novos lançamentos serão registrados sem avisos nem downloads automáticos."
-    }
+    },
+    "searching": "Buscando artistas…",
+    "autoSearchHint": "Digite pelo menos 2 letras para ver sugestões. Use Tab e Enter para selecionar."
   },
   "metadataDetails": {
     "title": "Detalhes do resultado",
@@ -943,5 +1005,49 @@
     "applied": "Metadados aplicados ao editor. Salve para gravar no arquivo.",
     "count": "{{count}} resultado(s) encontrado(s).",
     "empty": "Nenhum resultado encontrado. Ajuste o título e o artista e tente novamente."
+  },
+  "notifications": {
+    "titles": {
+      "info": "Reverb",
+      "success": "Tudo certo",
+      "warning": "Atenção",
+      "error": "Não foi possível concluir"
+    },
+    "actionFailed": "A ação não foi concluída. Tente novamente; nenhuma confirmação foi feita automaticamente.",
+    "remaining_one": "Fecha em {{count}} segundo",
+    "remaining_other": "Fecha em {{count}} segundos",
+    "paused": "Tempo pausado durante a leitura",
+    "settingsTitle": "Notificações e sons",
+    "settingsHint": "Escolha o som dos avisos. Notificações com ações têm mais tempo para leitura e pausam quando você interage com elas.",
+    "sound": "Som da notificação",
+    "sounds": {
+      "glass": "Cristal suave",
+      "marimba": "Marimba",
+      "sparkle": "Notas luminosas",
+      "custom": "Som personalizado",
+      "silent": "Sem som"
+    },
+    "volume": "Volume das notificações",
+    "previewSound": "Ouvir som",
+    "addSound": "Carregar som personalizado",
+    "removeSound": "Remover som personalizado",
+    "saveFailed": "Não foi possível salvar a preferência de notificação neste dispositivo.",
+    "playFailed": "Não foi possível tocar esse som. Experimente outro arquivo ou verifique a saída de áudio.",
+    "invalidSound": "Escolha um arquivo de áudio válido em MP3, WAV, OGG ou M4A, com até 2 MB. Se o armazenamento estiver cheio, remova o som anterior.",
+    "fileHint": "MP3, WAV, OGG ou M4A • até 2 MB. O som fica salvo neste dispositivo e toca por até 5 segundos.",
+    "soundAdded": "Som personalizado salvo: {{name}}",
+    "clipboardDuration": "Tempo para decidir sobre um link copiado",
+    "seconds_one": "{{count}} segundo",
+    "seconds_other": "{{count}} segundos",
+    "testNotification": "Testar notificação",
+    "demoTitle": "Download concluído",
+    "demoMessage": "Sua música está pronta para ouvir e já foi adicionada à Biblioteca.",
+    "demoDetails": "Exemplo de notificação • Nenhum arquivo foi baixado neste teste.",
+    "clipboardTitle": "Link de música copiado",
+    "clipboardMessage": "Deseja adicionar este link à fila? Formato: {{format}}. O download só começa ao clicar em Baixar; Cancelar ou deixar o aviso expirar não baixa nada.",
+    "queuedTitle": "Adicionado à fila",
+    "queuedMessage": "Você pode acompanhar o download em Atividade.",
+    "openReverb": "Abrir Reverb",
+    "regionTitle": "Notificações do Reverb"
   }
 }

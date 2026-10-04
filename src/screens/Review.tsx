@@ -189,7 +189,11 @@ export default function Review() {
             </p>
           )}
           <div className="flex flex-wrap gap-2">
-            <Button disabled={busy || item.missing || !candidates[choice]} onClick={apply}>
+            <Button
+              variant="primary"
+              disabled={busy || item.missing || !candidates[choice]}
+              onClick={apply}
+            >
               {t("review.apply")}
             </Button>
             <Button variant="ghost" disabled={busy} onClick={dismiss}>

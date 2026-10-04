@@ -9,17 +9,19 @@ export interface ScreenHeaderProps {
 /** Cabeçalho padrão das telas: título (h1), subtítulo e ações opcionais. */
 export function ScreenHeader({ title, subtitle, actions }: ScreenHeaderProps) {
   return (
-    <div className="mb-8 flex flex-wrap items-start justify-between gap-4 max-sm:mb-5">
+    <div className="mb-6 flex flex-wrap items-start justify-between gap-4 max-sm:mb-5">
       <div className="min-w-0">
         <h1
           id="screen-title"
-          className="font-display text-2xl font-semibold tracking-[-0.015em] text-fg"
+          className="font-display text-[28px] font-semibold tracking-[-0.025em] text-fg max-sm:text-2xl"
         >
           {title}
         </h1>
-        {subtitle && <p className="mt-1 text-[13px] text-fg-muted">{subtitle}</p>}
+        {subtitle && (
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-fg-muted">{subtitle}</p>
+        )}
       </div>
-      {actions}
+      {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
     </div>
   );
 }

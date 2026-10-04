@@ -298,7 +298,7 @@ function LibraryFiles() {
           placeholder={t("library.search")}
           value={query.text ?? ""}
           onChange={(e) => change({ text: e.target.value })}
-          wrapperClassName="col-span-2"
+          wrapperClassName="col-span-2 self-end"
         />
         <Select
           label={t("library.format")}
@@ -560,7 +560,7 @@ function LibraryFiles() {
               header: t("library.actions"),
               width: "108px",
               render: (i) => (
-                <div className="flex gap-1">
+                <div className="library-row-actions flex gap-1">
                   <IconButton
                     label={t("library.detailsTrack", { title: i.title })}
                     onClick={() => setDetails(i)}

@@ -19,6 +19,7 @@ const TONES: Record<string, ToastTone> = {
 export async function initNotices(): Promise<() => void> {
   return onEvent<NoticePayload>("notice", (n) => {
     useUiStore.getState().pushToast({
+      group: n.i18nKey === "integration.linkAdded" ? "queue-feedback" : undefined,
       message: i18n.t(n.i18nKey, n.params ?? {}),
       tone: TONES[n.level] ?? "info",
     });
