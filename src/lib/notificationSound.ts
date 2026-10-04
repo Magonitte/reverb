@@ -14,11 +14,19 @@ export async function playNotificationSound(preview = false): Promise<void> {
   if (!source) return;
   audio?.pause();
   clearTimeout(stopTimer);
-  audio = new Audio(source);
-  audio.volume = p.volume;
-  await audio.play();
+  const playing = new Audio(source);
+  audio = playing;
+  playing.volume = p.volume;
+  try {
+    await playing.play();
+  } catch (error) {
+    // A newer preview intentionally pauses this one, which may reject its play promise.
+    if (audio === playing) throw error;
+    return;
+  }
+  if (audio !== playing) return;
   lastPlayed = Date.now();
-  stopTimer = setTimeout(() => audio?.pause(), 5000);
+  stopTimer = setTimeout(() => playing.pause(), 5000);
 }
 export async function readNotificationAudio(file: File): Promise<string> {
   if (file.size > 2 * 1024 * 1024 || !/\.(mp3|wav|ogg|m4a)$/i.test(file.name))

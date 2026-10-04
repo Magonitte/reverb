@@ -26,17 +26,19 @@ test("clipboard confirmation, cancellation, timer pause and expiry", async ({ pa
   await expect(toast.getByRole("button", { name: "Cancelar", exact: true })).toBeVisible();
   await expect(toast).toContainText("Original (sem recodificar)");
   expect(await jobCount(page)).toBe(0);
+  await toast.getByRole("button", { name: "Cancelar" }).click();
+  expect(await jobCount(page)).toBe(0);
+  await copyLink(page, "https://youtu.be/dQw4w9WgXcQ");
+  await expect(toast).toBeVisible();
   await page.clock.install();
   await toast.hover();
   await expect(toast).toContainText("Tempo pausado");
   const scale = await toast.getByTestId("toast-timer").getAttribute("style");
-  await page.clock.fastForward(60000);
+  await page.clock.runFor(60000);
   await expect(toast.getByTestId("toast-timer")).toHaveAttribute("style", scale!);
-  await toast.getByRole("button", { name: "Cancelar" }).click();
-  expect(await jobCount(page)).toBe(0);
-  await copyLink(page, "https://youtu.be/dQw4w9WgXcQ");
   await page.mouse.move(0, 0);
-  await page.clock.fastForward(36000);
+  await expect(toast).not.toContainText("Tempo pausado");
+  await page.clock.runFor(36000);
   await expect(page.getByText("Link de música copiado", { exact: true })).toHaveCount(0);
   expect(await jobCount(page)).toBe(0);
 });
@@ -87,6 +89,7 @@ for (const theme of ["dark", "light"] as const)
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
     await expect(page).toHaveScreenshot(`notification-settings-${theme}.png`, {
       animations: "disabled",
+      maxDiffPixelRatio: 0.002,
       mask: [page.getByTestId("toast-timer")],
     });
     await goHash(page, "/activity");

@@ -88,3 +88,5 @@ As notificações informativas e a barra de tempo usam o accent do tema; fundo, 
 Validação: 6 testes unitários e 11 testes de interface passaram, incluindo cancelamento, expiração, som personalizado, opção avançada, tema escuro/claro e cores efetivas do popup. Axe sem violações nos dois temas. TypeScript, ESLint, traduções, build Vite e git diff --check passaram. Capturas conferidas: integracao-simples.png, notificacao-link-dark.png e notificacao-link-light.png.
 
 Executável Windows atualizado com a interface incorporada pelo Tauri CLI; a instância instalada não foi substituída.
+
+Preparação da release 0.1.6: o CI Windows expôs uma corrida real de áudio ao interromper uma prévia ainda pendente. A reprodução agora captura cada elemento e ignora somente a rejeição causada pela substituição; falhas reais continuam reportadas. Dois testes de regressão passaram. O teste de tempo usa ticks regulares e confirma cancelamento antes do relógio virtual; a comparação visual usa a tolerância de 0,2% já adotada nas outras telas. Os nove testes de notificações passaram novamente; aguardando repetição integral do CI.
