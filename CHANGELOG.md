@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.6
+
+- Interface revisada, menu recolhível, ícone Reverb e discos animados nos downloads.
+- Ferramentas e provedores com explicações e guias simples; sugestões de artistas durante a busca.
+- Links copiados pedem confirmação com Baixar/Cancelar, barra de tempo e pausa durante a leitura.
+- Notificações acompanham o tema, com três sons, volume ajustável e áudio personalizado local.
+- Integração simplificada para copiar links; favorito do navegador disponível como opção avançada.
+
 ## 0.1.5
 
 - Biblioteca reorganizada com importação em destaque, filtros agrupados, seleção contextual e detalhes das faixas.
