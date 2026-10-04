@@ -129,6 +129,12 @@ for (const theme of ["dark", "light"] as const)
     await expect(toast.getByRole("button", { name: "Cancelar", exact: true })).toBeVisible();
     await toast.hover();
     await expect(toast).toContainText("Tempo pausado");
+    const host = page.getByRole("region", { name: "Notificações do Reverb", exact: true });
+    await expect(host).toHaveCSS("position", "relative");
+    const bounds = await toast.boundingBox();
+    expect(bounds!.y).toBeGreaterThanOrEqual(16);
+    expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(420 - 16);
+    await expect(toast.getByText("Link de música copiado", { exact: true })).toBeVisible();
     const colors = await toast.evaluate((element) => {
       const root = getComputedStyle(document.documentElement);
       const timer = element.querySelector('[data-testid="toast-timer"]')!;

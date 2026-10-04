@@ -114,13 +114,6 @@
   html[data-notification-window="true"] #root {
     background: transparent !important;
   }
-  html[data-notification-window="true"] [aria-live="polite"] {
-    position: relative;
-    inset: auto;
-    margin: 16px;
-    max-width: calc(100vw - 32px);
-    max-height: calc(100dvh - 32px);
-  }
 }
 @layer base {
   html[data-notification-window="true"] [data-testid="toast"] {

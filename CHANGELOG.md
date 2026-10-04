@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.7
+
+- Corrige o corte da notificação flutuante no Windows, com fundo transparente, margens consistentes e posicionamento que respeita a barra de tarefas.
+
 ## 0.1.6
 
 - Interface revisada, menu recolhível, ícone Reverb e discos animados nos downloads.
