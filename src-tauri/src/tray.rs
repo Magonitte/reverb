@@ -151,17 +151,17 @@ pub fn initialize(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
                         if let Some(url) = copied.and_then(|text| watcher.observe(&text)) {
                             let visible = handle
                                 .get_webview_window("main")
-                                .and_then(|window| window.is_visible().ok())
+                                .map(|window| {
+                                    window.is_focused().unwrap_or(false)
+                                        && !window.is_minimized().unwrap_or(false)
+                                })
                                 .unwrap_or(false);
                             state.sink.emit(
                                 "clipboard://url",
-                                serde_json::json!({"url":url,"visible":visible}),
+                                serde_json::json!({"url":url.clone(),"visible":visible}),
                             );
                             if !visible {
-                                crate::notifications::show(
-                                    &handle,
-                                    texts::text(state.settings.get().language, "copied"),
-                                );
+                                crate::notifications::show_clipboard(&handle, url);
                             }
                         }
                     } else {

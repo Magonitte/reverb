@@ -8,7 +8,7 @@
 
   body {
     font-family: var(--font-body);
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1.5;
     color: var(--fg);
     background-color: var(--window-bg);
@@ -18,9 +18,9 @@
       repeating-radial-gradient(
         circle at 22% 18%,
         transparent 0,
-        transparent 22px,
-        var(--groove-2) 22px,
-        var(--groove-2) 23px
+        transparent 46px,
+        var(--groove-2) 46px,
+        var(--groove-2) 47px
       );
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
@@ -95,5 +95,35 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .library-row-actions {
+    opacity: 0;
+    transition: opacity 140ms ease;
+  }
+  [role="row"]:hover .library-row-actions,
+  [role="row"]:focus-within .library-row-actions {
+    opacity: 1;
+  }
+}
+
+@layer base {
+  html[data-notification-window="true"],
+  html[data-notification-window="true"] body,
+  html[data-notification-window="true"] #root {
+    background: transparent !important;
+  }
+  html[data-notification-window="true"] [aria-live="polite"] {
+    position: relative;
+    inset: auto;
+    margin: 16px;
+    max-width: calc(100vw - 32px);
+    max-height: calc(100dvh - 32px);
+  }
+}
+@layer base {
+  html[data-notification-window="true"] [data-testid="toast"] {
+    background: var(--bg-base) !important;
   }
 }

@@ -6,13 +6,19 @@ export interface Toast {
   id: number;
   message: string;
   tone: ToastTone;
+  title?: string;
+  details?: string;
+  durationMs?: number;
+  sound?: boolean;
+  group?: string;
   actionLabel?: string;
-  onAction?: () => void;
+  onAction?: () => void | Promise<void>;
   secondaryActionLabel?: string;
   onSecondaryAction?: () => void;
 }
 
 interface UiState {
+  modalCount: number;
   commandBarOpen: boolean;
   /** Texto da barra de comando (compartilhado entre a embutida no Início e o overlay Ctrl+K). */
   commandBarText: string;
@@ -33,6 +39,7 @@ interface UiState {
 let nextToastId = 1;
 
 export const useUiStore = create<UiState>((set) => ({
+  modalCount: 0,
   commandBarOpen: false,
   commandBarText: "",
   commandBarFocusTick: 0,
@@ -50,7 +57,12 @@ export const useUiStore = create<UiState>((set) => ({
   requestCommandBarSubmit: () => set((s) => ({ commandBarSubmitTick: s.commandBarSubmitTick + 1 })),
   pushToast: (toast) => {
     const id = nextToastId++;
-    set((s) => ({ toasts: [...s.toasts, { tone: "info", ...toast, id }] }));
+    set((s) => ({
+      toasts: [
+        ...s.toasts.filter((item) => !toast.group || item.group !== toast.group),
+        { tone: "info", ...toast, id },
+      ],
+    }));
     return id;
   },
   dismissToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),

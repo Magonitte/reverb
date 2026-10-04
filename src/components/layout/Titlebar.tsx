@@ -2,6 +2,7 @@ import { Minus, Square, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { windowControls } from "@/lib/window";
 import { cn } from "@/components/ui/cn";
+import reverbIcon from "@/assets/reverb.svg";
 
 function ControlButton({
   label,
@@ -38,13 +39,13 @@ export function Titlebar() {
       className="acrylic relative z-10 flex h-[var(--titlebar-h)] shrink-0 items-center gap-3 border-b border-glass-border pl-3 pr-1 max-sm:hidden"
     >
       <div data-tauri-drag-region className="flex min-w-0 flex-1 items-center gap-3 self-stretch">
-        <span
+        <img
+          src={reverbIcon}
+          alt=""
+          draggable={false}
           aria-hidden="true"
           data-tauri-drag-region
-          className="size-[18px] shrink-0 rounded-full shadow-[0_0_8px_var(--accent-glow)]"
-          style={{
-            background: "radial-gradient(circle at 35% 35%, #f6b06a, #e08a35 70%, #c06a1a 100%)",
-          }}
+          className="size-6 shrink-0"
         />
         <span
           data-tauri-drag-region

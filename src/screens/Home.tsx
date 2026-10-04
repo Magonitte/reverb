@@ -1,5 +1,5 @@
 import { useMemo, type ReactNode } from "react";
-import { ClipboardPaste, FolderOpen, House, ListMusic, Tags } from "lucide-react";
+import { ArrowUpRight, ClipboardPaste, FolderOpen, House, ListMusic, Tags } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { LibraryItem } from "@/bindings/LibraryItem";
@@ -18,20 +18,34 @@ import { SyncSummary } from "@/components/playlists/SyncSummary";
 function QuickAction({
   icon,
   label,
+  description,
   onClick,
 }: {
   icon: ReactNode;
   label: string;
+  description: string;
   onClick: () => void;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="glass flex items-center gap-3 rounded-lg p-4 text-left text-[13px] font-medium text-fg transition-colors duration-[140ms] hover:bg-glass-hover [&_svg]:size-5 [&_svg]:text-accent"
+      aria-label={label}
+      className="glass group flex items-start gap-3 rounded-lg p-4 text-left text-sm font-medium text-fg transition-colors duration-[140ms] hover:border-glass-border-hover hover:bg-glass-hover"
     >
-      {icon}
-      {label}
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-accent-muted text-accent [&_svg]:size-5">
+        {icon}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block">{label}</span>
+        <span className="mt-1 block text-xs font-normal leading-relaxed text-fg-muted">
+          {description}
+        </span>
+      </span>
+      <ArrowUpRight
+        className="size-4 shrink-0 text-fg-muted group-hover:text-accent"
+        aria-hidden="true"
+      />
     </button>
   );
 }
@@ -92,20 +106,25 @@ export default function Home() {
   return (
     <section aria-labelledby="screen-title">
       <ScreenHeader title={t("home.title")} subtitle={t("home.subtitle")} />
-      <CommandBar autoFocus />
+      <div className="glass rounded-xl border border-glass-border p-5 max-sm:p-4">
+        <h2 className="mb-3 text-sm font-semibold text-fg">{t("home.startTitle")}</h2>
+        <CommandBar autoFocus />
+      </div>
       <SyncSummary />
 
       <div className="mt-8">
         <h2 className="mb-3 text-sm font-semibold text-fg-secondary">{t("home.quickActions")}</h2>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <QuickAction
             icon={<ClipboardPaste aria-hidden="true" />}
             label={t("home.actions.pasteAndDownload")}
+            description={t("home.actionHints.paste")}
             onClick={() => void pasteAndDownload()}
           />
           <QuickAction
             icon={<ListMusic aria-hidden="true" />}
             label={t("home.actions.analyzePlaylist")}
+            description={t("home.actionHints.playlist")}
             onClick={() => {
               useUiStore.getState().requestCommandBarFocus();
               pushToast({ message: t("home.analyzePlaylistHint"), tone: "info" });
@@ -114,11 +133,13 @@ export default function Home() {
           <QuickAction
             icon={<Tags aria-hidden="true" />}
             label={t("home.actions.editTags")}
+            description={t("home.actionHints.tags")}
             onClick={() => navigate("/tag-editor")}
           />
           <QuickAction
             icon={<FolderOpen aria-hidden="true" />}
             label={t("home.actions.openMusicFolder")}
+            description={t("home.actionHints.folder")}
             onClick={() => void guard(() => api.openOutputDir())}
           />
         </div>

@@ -9,6 +9,7 @@ import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { cn } from "./cn";
 import { IconButton } from "./IconButton";
+import { useUiStore } from "@/stores/ui";
 
 const FOCUSABLE =
   'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
@@ -40,6 +41,12 @@ export function Dialog({
   const panelRef = useRef<HTMLDivElement>(null);
   const onCloseRef = useRef(onClose);
   const titleId = useId();
+  useEffect(() => {
+    if (!open) return;
+    useUiStore.setState((state) => ({ modalCount: state.modalCount + 1 }));
+    return () =>
+      useUiStore.setState((state) => ({ modalCount: Math.max(0, state.modalCount - 1) }));
+  }, [open]);
 
   useEffect(() => {
     onCloseRef.current = onClose;

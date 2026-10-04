@@ -18,7 +18,7 @@ export function ScreenOutlet() {
       initial={{ opacity: 0, y: reduce ? 0 : 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: reduce ? 0 : 0.24, ease: [0.16, 1, 0.3, 1] }}
-      className="p-8 max-sm:p-4"
+      className="mx-auto w-full max-w-[1440px] p-8 max-sm:p-4"
     >
       <HealBanner />
       <Suspense

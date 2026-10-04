@@ -1,4 +1,5 @@
 import { ProviderSettings } from "./ProviderSettings";
+import { NotificationSettings } from "./NotificationSettings";
 import { QualitySettings } from "./QualitySettings";
 import { useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -93,7 +94,7 @@ export default function Settings() {
     : "general";
 
   return (
-    <section aria-labelledby="screen-title">
+    <section aria-labelledby="screen-title" className="mx-auto max-w-[960px]">
       <ScreenHeader title={t("settings.title")} subtitle={t("settings.subtitle")} />
       <Tabs
         label={t("settings.tabsLabel")}
@@ -104,14 +105,23 @@ export default function Settings() {
         {tab === "general" && (
           <div className="space-y-4">
             <DesktopSettings />
+            <NotificationSettings />
             <Appearance />
           </div>
         )}
         {tab === "updates" && <UpdatesTab />}
         {tab === "integration" && <IntegrationTab />}
         {(tab === "downloads" || tab === "metadata") && <PostprocessSettings key={tab} tab={tab} />}
-        {tab === "downloads" && <QualitySettings />}
-        {tab === "metadata" && <ProviderSettings />}
+        {tab === "downloads" && (
+          <div className="mt-5">
+            <QualitySettings />
+          </div>
+        )}
+        {tab === "metadata" && (
+          <div className="mt-5">
+            <ProviderSettings />
+          </div>
+        )}
         {tab === "advanced" && <AdvancedTab />}
       </Tabs>
     </section>

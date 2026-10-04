@@ -1,3 +1,4 @@
+import { initNativeNotices } from "@/stores/nativeNotices";
 import { isTauri } from "@/lib/ipc/isTauri";
 import { initHealStore } from "@/stores/heal";
 import { initJobsStore } from "@/stores/jobs";
@@ -21,6 +22,7 @@ export async function bootstrap(): Promise<void> {
     initToolsStore(),
     initHealStore(),
     initNotices(),
+    initNativeNotices(),
     initUpdaterStore(),
     initSyncsStore(),
     initClipboard(),

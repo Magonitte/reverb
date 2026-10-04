@@ -1,16 +1,15 @@
+import { useId } from "react";
 import { cn } from "./cn";
 
 export interface VinylDiscProps {
-  /** Gira (download em andamento). Parado com prefers-reduced-motion (base.css). */
   spinning?: boolean;
   size?: number;
   className?: string;
 }
 
-const DISC =
-  "radial-gradient(circle at 50% 50%, #2a2520 0%, #221e18 18%, #1a1710 18.5%, #2a2520 20%, transparent 20.5%, transparent 21%, rgba(245,158,75,.12) 21%, rgba(245,158,75,.06) 28%, transparent 28.5%, transparent 30%, rgba(245,158,75,.10) 30%, rgba(245,158,75,.04) 40%, transparent 40.5%, transparent 43%, rgba(245,158,75,.08) 43%, rgba(245,158,75,.03) 55%, transparent 55.5%, transparent 58%, rgba(245,158,75,.06) 58%, rgba(245,158,75,.02) 70%, #141210 100%)";
-
+/** Vinyl grooves, reflected light, paper label and a real spindle hole. */
 export function VinylDisc({ spinning = false, size = 48, className }: VinylDiscProps) {
+  const id = useId();
   return (
     <div
       aria-hidden="true"
@@ -19,22 +18,59 @@ export function VinylDisc({ spinning = false, size = 48, className }: VinylDiscP
         width: size,
         height: size,
         animation: spinning ? "reverb-spin 2.4s linear infinite" : undefined,
-        background: DISC,
       }}
       className={cn(
-        "relative flex shrink-0 items-center justify-center rounded-full shadow-[0_0_0_1px_var(--glass-border),var(--shadow-md)]",
+        "relative shrink-0 rounded-full shadow-[0_0_0_1px_var(--glass-border),var(--shadow-md)]",
         className,
       )}
     >
-      <span
-        className="rounded-full"
-        style={{
-          width: size * 0.13,
-          height: size * 0.13,
-          background: "radial-gradient(circle at 40% 40%, #e8943a, #8a4a10)",
-          boxShadow: "0 0 12px rgba(245,158,75,.5)",
-        }}
-      />
+      <svg viewBox="0 0 100 100" className="size-full">
+        <defs>
+          <linearGradient id={`${id}-vinyl`} x1="0" y1="0" x2="1" y2="1">
+            <stop stopColor="#33343a" />
+            <stop offset=".35" stopColor="#111216" />
+            <stop offset=".55" stopColor="#292a30" />
+            <stop offset=".75" stopColor="#101115" />
+            <stop offset="1" stopColor="#38393f" />
+          </linearGradient>
+          <linearGradient id={`${id}-label`} x1="0" y1="0" x2="1" y2="1">
+            <stop stopColor="#ffc477" />
+            <stop offset="1" stopColor="#cc762d" />
+          </linearGradient>
+        </defs>
+        <circle
+          cx="50"
+          cy="50"
+          r="49"
+          fill={`url(#${id}-vinyl)`}
+          stroke="#55565b"
+          strokeWidth="1"
+        />
+        {[22, 25, 28, 31, 34, 37, 40, 43, 46].map((r) => (
+          <circle
+            key={r}
+            cx="50"
+            cy="50"
+            r={r}
+            fill="none"
+            stroke="#74757c"
+            strokeOpacity=".22"
+            strokeWidth=".65"
+          />
+        ))}
+        <circle cx="50" cy="50" r="18" fill={`url(#${id}-label)`} />
+        <circle
+          cx="50"
+          cy="50"
+          r="13"
+          fill="none"
+          stroke="#79441d"
+          strokeOpacity=".35"
+          strokeWidth=".8"
+        />
+        <path d="M44 40h12M44 60h12" stroke="#79441d" strokeOpacity=".6" strokeWidth="1.8" />
+        <circle cx="50" cy="50" r="3.5" fill="#090a0e" stroke="#e0a568" strokeWidth="1" />
+      </svg>
     </div>
   );
 }

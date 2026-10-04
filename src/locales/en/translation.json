@@ -26,7 +26,9 @@
     "activity": "Activity",
     "review": "Review",
     "settings": "Settings",
-    "more": "More"
+    "more": "More",
+    "collapse": "Collapse menu",
+    "expand": "Expand menu"
   },
   "commandBar": {
     "placeholder": "Paste a link or search for a song…",
@@ -51,7 +53,10 @@
     "resultsLabel": "Search results",
     "openPreview": "Open the preview of {{title}}",
     "downloadItem": "Download {{title}}",
-    "download": "Download"
+    "download": "Download",
+    "searchAction": "Search",
+    "analyzeAction": "Analyze link",
+    "instructions": "Paste a link or enter a song name. Press Enter to continue."
   },
   "shortcuts": {
     "commandBar": "Open the command bar",
@@ -109,7 +114,14 @@
     "analyzePlaylistHint": "Paste the playlist link in the bar and press Enter.",
     "clipboardEmpty": "The clipboard is empty.",
     "recent": "Recent",
-    "revealRecent": "Show {{title}} in folder"
+    "revealRecent": "Show {{title}} in folder",
+    "startTitle": "Your next song starts here",
+    "actionHints": {
+      "paste": "Review the copied link before downloading.",
+      "playlist": "Choose tracks from a playlist or album.",
+      "tags": "Edit track information, artwork and lyrics.",
+      "folder": "Find your downloaded audio files."
+    }
   },
   "preview": {
     "title": "Preview",
@@ -356,7 +368,7 @@
     "subtitle": "Adjust a file's title, artist, album, cover and lyrics.",
     "empty": {
       "title": "No file open",
-      "description": "Open a file from the Library to edit its tags."
+      "description": "Use “Open audio file…” or choose a track in the Library to edit its title, artist, artwork and lyrics."
     },
     "open": "Open audio file…",
     "saved": "Tags saved.",
@@ -609,7 +621,14 @@
     "bgutil": "bgutil",
     "upToDate": "Up to date",
     "updateAvailable": "Update available",
-    "missing": "Not installed"
+    "missing": "Not installed",
+    "descriptions": {
+      "ytdlp": "Downloads audio from YouTube links and other supported sites.",
+      "deno": "Runs scripts that help Reverb access YouTube videos.",
+      "ffmpeg": "Converts audio files to the format you choose for your music.",
+      "fpcalc": "Creates an audio fingerprint to identify music through AcoustID. Optional.",
+      "bgutil": "Helps access YouTube when additional verification is required."
+    }
   },
   "errors": {
     "extractorPersistent": "YouTube changed and even the latest yt-dlp could not keep up. Try again later.",
@@ -728,7 +747,7 @@
     "bookmarkletCopied": "Bookmarklet copied",
     "copyBookmarklet": "Copy bookmarklet",
     "bookmarkletTitle": "Download from your browser",
-    "bookmarkletHelp": "Copy the code and save it as the address of a bookmark, or drag the Reverb bookmark to your bookmarks bar. Use it on a YouTube page to add audio to the Reverb queue.",
+    "bookmarkletHelp": "Create a browser bookmark to send the current page to Reverb.",
     "autostartFailed": "Could not change startup with the system",
     "clipboardWatch": "Watch copied links",
     "analyzeCopied": "Analyze",
@@ -745,7 +764,18 @@
     "testLink": "Deep link to test",
     "test": "Test link",
     "testSuccess": "Link received",
-    "testFailed": "Invalid or unsupported deep link"
+    "testFailed": "Invalid or unsupported deep link",
+    "bookmarkletStep1": "Show your browser bookmarks bar (Ctrl + Shift + B in Chrome, Edge or Firefox).",
+    "bookmarkletStep2": "Drag the Reverb link below to that bar to create a bookmark named Reverb.",
+    "bookmarkletStep3": "Open a supported video or playlist page and click the bookmark. Allow the browser to open Reverb if prompted; the audio will be added to the queue.",
+    "bookmarkletStep4": "If dragging does not work: click Copy bookmarklet, create a bookmark, then edit its address (URL) and paste the copied code.",
+    "easyTitle": "Copy a link and choose whether to download",
+    "easyHelp": "The easiest way. Enable the switch beside this text; no browser setup needed.",
+    "easyStep1": "Open a video or playlist on YouTube and copy its address (Ctrl + C).",
+    "easyStep2": "With Reverb running, wait for the copied-link notification.",
+    "easyStep3": "Click Download to add it to the queue, or Cancel to ignore it.",
+    "easyPrivacy": "Nothing downloads without your confirmation. If you leave this option off, paste the link into the Home search instead.",
+    "advancedTitle": "Another option: create a browser bookmark (advanced)"
   },
   "quality": {
     "cookies": "Cookies and YouTube Premium",
@@ -801,7 +831,37 @@
     "notConfigured": "Not configured",
     "apiOk": "Connection valid",
     "testApi": "Test connection",
-    "clearKey": "Remove key"
+    "clearKey": "Remove key",
+    "openService": "Open {{provider}} ↗",
+    "setupGuide": "How to set up: step by step",
+    "saved": "Details saved. Test the connection to check.",
+    "guides": {
+      "acoustid": {
+        "description": "Identifies music by sound, even when a file has no title or artist.",
+        "step1": "Open AcoustID using the button above and sign in.",
+        "step2": "On the application registration page, enter a name such as Personal Reverb and the requested details.",
+        "step3": "Copy the Application API key. The user key used for submitting music cannot be used for this lookup.",
+        "step4": "Paste it into AcoustID key, click Save, then Test connection. Sound identification also requires the fpcalc tool."
+      },
+      "spotify": {
+        "description": "Looks up titles, artists, albums and artwork in the Spotify catalog. Access depends on platform rules."
+      },
+      "discogs": {
+        "description": "Adds album information about editions and releases.",
+        "step1": "Open Discogs using the button above and sign in or create an account.",
+        "step2": "Open Developers in your account settings.",
+        "step3": "Create a personal token using Generate new token and copy its value.",
+        "step4": "Paste it into Discogs token, click Save, then Test connection."
+      },
+      "jamendo": {
+        "description": "Looks up music and independent artists in the Jamendo catalog.",
+        "step1": "Open the Jamendo developer portal using the button above and sign in or create an account.",
+        "step2": "Register an application with a name such as Personal Reverb and fill in the requested details.",
+        "step3": "Open the registered application and copy its Client ID.",
+        "step4": "Paste it into Jamendo Client ID, click Save, then Test connection."
+      }
+    },
+    "autoUpgradeHint": "When checking followed artists, looks for better versions of tracks below your chosen source quality target. Only replaces the file when a better source is found; it does not artificially improve audio quality. Choose 160 or 256 kbps above to use this feature."
   },
   "sources": {
     "youtube": "YouTube",
@@ -840,7 +900,7 @@
     "spotifyDashboard": "Open Spotify dashboard",
     "step1": "Sign in to the Spotify developer dashboard with your account.",
     "step2": "Create an application and enable Web API.",
-    "step3": "Copy your Client ID and Client Secret into the fields above and save.",
+    "step3": "Copy your Client ID and Client Secret into the fields below, then click Save.",
     "step4": "Test the connection. Access depends on application permissions; restricted playlists may be unavailable.",
     "selection": "Selection"
   },
@@ -925,7 +985,9 @@
       "all": "New releases are queued automatically while the app is open.",
       "notify": "New releases trigger a notification and appear in Missing. You decide when to download.",
       "none": "New releases are recorded without notifications or automatic downloads."
-    }
+    },
+    "searching": "Searching artists…",
+    "autoSearchHint": "Type at least 2 letters for suggestions. Use Tab and Enter to select."
   },
   "metadataDetails": {
     "title": "Result details",
@@ -943,5 +1005,49 @@
     "applied": "Metadata applied to the editor. Save to write the file.",
     "count": "{{count}} result(s) found.",
     "empty": "No results found. Adjust the title and artist and try again."
+  },
+  "notifications": {
+    "titles": {
+      "info": "Reverb",
+      "success": "All set",
+      "warning": "Attention",
+      "error": "Could not complete"
+    },
+    "actionFailed": "The action did not complete. Try again; no confirmation was made automatically.",
+    "remaining_one": "Closes in {{count}} second",
+    "remaining_other": "Closes in {{count}} seconds",
+    "paused": "Timer paused while reading",
+    "settingsTitle": "Notifications and sounds",
+    "settingsHint": "Choose the alert sound. Notifications with actions give you more reading time and pause while you interact with them.",
+    "sound": "Notification sound",
+    "sounds": {
+      "glass": "Soft glass",
+      "marimba": "Marimba",
+      "sparkle": "Bright notes",
+      "custom": "Custom sound",
+      "silent": "Silent"
+    },
+    "volume": "Notification volume",
+    "previewSound": "Preview sound",
+    "addSound": "Load custom sound",
+    "removeSound": "Remove custom sound",
+    "saveFailed": "Could not save notification preferences on this device.",
+    "playFailed": "Could not play this sound. Try another file or check your audio output.",
+    "invalidSound": "Choose a valid MP3, WAV, OGG or M4A audio file up to 2 MB. If storage is full, remove the previous sound.",
+    "fileHint": "MP3, WAV, OGG or M4A • up to 2 MB. Stored on this device and played for up to 5 seconds.",
+    "soundAdded": "Custom sound saved: {{name}}",
+    "clipboardDuration": "Time to decide about a copied link",
+    "seconds_one": "{{count}} second",
+    "seconds_other": "{{count}} seconds",
+    "testNotification": "Test notification",
+    "demoTitle": "Download complete",
+    "demoMessage": "Your music is ready to play and has been added to the Library.",
+    "demoDetails": "Example notification • No file was downloaded in this test.",
+    "clipboardTitle": "Music link copied",
+    "clipboardMessage": "Add this link to the queue? Format: {{format}}. Download starts only when you click Download; Cancel or letting the notice expire downloads nothing.",
+    "queuedTitle": "Added to queue",
+    "queuedMessage": "You can follow the download in Activity.",
+    "openReverb": "Open Reverb",
+    "regionTitle": "Reverb notifications"
   }
 }

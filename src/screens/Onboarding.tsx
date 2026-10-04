@@ -240,6 +240,7 @@ export default function Onboarding() {
           {t("onboarding.back")}
         </Button>
         <Button
+          variant="primary"
           loading={busy}
           disabled={busy || (step === 1 && !folderValid(destination)) || (step === 2 && !ready)}
           onClick={() => void next()}

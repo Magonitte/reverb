@@ -4,6 +4,7 @@ import type { SettingsPatch } from "@/bindings/SettingsPatch";
 import type { SettingsView } from "@/bindings/SettingsView";
 import { api } from "@/lib/ipc/api";
 import { onEvent } from "@/lib/ipc/events";
+import { DEFAULT_NOTIFICATIONS, useNotificationPreferences } from "./notificationPreferences";
 
 interface SettingsState {
   settings: SettingsView | null;
@@ -63,6 +64,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
   reset: async () => {
     set({ settings: await api.settingsReset() });
+    useNotificationPreferences.getState().update(DEFAULT_NOTIFICATIONS);
   },
 }));
 

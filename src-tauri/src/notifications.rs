@@ -3,22 +3,138 @@ use reverb_core::desktop::{notifications::CompletionBatch, texts};
 use std::collections::HashSet;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
-use tauri::{AppHandle, Listener, Manager};
+use tauri::{AppHandle, Emitter, Listener, Manager, WebviewUrl, WebviewWindowBuilder};
 use tauri_plugin_notification::NotificationExt;
 
+#[derive(Clone, serde::Serialize)]
+pub struct NativeNotice {
+    message: String,
+    title: String,
+    tone: String,
+    url: Option<String>,
+}
+#[derive(Default)]
+pub struct PendingNotices(Mutex<Vec<NativeNotice>>);
+
 pub fn show(app: &AppHandle, message: &str) {
+    show_rich(
+        app,
+        NativeNotice {
+            message: message.to_owned(),
+            title: "Reverb".into(),
+            tone: "info".into(),
+            url: None,
+        },
+    );
+}
+pub fn show_clipboard(app: &AppHandle, url: String) {
+    show_rich(
+        app,
+        NativeNotice {
+            message: format!(
+                "{} — {}",
+                texts::text(app.state::<AppState>().settings.get().language, "copied"),
+                url
+            ),
+            title: "Reverb".into(),
+            tone: "info".into(),
+            url: Some(url),
+        },
+    );
+}
+fn show_rich(app: &AppHandle, notice: NativeNotice) {
+    if let Some(window) = app.get_webview_window("main") {
+        if window.is_focused().unwrap_or(false) && !window.is_minimized().unwrap_or(false) {
+            let _ = window.emit("notification://notice", &notice);
+            return;
+        }
+    }
+    if let Some(pending) = app.try_state::<PendingNotices>() {
+        {
+            let mut items = pending.0.lock().unwrap();
+            // The latest clipboard link replaces a previous undecided link.
+            if notice.url.is_some() {
+                items.retain(|item| item.url.is_none());
+            }
+            items.push(notice.clone());
+        }
+        let window = app
+            .get_webview_window("notification")
+            .map(Ok)
+            .unwrap_or_else(|| {
+                WebviewWindowBuilder::new(
+                    app,
+                    "notification",
+                    WebviewUrl::App("index.html#/notification".into()),
+                )
+                .title("Reverb")
+                .data_directory(app.state::<AppState>().paths.data_dir.join("webview"))
+                .inner_size(452.0, 420.0)
+                .decorations(false)
+                .transparent(true)
+                .always_on_top(true)
+                .skip_taskbar(true)
+                .resizable(false)
+                .focused(false)
+                .visible(false)
+                .build()
+            });
+        match window {
+            Ok(window) => {
+                let _ = window.emit("notification://pending", ());
+                let _ = notifications_resize(app.clone(), 420);
+                return;
+            }
+            Err(error) => tracing::warn!(%error, "notification popup unavailable"),
+        }
+    }
     if let Err(error) = app
         .notification()
         .builder()
-        .title("Reverb")
-        .body(message)
+        .title(&notice.title)
+        .body(&notice.message)
         .show()
     {
         tracing::warn!(%error, "native notification failed");
     }
 }
+#[tauri::command]
+pub fn notifications_pending(app: AppHandle) -> Vec<NativeNotice> {
+    app.try_state::<PendingNotices>()
+        .map(|pending| std::mem::take(&mut *pending.0.lock().unwrap()))
+        .unwrap_or_default()
+}
+#[tauri::command]
+pub fn notifications_hide(app: AppHandle) {
+    if let Some(window) = app.get_webview_window("notification") {
+        let _ = window.hide();
+    }
+}
+#[tauri::command]
+pub fn notifications_resize(app: AppHandle, height: u32) -> Result<(), String> {
+    let Some(window) = app.get_webview_window("notification") else {
+        return Ok(());
+    };
+    let height = height.clamp(160, 640) as f64;
+    window
+        .set_size(tauri::LogicalSize::new(452.0, height))
+        .map_err(|e| e.to_string())?;
+    if let Some(monitor) = window.current_monitor().map_err(|e| e.to_string())? {
+        let scale = monitor.scale_factor();
+        let size = monitor.size();
+        let position = monitor.position();
+        window
+            .set_position(tauri::PhysicalPosition::new(
+                position.x + size.width as i32 - (468.0 * scale) as i32,
+                position.y + size.height as i32 - ((height + 64.0) * scale) as i32,
+            ))
+            .map_err(|e| e.to_string())?;
+    }
+    window.show().map_err(|e| e.to_string())
+}
 
 pub fn initialize(app: &AppHandle) -> reverb_core::CoreResult<()> {
+    app.manage(PendingNotices::default());
     let app_artists = app.clone();
     app.listen("artists://release", move |event| {
         if !app_artists
@@ -74,7 +190,24 @@ pub fn initialize(app: &AppHandle) -> reverb_core::CoreResult<()> {
                 job["title"].as_str().unwrap_or("Reverb").to_owned(),
             );
         } else if status == "failed" {
-            show(&app_jobs, texts::text(settings.language, "failed"));
+            show_rich(
+                &app_jobs,
+                NativeNotice {
+                    title: if settings.language == reverb_core::settings::Language::En {
+                        "Download failed"
+                    } else {
+                        "Falha no download"
+                    }
+                    .into(),
+                    message: format!(
+                        "{} · {}",
+                        job["title"].as_str().unwrap_or("Reverb"),
+                        texts::text(settings.language, "failed")
+                    ),
+                    tone: "error".into(),
+                    url: None,
+                },
+            );
         }
     });
     let handle = app.clone();
@@ -94,7 +227,20 @@ pub fn initialize(app: &AppHandle) -> reverb_core::CoreResult<()> {
                 }
             };
             for message in messages {
-                show(&handle, &message);
+                show_rich(
+                    &handle,
+                    NativeNotice {
+                        title: if settings.language == reverb_core::settings::Language::En {
+                            "Download complete"
+                        } else {
+                            "Download concluído"
+                        }
+                        .into(),
+                        message,
+                        tone: "success".into(),
+                        url: None,
+                    },
+                );
             }
         }
     });

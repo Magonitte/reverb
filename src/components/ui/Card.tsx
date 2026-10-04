@@ -11,8 +11,9 @@ export function Card({ interactive, elevated, className, ...rest }: CardProps) {
     <div
       className={cn(
         elevated ? "glass-elevated" : "glass",
-        "rounded-lg p-5 transition-all duration-[140ms] ease-out hover:bg-glass-hover hover:border-glass-border-hover hover:shadow-md",
-        interactive && "cursor-pointer active:scale-[0.985]",
+        "rounded-lg p-5 shadow-sm transition-all duration-[140ms] ease-out",
+        interactive &&
+          "cursor-pointer hover:bg-glass-hover hover:border-glass-border-hover hover:shadow-md active:scale-[0.985]",
         className,
       )}
       {...rest}

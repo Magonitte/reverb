@@ -151,13 +151,19 @@ export default function TagEditor() {
             <Button variant="ghost" disabled={busy} onClick={() => navigate("/library")}>
               {t("library.back")}
             </Button>
+            {path && (
+              <Button
+                disabled={busy || !path}
+                onClick={() => void run(async () => setTrimDuration(await api.audioDuration(path)))}
+              >
+                {t("quality.trim")}
+              </Button>
+            )}
             <Button
-              disabled={busy || !path}
-              onClick={() => void run(async () => setTrimDuration(await api.audioDuration(path)))}
+              variant={path ? "secondary" : "primary"}
+              disabled={busy}
+              onClick={() => void run(open)}
             >
-              {t("quality.trim")}
-            </Button>
-            <Button disabled={busy} onClick={() => void run(open)}>
               {t("tagEditor.open")}
             </Button>
           </>
@@ -190,7 +196,7 @@ export default function TagEditor() {
       ) : tags ? (
         <div className="flex flex-col gap-4">
           <p className="break-all text-xs text-fg-muted">{path}</p>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="glass grid gap-4 rounded-lg p-5 md:grid-cols-2">
             {TEXT_FIELDS.map((field) => (
               <Input
                 key={field}
@@ -346,7 +352,13 @@ export default function TagEditor() {
               {t("tagEditor.reorganize")}
             </Checkbox>
           )}
-          <Button loading={busy} disabled={!tags.title.trim()} onClick={() => void run(save)}>
+          <Button
+            variant="primary"
+            className="self-start"
+            loading={busy}
+            disabled={!tags.title.trim()}
+            onClick={() => void run(save)}
+          >
             {t("common.save")}
           </Button>
         </div>

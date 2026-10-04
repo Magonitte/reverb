@@ -25,13 +25,17 @@ describe("F12 bookmarklet", () => {
   });
   it("shows instructions and copies the exact bookmarklet through Rust IPC", async () => {
     renderApp("/settings/integration");
+    const advanced = await screen.findByText(
+      "Outra opção: criar um favorito no navegador (avançado)",
+    );
+    expect(screen.getByText("Código do bookmarklet")).not.toBeVisible();
+    expect(screen.getByText(/Nada é baixado sem sua confirmação/)).toBeVisible();
+    await userEvent.click(advanced);
     const button = await screen.findByRole("button", { name: "Copiar bookmarklet" });
     await userEvent.click(button);
     expect(await api.clipboardReadText()).toBe(BOOKMARKLET);
     expect(screen.getByRole("textbox", { name: "Código do bookmarklet" })).toHaveValue(BOOKMARKLET);
-    await waitFor(() =>
-      expect(screen.getByText(/salve como endereço de um favorito/)).toBeVisible(),
-    );
+    await waitFor(() => expect(screen.getByText(/Arraste o link Reverb abaixo/)).toBeVisible());
   });
   it("test command enqueues a validated URL using the specified profile", async () => {
     await api.deeplinkTest("reverb://add?url=https%3A%2F%2Fyoutu.be%2FjNQXAC9IVRw&profile=opus_96");
